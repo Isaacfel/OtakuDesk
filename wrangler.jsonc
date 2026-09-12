@@ -8,12 +8,19 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
 
-  // The custom domain is attached in the dashboard (Worker > Settings >
-  // Domains & Routes), NOT here, so that deploying can never repoint
-  // otakudesk.com by accident. See DEPLOY.md.
+  // Custom domains. otakudesk.com is registered in this same Cloudflare
+  // account, so the DNS records and the TLS certificate are created and
+  // renewed automatically — there is no nameserver change to make.
   //
-  // Secrets (AMAZON_TAG, AWIN_AFF_ID) are set with `wrangler secret put`
-  // and must never appear in this file - it is committed.
+  // Declared here rather than clicked in the dashboard so the routing is in
+  // version control and a rebuild cannot silently lose it.
+  //
+  // Secrets (AMAZON_TAG, AWIN_AFF_ID) are set with `wrangler secret put` and
+  // must never appear in this file - it is committed.
+  "routes": [
+    { "pattern": "otakudesk.com", "custom_domain": true },
+    { "pattern": "www.otakudesk.com", "custom_domain": true }
+  ]
 }

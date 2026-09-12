@@ -60,27 +60,27 @@ npx wrangler secret put AWIN_AFF_ID
 
 Never commit these. `.env*` is gitignored.
 
-## Before pointing the real domain at it
+## The live domain
 
-The catalog is still sample data, and that has a consequence beyond
-appearances: **affiliate programs review your live site when you apply.** A
-reviewer landing on twelve products marked SAMPLE is a rejection, and
-reapplying after one is harder than applying cleanly the first time.
+`otakudesk.com` and `www.otakudesk.com` are attached as custom domains, declared
+in `wrangler.jsonc` rather than clicked in the dashboard so the routing is in
+version control. Both are served by the Worker; DNS and the TLS certificate are
+managed automatically because the domain sits in the same Cloudflare account.
 
-`app/robots.ts` therefore blocks all crawling while `CATALOG_IS_SAMPLE` is
-true, and clears itself the moment one real verified pick is published. That
-protects the domain's first impression in search, but it does not stop a human
-reviewer from looking.
+Note that attaching custom domains disabled the `*.workers.dev` URL, because
+`workers_dev` is not set in the config. Add `"workers_dev": true` if you want a
+staging URL back alongside the live one.
 
-So the sequence that works:
+## While the catalog is sample data
 
-1. Deploy to the generated `*.workers.dev` URL and check it there.
-2. Do the Phase 0 research — get real picks verified and published.
-3. Attach `otakudesk.com` once there is a site worth reviewing.
+`app/robots.ts` blocks all crawling until one real verified pick is published,
+then clears itself. That keeps the domain out of search results while every
+product is still placeholder data.
 
-Attaching the domain earlier is not harmful, only premature. The deploy
-pipeline being ready is the useful part; using it on the real domain is a
-decision with a right moment, and this is not quite it.
+It does not stop a human. Affiliate programs review your live site when you
+apply, so a reviewer who visits before there is real content will see twelve
+products marked SAMPLE. Prefer to have real picks published before applying to
+Displate, Awin, or Crunchyroll.
 
 ## Deploying (after the one-time setup)
 
