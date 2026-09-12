@@ -39,7 +39,7 @@ export async function GET(
 
   // Unknown slug: a stale link from an old article or a mistyped URL.
   // Send the reader somewhere useful rather than showing them an error.
-  if (!pick) return bounce('/vault')
+  if (!pick) return bounce('/desk')
 
   // The two hard stops, both delegating to the same predicate the UI uses so
   // the button and the redirect can never disagree. Sample and unverified

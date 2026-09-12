@@ -27,10 +27,10 @@ export default function PickNotFound() {
 
         <div className="mt-8 flex flex-wrap items-center gap-4 text-sm">
           <Link
-            href="/vault"
+            href="/desk"
             className="inline-flex items-center gap-2 rounded-sm bg-shu px-5 py-3 font-display font-semibold tracking-tight text-white transition-colors hover:bg-shu-bright"
           >
-            Browse the Vault
+            Browse all picks
             <span aria-hidden="true">&rarr;</span>
           </Link>
           <Link

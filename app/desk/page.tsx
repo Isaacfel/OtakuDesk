@@ -1,18 +1,18 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { Header, Footer } from '@/components/Shell'
-import { VaultBrowser } from '@/components/VaultBrowser'
+import { DeskBrowser } from '@/components/DeskBrowser'
 import { PICKS } from '@/data/picks'
 import { toCatalogPick } from '@/data/types'
 
 export const metadata: Metadata = {
-  title: 'The Vault',
+  title: 'The Desk',
   description:
     'Every Otakudesk pick in one place. Search and filter by category, licence status, seller type, price, and collection. Seller named and price dated on every pick.',
 }
 
 /**
- * /vault — the full catalog.
+ * /desk — the full catalog.
  *
  * A server component that hands the static PICKS array to the client browser.
  * There is no data fetching here and the page stays fully static. The browser
@@ -20,13 +20,13 @@ export const metadata: Metadata = {
  * Suspense boundary) and mirrors changes back into the URL, so a filtered view
  * is shareable without making the route dynamic.
  */
-export default function VaultPage() {
+export default function DeskPage() {
   return (
     <>
       <Header />
       <main className="mx-auto max-w-6xl px-5 pt-10 pb-8 sm:pt-14">
         <header className="mb-10 max-w-[64ch]">
-          <p className="label-xs mb-3 text-shu">The Vault</p>
+          <p className="label-xs mb-3 text-shu">The Desk</p>
           <h1 className="text-4xl text-paper sm:text-5xl">
             Every pick, with the facts attached.
           </h1>
@@ -46,7 +46,7 @@ export default function VaultPage() {
           }
         >
           {/* Narrowed at the boundary: purchaseUrl must never reach the client. */}
-          <VaultBrowser picks={PICKS.map(toCatalogPick)} />
+          <DeskBrowser picks={PICKS.map(toCatalogPick)} />
         </Suspense>
       </main>
       <Footer />

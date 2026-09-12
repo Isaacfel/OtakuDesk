@@ -44,7 +44,7 @@ These are the same work aimed at a different surface, not residual footnotes.
 | Route | Notes |
 |---|---|
 | `/` | Home. Positioning, trust, featured picks, journal preview, email. |
-| `/vault` | All picks: search, filter, sort. Client-side over static data. |
+| `/desk` | All picks: search, filter, sort. Client-side over static data. |
 | `/picks/[slug]` | Pick detail. The most important page on the site. |
 | `/journal`, `/journal/[slug]` | MDX. The traffic engine. |
 | `/about` | Who curates, how picks are chosen, how we are paid. |
@@ -54,8 +54,8 @@ These are the same work aimed at a different surface, not residual footnotes.
 **Deferred out of v1** (data already exists, routes ship later without rework):
 
 - `/collections` and `/collections/[slug]` — `COLLECTIONS` stays in the data
-  layer and is used as a filter facet on `/vault`.
-- `/new-drops` — `addedAt` is already on every pick; sort by it on `/vault`.
+  layer and is used as a filter facet on `/desk`.
+- `/new-drops` — `addedAt` is already on every pick; sort by it on `/desk`.
 - `/saved` — no wishlist in v1.
 - Curated sets (`SETS`) — data kept, no route.
 

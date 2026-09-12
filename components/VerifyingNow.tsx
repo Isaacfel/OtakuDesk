@@ -22,7 +22,7 @@ export function VerifyingNow() {
   if (waiting.length === 0) {
     return (
       <>
-        Every pick currently in the Vault has cleared that check — but the
+        Every pick we list has cleared that check right now — but the
         label exists precisely so that we are not tempted to skip it.
       </>
     )

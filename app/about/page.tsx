@@ -73,8 +73,8 @@ export default function AboutPage() {
               automated catalog. Every pick was chosen by a member of the
               Otakudesk team who found the product, read the seller&rsquo;s
               listing, checked the licence, and wrote the three reasons you see
-              on its card. If we would not put it on our own desk, it is not in
-              the Vault.
+              on its card. If we would not put it on our own desk, we do not list
+              it.
             </p>
             <p>
               Bylines and a short bio for each editor will sit here before
@@ -227,7 +227,7 @@ export default function AboutPage() {
               <>
                 <h2 id="catalog">Where the catalog stands</h2>
                 <p>
-                  Every one of the {PICKS.length} products in the Vault today is
+                  Every one of the {PICKS.length} products on Otakudesk today is
                   sample data used while the site is built. Each is labelled as
                   such, none is for sale, no price is live, and no purchase link
                   is configured. Real picks will replace them one at a time, each

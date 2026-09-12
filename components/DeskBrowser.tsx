@@ -14,7 +14,7 @@ import { track } from '@/lib/analytics'
 import { PickCard } from './PickCard'
 
 /**
- * The browse surface for /vault.
+ * The browse surface for /desk.
  *
  * Everything happens client-side over the static PICKS array — with a catalog
  * that is hand-verified one row at a time, there is no size at which a search
@@ -187,7 +187,7 @@ function writeUrlState(query: string, filters: Filters, sort: SortKey) {
   }
 }
 
-export function VaultBrowser({ picks }: { picks: CatalogPick[] }) {
+export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
   // Initial state comes from a shared URL, read once. `useSearchParams` in a
   // statically rendered page defers this component to the client inside the
   // page's Suspense boundary, so there is no server/client mismatch.
@@ -443,7 +443,7 @@ export function VaultBrowser({ picks }: { picks: CatalogPick[] }) {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex-1">
             <label htmlFor={searchId} className="label-xs mb-1.5 block text-muted">
-              Search the vault
+              Search the desk
             </label>
             <input
               id={searchId}
@@ -521,7 +521,7 @@ export function VaultBrowser({ picks }: { picks: CatalogPick[] }) {
           <div className="mt-6">
             <div className="border border-line bg-surface p-6 sm:p-8">
               <h2 className="font-display text-2xl font-extrabold tracking-tight text-paper">
-                Nothing in the vault matches that yet.
+                Nothing matches that yet.
               </h2>
               <p className="mt-2 max-w-[52ch] text-sm leading-relaxed text-paper-2">
                 The catalog is small on purpose — every pick is verified by hand, so

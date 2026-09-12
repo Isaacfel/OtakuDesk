@@ -4,14 +4,14 @@ import { DisclosureBanner, SampleCatalogNotice } from './Disclosure'
 /**
  * The site shell.
  *
- * Nav is deliberately short. v1 ships Vault, Journal and About — collections,
+ * Nav is deliberately short. v1 ships Desk, Journal and About — collections,
  * new-drops and saved are deferred (their data already exists, so the routes
  * can be added later without rework). A nav with six entries and three real
  * destinations is how a small site announces that it is padding.
  */
 
 const NAV = [
-  { href: '/vault', label: 'The Vault' },
+  { href: '/desk', label: 'The Desk' },
   { href: '/journal', label: 'Journal' },
   { href: '/about', label: 'About' },
 ]

@@ -40,10 +40,10 @@ export function Hero() {
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link
-              href="/vault"
+              href="/desk"
               className="inline-flex items-center gap-2 bg-shu px-6 py-3 text-base font-semibold text-paper transition-colors hover:bg-shu-bright"
             >
-              Explore the vault
+              Explore the desk
               <span aria-hidden="true">→</span>
             </Link>
 

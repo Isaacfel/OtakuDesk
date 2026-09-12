@@ -99,10 +99,10 @@ export default function HomePage() {
                 </h2>
               </div>
               <Link
-                href="/vault"
+                href="/desk"
                 className="text-sm text-paper-2 underline underline-offset-4 hover:text-paper"
               >
-                See all {PICKS.length} picks in the vault →
+                See all {PICKS.length} picks →
               </Link>
             </div>
 
@@ -117,8 +117,8 @@ export default function HomePage() {
             ) : (
               <p className="mt-10 text-sm text-muted">
                 No picks are featured right now.{' '}
-                <Link href="/vault" className="text-paper-2 underline underline-offset-2">
-                  Browse the vault
+                <Link href="/desk" className="text-paper-2 underline underline-offset-2">
+                  Explore the desk
                 </Link>{' '}
                 instead.
               </p>

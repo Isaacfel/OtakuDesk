@@ -67,8 +67,8 @@ export default async function JournalIndex() {
 
         <p className="mt-8 max-w-[60ch] text-sm leading-relaxed text-muted">
           Articles link to picks in{' '}
-          <Link href="/vault" className="text-paper-2 underline underline-offset-2 hover:text-paper">
-            the Vault
+          <Link href="/desk" className="text-paper-2 underline underline-offset-2 hover:text-paper">
+            the Desk
           </Link>
           . Every pick page shows the seller, the licence status, and the date
           the price was checked before you see any buy link.

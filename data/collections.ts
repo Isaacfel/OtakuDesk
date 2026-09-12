@@ -3,7 +3,7 @@ import type { Collection, CuratedSet } from './types'
 /**
  * Collection and set metadata, deliberately in its own module.
  *
- * VaultBrowser is a Client Component and needs COLLECTIONS for its filter
+ * DeskBrowser is a Client Component and needs COLLECTIONS for its filter
  * facets. When this lived in data/picks.ts, that single import pulled the
  * whole catalog into the client bundle — including every `purchaseUrl`, the
  * raw untagged merchant destinations, readable by anyone who opened the JS.

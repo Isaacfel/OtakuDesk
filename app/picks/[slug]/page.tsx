@@ -81,8 +81,8 @@ export default async function PickPage({ params }: Props) {
           aria-label="Breadcrumb"
           className="label-xs flex flex-wrap items-center gap-2 text-muted"
         >
-          <Link href="/vault" className="transition-colors hover:text-paper">
-            The Vault
+          <Link href="/desk" className="transition-colors hover:text-paper">
+            The Desk
           </Link>
           <span aria-hidden="true">/</span>
           <span>{pick.category}</span>
