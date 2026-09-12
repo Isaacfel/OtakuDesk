@@ -73,7 +73,7 @@ function A({ href = '', children, ...rest }: ComponentPropsWithoutRef<'a'>) {
     )
   }
   return (
-    <a href={href} rel="nofollow noopener" target="_blank" {...rest}>
+    <a {...rest} href={href} rel="nofollow noopener" target="_blank">
       {children}
     </a>
   )

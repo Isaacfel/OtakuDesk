@@ -1,54 +1,143 @@
 import Link from 'next/link'
 import { Header, Footer } from '@/components/Shell'
 import { Hero } from '@/components/Hero'
-import { PickCard } from '@/components/PickCard'
+import { ArcCard } from '@/components/ArcCard'
+import { SetupPath } from '@/components/SetupPath'
+import { TrustPanels } from '@/components/TrustPanels'
+import { JournalCovers } from '@/components/JournalCovers'
+import { PickThumb } from '@/components/PickThumb'
+import { PriceStamp } from '@/components/PriceStamp'
+import { LicenseBadge, SellerNote } from '@/components/Badges'
+import { CATEGORY_ACCENT } from '@/components/PickCard'
+import { EditorialBadge, RegistrationMark } from '@/components/motifs'
 import { PICKS } from '@/data/picks'
-import { PRICE_MAX_AGE_DAYS } from '@/data/types'
+import { COLLECTIONS } from '@/data/collections'
+import { isPurchasable, type Pick } from '@/data/types'
 
 /**
- * Home.
+ * Home — the volume's opening spread.
  *
- * Positioning, then the trust argument, then the picks. The order matters:
- * the site's entire differentiation is that it tells you who is selling, under
- * what licence, and when the price was checked. That case gets made before a
- * single product card appears, so the cards are read in that light.
+ * Order: the masthead, the arcs to choose from, the featured lookbook, the
+ * setup path, then the trust panels, the journal covers, and the letter. The
+ * trust argument sits mid-page rather than first because the new masthead
+ * already carries its three-word version ("Seller named · License stated ·
+ * Price dated"); the panels expand it once the reader has seen what is here.
+ *
+ * Hard rules that shape this file: nothing renders `purchaseUrl`; no outbound
+ * merchant link exists on this page at all (only `OutboundButton`, on the
+ * pick page, may link out); no ratings, counts, stock or urgency anywhere.
  */
 
-const TRUST_POINTS = [
-  {
-    n: '01',
-    title: 'We name the seller.',
-    body: 'Marketplace listings hide who is actually shipping the box. Every pick here says whether you are buying from a licensed retailer, the brand itself, a marketplace seller, or an independent artist — and names them.',
-    why: 'Because the seller decides your returns, your shipping time, and whether the thing that arrives is the thing in the photo.',
-  },
-  {
-    n: '02',
-    title: 'We state the licence.',
-    body: 'Each pick is marked officially licensed, original design, or still being verified. An unverified pick never gets a buy link — it gets a panel saying we are still checking.',
-    why: 'Because bootleg merchandise pays nobody who made the work you love, and telling the difference is the hardest part of shopping this space.',
-  },
-  {
-    n: '03',
-    title: 'We date every price.',
-    body: `A price is shown with the day we last checked it, and a price older than ${PRICE_MAX_AGE_DAYS} days is not shown at all. There is no “was $59, now $39” anywhere on this site.`,
-    why: 'Because a stale price is a small lie, and a guide that tells small lies is not a guide.',
-  },
-]
+function SectionHead({
+  id,
+  kicker,
+  title,
+  aside,
+  tone = 'paper',
+}: {
+  id: string
+  kicker: string
+  title: string
+  aside?: React.ReactNode
+  tone?: 'paper' | 'dark'
+}) {
+  const kickerTone = tone === 'dark' ? 'text-shu-electric' : 'text-shu'
+  const titleTone = tone === 'dark' ? 'text-panel-type' : 'text-paper'
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+      <div className="max-w-[60ch]">
+        <p className={`label-xs mb-3 flex items-center gap-2 ${kickerTone}`}>
+          <RegistrationMark className="h-3 w-3" />
+          {kicker}
+        </p>
+        <h2 id={id} className={`text-3xl sm:text-4xl ${titleTone}`}>
+          {title}
+        </h2>
+      </div>
+      {aside}
+    </div>
+  )
+}
 
-const HOW_WE_CHOOSE = [
-  {
-    step: 'Find',
-    text: 'We look for pieces that change how a room or a desk feels, starting with what sits on the desk and what goes on the wall. Figures are out of scope on purpose.',
-  },
-  {
-    step: 'Verify',
-    text: 'We confirm who sells it and under what licence, by hand, one pick at a time. Nothing is bulk-imported from a merchant feed.',
-  },
-  {
-    step: 'Explain',
-    text: 'Every pick carries exactly three reasons we chose it, who it suits, and an honest caveat where there is one. No ratings, no review counts we cannot stand behind.',
-  },
-]
+/* -------------------------------------------------------------------------
+   Featured lookbook card. The picture is the panel; the caption is editorial —
+   the first of the three reasons, and who it suits. Never a rating.
+   ---------------------------------------------------------------------- */
+function LookCard({
+  pick,
+  index,
+  lead = false,
+}: {
+  pick: Pick
+  index: number
+  lead?: boolean
+}) {
+  const live = isPurchasable(pick)
+  const accent = CATEGORY_ACCENT[pick.category] ?? CATEGORY_ACCENT['Desk & Room']
+
+  return (
+    <article
+      className={`group flex h-full w-[82%] shrink-0 snap-start flex-col sm:w-[60%] lg:w-auto ${
+        lead ? 'lg:col-span-7 lg:row-span-2' : 'lg:col-span-5'
+      }`}
+    >
+      <Link
+        href={`/picks/${pick.slug}`}
+        className={`panel-frame flex h-full flex-col bg-surface transition-[box-shadow,transform] duration-200 group-hover:offset-print group-hover:-translate-x-px group-hover:-translate-y-px ${
+          lead ? '' : 'lg:flex-row'
+        }`}
+      >
+        <div
+          className={`relative overflow-hidden border-b-2 border-paper ${
+            lead ? '' : 'lg:w-[44%] lg:shrink-0 lg:border-r-2 lg:border-b-0'
+          }`}
+        >
+          <PickThumb pick={pick} priority={index === 0} ratio={lead ? 'standard' : 'cover'} />
+          <div className="absolute top-2 left-2 flex flex-col items-start gap-1.5">
+            <EditorialBadge tone="ink">Look {String(index + 1).padStart(2, '0')}</EditorialBadge>
+            {!live && (
+              <EditorialBadge tone={pick.linkStatus === 'sample' ? 'ink' : 'orange'}>
+                {pick.linkStatus === 'sample' ? 'Sample · not for sale' : 'Verifying'}
+              </EditorialBadge>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-1 flex-col">
+          <div aria-hidden="true" className={`h-1 ${accent.bar} ${lead ? '' : 'lg:hidden'}`} />
+          <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
+            <div className="flex flex-wrap items-center gap-2">
+              <LicenseBadge pick={pick} />
+              <span className={`label-xs ${accent.text}`}>{pick.category}</span>
+            </div>
+
+            <h3
+              className={`font-display leading-tight font-bold text-paper transition-colors group-hover:text-shu ${
+                lead ? 'text-2xl sm:text-3xl' : 'text-xl'
+              }`}
+            >
+              {pick.title}
+            </h3>
+
+            <p className={`leading-relaxed text-paper-2 ${lead ? 'text-base' : 'text-sm line-clamp-3'}`}>
+              {pick.whyWePicked[0]}
+            </p>
+
+            <p className="text-sm text-muted">
+              <span className="label-xs text-paper-2">Best for</span>{' '}
+              <span className="text-paper-2">{pick.bestFor.toLowerCase()}</span>
+            </p>
+
+            <div className="mt-auto flex flex-col gap-1.5 border-t border-line-soft pt-3">
+              <PriceStamp price={pick.price} checkedAt={pick.priceCheckedAt} size="sm" />
+              <SellerNote pick={pick} />
+            </div>
+          </div>
+        </div>
+      </Link>
+    </article>
+  )
+}
 
 export default function HomePage() {
   const featured = PICKS.filter((p) => p.featured)
@@ -56,122 +145,162 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main>
+      <main className="overflow-x-clip">
         <Hero />
 
-        {/* ---- The trust argument ---------------------------------------- */}
+        {/* ---- Choose your arc ------------------------------------------- */}
         <section
-          aria-labelledby="trust-heading"
-          className="mx-auto max-w-6xl px-5 pt-16 pb-20 sm:pt-20"
+          aria-labelledby="arcs-heading"
+          className="paper-grain mx-auto max-w-6xl px-5 pt-16 pb-16 sm:pt-20"
         >
-          <div className="max-w-[60ch]">
-            <p className="label-xs mb-3 text-shu">Why this guide exists</p>
-            <h2 id="trust-heading" className="text-3xl text-paper sm:text-4xl">
-              Three things every pick tells you that a search result will not.
-            </h2>
-          </div>
+          <SectionHead
+            id="arcs-heading"
+            kicker="Choose your arc"
+            title="Five ways in. Pick the one that sounds like your room."
+            aside={
+              <p className="max-w-[38ch] text-sm leading-relaxed text-muted">
+                Each arc opens the Desk with that filter already set. Nothing is
+                behind a separate page.
+              </p>
+            }
+          />
 
-          <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
-            {TRUST_POINTS.map((point) => (
-              <li key={point.n} className="border-t-2 border-shu pt-6">
-                <span className="tnum block text-sm text-shu">{point.n}</span>
-                <h3 className="mt-3 text-2xl text-paper">{point.title}</h3>
-                <p className="mt-4 text-base leading-relaxed text-paper-2">{point.body}</p>
-                <p className="mt-4 border-l border-line pl-4 text-sm leading-relaxed text-muted">
-                  {point.why}
-                </p>
+          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+            {COLLECTIONS.map((collection, i) => (
+              <li
+                key={collection.slug}
+                className={i === 0 ? 'sm:col-span-2 lg:col-span-4' : 'lg:col-span-2'}
+              >
+                <ArcCard collection={collection} index={i} size={i === 0 ? 'lead' : 'standard'} />
               </li>
             ))}
-          </ol>
+          </ul>
         </section>
 
-        {/* ---- Featured picks -------------------------------------------- */}
+        {/* ---- Featured picks: the lookbook ------------------------------ */}
         <section
           aria-labelledby="featured-heading"
-          className="border-y border-line bg-surface"
+          className="border-y-2 border-paper bg-surface-2/50"
         >
           <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="label-xs mb-3 text-shu">Featured picks</p>
-                <h2 id="featured-heading" className="text-3xl text-paper sm:text-4xl">
-                  Start with these.
-                </h2>
-              </div>
-              <Link
-                href="/desk"
-                className="text-sm text-paper-2 underline underline-offset-4 hover:text-paper"
-              >
-                See all {PICKS.length} picks →
-              </Link>
-            </div>
+            <SectionHead
+              id="featured-heading"
+              kicker="Featured picks"
+              title="The lookbook."
+              aside={
+                <Link
+                  href="/desk"
+                  className="label-xs inline-flex items-center gap-2 border-2 border-paper px-4 py-2.5 text-paper transition-colors hover:bg-paper hover:text-ink"
+                >
+                  All {PICKS.length} picks
+                  <span aria-hidden="true">→</span>
+                </Link>
+              }
+            />
 
             {featured.length > 0 ? (
-              <ul className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="-mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:thin] lg:mx-0 lg:grid lg:grid-cols-12 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0">
                 {featured.map((pick, i) => (
-                  <li key={pick.id}>
-                    <PickCard pick={pick} priority={i < 3} />
-                  </li>
+                  <LookCard key={pick.id} pick={pick} index={i} lead={i === 0} />
                 ))}
-              </ul>
+              </div>
             ) : (
               <p className="mt-10 text-sm text-muted">
                 No picks are featured right now.{' '}
                 <Link href="/desk" className="text-paper-2 underline underline-offset-2">
-                  Explore the desk
+                  Enter the Desk
                 </Link>{' '}
                 instead.
               </p>
             )}
+
+            <p className="mt-6 max-w-[64ch] text-xs leading-relaxed text-muted">
+              Captions are the first of the three reasons we chose each pick. Open
+              a pick for all three, who it suits, and the honest caveat. We show
+              no ratings or review counts because we have none we can stand behind.
+            </p>
           </div>
         </section>
 
-        {/* ---- How we choose --------------------------------------------- */}
+        {/* ---- Build your setup ------------------------------------------ */}
         <section
-          aria-labelledby="how-heading"
+          aria-labelledby="setup-heading"
           className="mx-auto max-w-6xl px-5 py-16 sm:py-20"
         >
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16">
-            <div>
-              <p className="label-xs mb-3 text-shu">How we choose</p>
-              <h2 id="how-heading" className="text-3xl text-paper sm:text-4xl">
-                Small catalog. Every row checked.
-              </h2>
-              <p className="mt-4 text-base leading-relaxed text-paper-2">
-                We earn a commission when you buy through a link here, at no extra
-                cost to you. That is the whole business, and it is why the catalog
-                stays small: each pick is a claim we are putting our name to.
+          <SectionHead
+            id="setup-heading"
+            kicker="Build your setup"
+            title="Three panels to a room that reads as yours."
+            aside={
+              <p className="max-w-[40ch] text-sm leading-relaxed text-muted">
+                A way to plan, not a bundle. Every piece links out on its own from
+                its pick page; there is no combined price and no discount.
               </p>
+            }
+          />
+          <div className="mt-10">
+            <SetupPath />
+          </div>
+        </section>
+
+        {/* ---- The trust panel ------------------------------------------- */}
+        <section
+          aria-labelledby="trust-heading"
+          className="halftone border-y-2 border-paper bg-ink"
+        >
+          <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
+            <SectionHead
+              id="trust-heading"
+              kicker="The trust panel"
+              title="Three things every pick tells you that a search result will not."
+              aside={
+                <Link
+                  href="/about"
+                  className="text-sm text-paper-2 underline underline-offset-4 hover:text-shu"
+                >
+                  How we choose and how we are paid
+                </Link>
+              }
+            />
+            <div className="mt-10">
+              <TrustPanels />
+            </div>
+          </div>
+        </section>
+
+        {/* ---- Journal covers -------------------------------------------- */}
+        <section
+          aria-labelledby="journal-heading"
+          className="mx-auto max-w-6xl px-5 py-16 sm:py-20"
+        >
+          <SectionHead
+            id="journal-heading"
+            kicker="Journal"
+            title="Notes on buying well."
+            aside={
               <Link
-                href="/about"
-                className="mt-6 inline-flex items-center gap-2 border border-line px-5 py-2.5 text-sm font-semibold text-paper transition-colors hover:border-paper"
+                href="/journal"
+                className="label-xs inline-flex items-center gap-2 border-2 border-paper px-4 py-2.5 text-paper transition-colors hover:bg-paper hover:text-ink"
               >
-                Read how we choose and how we are paid
+                All articles
                 <span aria-hidden="true">→</span>
               </Link>
-            </div>
-
-            <ol className="grid gap-6 sm:grid-cols-3 lg:gap-8">
-              {HOW_WE_CHOOSE.map((item, i) => (
-                <li key={item.step} className="border-t border-line pt-5">
-                  <span className="tnum text-xs text-muted">{String(i + 1).padStart(2, '0')}</span>
-                  <h3 className="mt-2 text-lg text-paper">{item.step}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-paper-2">{item.text}</p>
-                </li>
-              ))}
-            </ol>
+            }
+          />
+          <div className="mt-10">
+            <JournalCovers limit={4} />
           </div>
         </section>
 
         {/* ---- Email ------------------------------------------------------ */}
-        <section
-          aria-labelledby="email-heading"
-          className="mx-auto max-w-6xl px-5 pb-8"
-        >
-          <div className="screentone border border-line bg-surface">
-            <div className="grid gap-8 bg-surface/80 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
+        <section aria-labelledby="email-heading" className="mx-auto max-w-6xl px-5 pb-4">
+          <div className="halftone-lg border-2 border-paper bg-surface offset-print">
+            <div className="grid gap-8 bg-surface/85 p-6 sm:p-10 lg:grid-cols-2 lg:items-center">
               <div>
-                <p className="label-xs mb-3 text-shu">The letter</p>
+                <p className="label-xs mb-3 flex items-center gap-2 text-shu">
+                  <RegistrationMark className="h-3 w-3" />
+                  The letter
+                </p>
                 <h2 id="email-heading" className="text-2xl text-paper sm:text-3xl">
                   New picks and price checks, when there are some.
                 </h2>
@@ -184,10 +313,7 @@ export default function HomePage() {
 
               {/* Visual only. The list has no backend yet, so the form does not
                   submit and says so plainly instead of pretending. */}
-              <form
-                aria-describedby="email-note"
-                className="flex flex-col gap-3"
-              >
+              <form aria-describedby="email-note" className="flex flex-col gap-3">
                 <label htmlFor="email-input" className="label-xs text-muted">
                   Email address
                 </label>
@@ -201,13 +327,13 @@ export default function HomePage() {
                     placeholder="you@example.com"
                     disabled
                     aria-disabled="true"
-                    className="min-w-0 flex-1 border border-line bg-ink px-3 py-2.5 text-sm text-paper placeholder:text-muted disabled:cursor-not-allowed disabled:opacity-60"
+                    className="min-w-0 flex-1 border-2 border-line bg-ink px-3 py-2.5 text-sm text-paper placeholder:text-muted disabled:cursor-not-allowed disabled:opacity-60"
                   />
                   <button
                     type="submit"
                     disabled
                     aria-disabled="true"
-                    className="bg-shu px-5 py-2.5 text-sm font-semibold text-paper disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-shu px-5 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Not open yet
                   </button>

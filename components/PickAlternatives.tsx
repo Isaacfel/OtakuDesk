@@ -1,6 +1,7 @@
 import type { Pick } from '@/data/types'
 import { getPickById } from '@/data/picks'
 import { PickCard } from './PickCard'
+import { DossierHeading } from './ProductDossierSection'
 
 /**
  * The comparison block.
@@ -13,9 +14,11 @@ import { PickCard } from './PickCard'
  */
 export function PickAlternatives({
   pick,
+  n = '06',
   className = '',
 }: {
   pick: Pick
+  n?: string
   className?: string
 }) {
   const alternatives = pick.alternatives
@@ -26,22 +29,17 @@ export function PickAlternatives({
 
   return (
     <section aria-labelledby="alternatives-heading" className={className}>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-        <h2
-          id="alternatives-heading"
-          className="font-display text-2xl text-paper sm:text-3xl"
-        >
-          Also consider
-        </h2>
-        <p className="text-sm text-muted">
-          What we would weigh this against before deciding.
-        </p>
-      </div>
+      <DossierHeading
+        n={n}
+        id="alternatives-heading"
+        title="Also consider"
+        kicker="What we would weigh this against before deciding. Same facts on every card: licence, seller, dated price."
+      />
 
-      <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-6 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
         {alternatives.map((alt) => (
           <li key={alt.id} className="min-w-0">
-            <PickCard pick={alt} />
+            <PickCard pick={alt} ratio="standard" />
           </li>
         ))}
       </ul>

@@ -1,5 +1,5 @@
 import type { Pick, Merchant } from '@/data/types'
-import { getMerchant } from '@/data/merchants'
+import { getMerchant } from '../data/merchants'
 
 /**
  * Affiliate link construction — the one place in the codebase that knows how
@@ -7,6 +7,18 @@ import { getMerchant } from '@/data/merchants'
  *
  * Nothing outside lib/ and app/go/ should import this. Components link to
  * /go/[goSlug]; only the redirect handler resolves a real merchant URL.
+ *
+ * Security model, stated once so it can be checked in one place:
+ *
+ *   - The DESTINATION always comes from the catalog (`pick.purchaseUrl`).
+ *     No request input is ever used as, or concatenated into, a URL.
+ *   - The only request-derived value that reaches the outbound URL is the
+ *     sub-id, and it passes through `normalizeFrom` + `buildSubId`, which
+ *     reduce it to `[a-zA-Z0-9_-]` and cap its length. It is then attached
+ *     with `URLSearchParams.set`, which encodes it again. There is no path by
+ *     which it can add a query parameter, a fragment, or change the scheme.
+ *
+ * tests/affiliate.test.mts asserts both properties with hostile input.
  */
 
 /** Network credentials. Absent in development, which is intentional. */
@@ -16,6 +28,27 @@ const CREDS = {
 }
 
 export class AffiliateConfigError extends Error {}
+
+/**
+ * Upper bound on the `from` query param the /go route accepts. Legitimate
+ * values are short labels like `pick:neon-panel-desk-mat` or
+ * `journal:licensed-vs-bootleg`; anything longer is noise or abuse.
+ */
+export const FROM_MAX_LENGTH = 64
+
+const FROM_ALLOWED = /[^a-zA-Z0-9_:.-]/g
+
+/**
+ * Reduce the raw `from` query value to something safe to log and to pass
+ * into `buildSubId`. Never throws; hostile or empty input degrades to
+ * 'direct' rather than being rejected, because a refused click is lost
+ * revenue and the attribution label is only diagnostic.
+ */
+export function normalizeFrom(raw: string | null | undefined): string {
+  if (typeof raw !== 'string') return 'direct'
+  const cleaned = raw.slice(0, FROM_MAX_LENGTH).replace(FROM_ALLOWED, '')
+  return cleaned.length > 0 ? cleaned : 'direct'
+}
 
 /**
  * The sub-id carried into the network's own reporting.
@@ -29,6 +62,29 @@ export function buildSubId(pickSlug: string, from: string): string {
 }
 
 /**
+ * Parse a catalog destination and refuse anything that is not a web URL.
+ *
+ * The catalog is ours, so this is a guard against a data-entry mistake
+ * (`javascript:`, a bare domain, an empty string) rather than an attacker —
+ * but the redirect handler emits whatever this returns as a Location header,
+ * so a mistake here would be served to every reader.
+ */
+function parseDestination(dest: string, pickSlug: string): URL {
+  let u: URL
+  try {
+    u = new URL(dest)
+  } catch {
+    throw new AffiliateConfigError(`Pick ${pickSlug} has an unparseable purchaseUrl`)
+  }
+  if (u.protocol !== 'https:' && u.protocol !== 'http:') {
+    throw new AffiliateConfigError(
+      `Pick ${pickSlug} purchaseUrl has a non-web scheme (${u.protocol})`,
+    )
+  }
+  return u
+}
+
+/**
  * Build the tracked destination for a pick.
  *
  * Throws AffiliateConfigError when the network credential is missing, rather
@@ -38,7 +94,7 @@ export function buildSubId(pickSlug: string, from: string): string {
  */
 export function buildTrackedUrl(pick: Pick, subId: string): string {
   const merchant: Merchant = getMerchant(pick.merchantId)
-  const dest = pick.purchaseUrl
+  const dest = parseDestination(pick.purchaseUrl, pick.slug)
 
   switch (merchant.network) {
     case 'amazon': {
@@ -57,7 +113,7 @@ export function buildTrackedUrl(pick: Pick, subId: string): string {
       u.searchParams.set('awinmid', merchant.mid)
       u.searchParams.set('awinaffid', CREDS.awinAffId)
       u.searchParams.set('clickref', subId)
-      u.searchParams.set('ued', dest)
+      u.searchParams.set('ued', dest.toString())
       return u.toString()
     }
 
@@ -67,7 +123,7 @@ export function buildTrackedUrl(pick: Pick, subId: string): string {
           `Merchant ${merchant.id} has no Impact trackingBase`,
         )
       const u = new URL(merchant.trackingBase)
-      u.searchParams.set('u', dest)
+      u.searchParams.set('u', dest.toString())
       u.searchParams.set('subId1', subId)
       return u.toString()
     }

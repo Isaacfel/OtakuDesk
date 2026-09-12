@@ -27,10 +27,7 @@ export function PickLicenseNote({ pick }: { pick: Pick }) {
   const merchant = getMerchant(pick.merchantId)
 
   return (
-    <section
-      aria-labelledby="licence-heading"
-      className="border-t border-line-soft pt-4"
-    >
+    <section aria-labelledby="licence-heading" className="min-w-0">
       <h3 id="licence-heading" className="label-xs mb-3 text-muted">
         Authenticity &amp; licensing
       </h3>
@@ -44,7 +41,7 @@ export function PickLicenseNote({ pick }: { pick: Pick }) {
         {EXPLAINER[pick.licenseStatus](merchant.name)}
       </p>
 
-      <p className="mt-3 max-w-[58ch] text-xs leading-relaxed text-muted">
+      <p className="mt-3 max-w-[58ch] border-l-2 border-line pl-3 text-xs leading-relaxed text-muted">
         The date above is when we last re-checked the seller and the licence
         for this pick. Our verdict describes the product and the seller; it is
         not an endorsement by, or an affiliation with, any studio, publisher,

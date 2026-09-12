@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useState, type CSSProperties } from 'react'
 import { useSearchParams } from 'next/navigation'
 import type { Category, CatalogPick, LicenseStatus, SellerType } from '@/data/types'
 import {
@@ -9,8 +9,9 @@ import {
   SELLER_LABEL,
   isPriceFresh,
 } from '@/data/types'
-import { COLLECTIONS } from '@/data/collections'
+import { COLLECTIONS, SETS } from '@/data/collections'
 import { track } from '@/lib/analytics'
+import { EditorialBadge, MascotMark, RegistrationMark } from '@/components/motifs'
 import { PickCard } from './PickCard'
 
 /**
@@ -25,6 +26,16 @@ import { PickCard } from './PickCard'
  * There is nothing here that could invent a rating, a stock level, or a
  * countdown; the only numbers on the page are prices with dates and counts of
  * real rows.
+ *
+ * Two browse aids sit on top of the facets and are LOCAL state only (not in
+ * the URL, no backend):
+ *
+ *   - The mood selector, a shortcut over existing tags. Each mood names the
+ *     tags it stands for, so it reads as a lens rather than a verdict, and a
+ *     mood with no tagged picks says so instead of padding the grid.
+ *   - "Show me a setup", which reveals one of the curated SETS as a reading
+ *     order. Sets are not bundles: no bundle price, each pick links out on its
+ *     own page through its own seller.
  */
 
 type PriceBand = 'under-25' | '25-50' | '50-100' | '100-plus'
@@ -56,6 +67,29 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'price-asc', label: 'Price: low to high' },
   { value: 'price-desc', label: 'Price: high to low' },
 ]
+
+/* --- Moods ------------------------------------------------------------------
+   A mood is a named bag of EXISTING tags. Nothing is inferred from the copy or
+   the price; a pick is in a mood only if it carries one of the listed tags, and
+   the list is printed next to the selector so the reader can see the rule. */
+
+type Mood = 'calm' | 'colourful' | 'cyber' | 'cozy' | 'minimal' | 'collector'
+
+const MOODS: { value: Mood; label: string; tags: string[] }[] = [
+  { value: 'calm', label: 'Calm', tags: ['subtle', 'ergonomics', 'renter friendly'] },
+  { value: 'colourful', label: 'Colourful', tags: ['original design', 'wall art'] },
+  { value: 'cyber', label: 'Cyber', tags: ['gaming', 'lighting'] },
+  { value: 'cozy', label: 'Cozy', tags: ['lighting', 'room decor', 'everyday', 'outerwear'] },
+  { value: 'minimal', label: 'Minimal', tags: ['subtle', 'small space', 'ergonomics'] },
+  { value: 'collector', label: 'Collector', tags: ['collector', 'display', 'pins', 'protection'] },
+]
+
+function matchesMood(pick: CatalogPick, mood: Mood | ''): boolean {
+  if (!mood) return true
+  const def = MOODS.find((m) => m.value === mood)
+  if (!def) return true
+  return pick.tags.some((t) => def.tags.includes(t))
+}
 
 type Filters = {
   category: Category | ''
@@ -187,6 +221,11 @@ function writeUrlState(query: string, filters: Filters, sort: SortKey) {
   }
 }
 
+/* Motif utilities draw in `--paper`. On a dark panel that has to be the light
+   stock, so the variable is flipped on DECORATIVE layers only — never on a
+   subtree that contains a PickCard, whose own text would invert with it. */
+const ON_DARK = { '--paper': 'var(--panel-type)' } as CSSProperties
+
 export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
   // Initial state comes from a shared URL, read once. `useSearchParams` in a
   // statically rendered page defers this component to the client inside the
@@ -196,11 +235,16 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
   const [query, setQuery] = useState(initial.query)
   const [filters, setFilters] = useState<Filters>(initial.filters)
   const [sort, setSort] = useState<SortKey>(initial.sort)
+  const [mood, setMood] = useState<Mood | ''>('')
   const [panelOpen, setPanelOpen] = useState(false)
+  const [setupOpen, setSetupOpen] = useState(false)
+  const [setupIndex, setSetupIndex] = useState(0)
   const panelId = useId()
   const searchId = useId()
   const sortId = useId()
   const statusId = useId()
+  const setupId = useId()
+  const moodId = useId()
 
   // Mirror state back into the URL so the current view can be shared.
   useEffect(() => {
@@ -212,18 +256,28 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
   const results = useMemo(
     () =>
       sortPicks(
-        picks.filter((p) => matchesQuery(p, trimmed) && matchesFilters(p, filters)),
+        picks.filter(
+          (p) => matchesQuery(p, trimmed) && matchesFilters(p, filters) && matchesMood(p, mood),
+        ),
         sort,
       ),
-    [picks, trimmed, filters, sort],
+    [picks, trimmed, filters, sort, mood],
   )
 
   // Facet counts: how many picks would match if this facet were set to a given
-  // value, holding the query and every OTHER facet constant.
+  // value, holding the query, the mood and every OTHER facet constant.
   const countFor = (facet: keyof Filters, predicate: (p: CatalogPick) => boolean) =>
     picks.filter(
-      (p) => matchesQuery(p, trimmed) && matchesFilters(p, filters, facet) && predicate(p),
+      (p) =>
+        matchesQuery(p, trimmed) &&
+        matchesFilters(p, filters, facet) &&
+        matchesMood(p, mood) &&
+        predicate(p),
     ).length
+
+  // Mood counts are over the WHOLE catalog, so a mood's number is a fact about
+  // our tagging and not a moving target as filters change.
+  const moodCount = (m: Mood) => picks.filter((p) => matchesMood(p, m)).length
 
   // Search analytics, debounced so a typed word logs once rather than per key.
   useEffect(() => {
@@ -244,17 +298,51 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
     track({ name: 'filter_apply', facet: 'sort', value })
   }
 
+  function applyMood(value: Mood | '') {
+    setMood(value)
+    track({ name: 'filter_apply', facet: 'mood', value: value || 'all' })
+  }
+
   function clearAll() {
     setFilters(EMPTY_FILTERS)
     setQuery('')
+    setMood('')
     track({ name: 'filter_apply', facet: 'all', value: 'clear' })
   }
 
+  // Curated sets, resolved against the catalog we were handed. A set whose
+  // picks have been retired down to one is not a setup and is skipped.
+  const byId = useMemo(() => new Map(picks.map((p) => [p.id, p])), [picks])
+  const setups = useMemo(
+    () =>
+      SETS.map((s) => ({
+        ...s,
+        picks: s.pickIds
+          .map((id) => byId.get(id))
+          .filter((p): p is CatalogPick => p !== undefined)
+          .slice(0, 5),
+      })).filter((s) => s.picks.length >= 2),
+    [byId],
+  )
+  const setup = setups.length > 0 ? setups[setupIndex % setups.length] : null
+
+  function revealSetup(index: number) {
+    setSetupIndex(index)
+    setSetupOpen(true)
+    const s = setups[index % setups.length]
+    if (s) track({ name: 'filter_apply', facet: 'setup', value: s.slug })
+  }
+
   const activeCount =
-    Object.values(filters).filter(Boolean).length + (trimmed ? 1 : 0)
+    Object.values(filters).filter(Boolean).length + (trimmed ? 1 : 0) + (mood ? 1 : 0)
 
   const activeChips: { label: string; onRemove: () => void }[] = []
   if (trimmed) activeChips.push({ label: `“${trimmed}”`, onRemove: () => setQuery('') })
+  if (mood)
+    activeChips.push({
+      label: `Mood: ${MOODS.find((m) => m.value === mood)?.label ?? mood}`,
+      onRemove: () => applyMood(''),
+    })
   if (filters.category)
     activeChips.push({ label: filters.category, onRemove: () => applyFilter('category', '') })
   if (filters.licence)
@@ -285,36 +373,80 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
     return (featured.length >= 3 ? featured : sortPicks(picks, 'newest')).slice(0, 3)
   }, [picks])
 
+  const activeMood = MOODS.find((m) => m.value === mood)
+  // True when the mood alone — before any other filter — matches nothing. The
+  // honest message is then "we have not tagged anything for this", not "try
+  // dropping a filter".
+  const moodIsEmpty = Boolean(mood) && picks.every((p) => !matchesMood(p, mood))
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-12">
-      {/* ---- Filter column ------------------------------------------------ */}
-      <div className="lg:sticky lg:top-6 lg:self-start">
-        <button
-          type="button"
-          onClick={() => setPanelOpen((v) => !v)}
-          aria-expanded={panelOpen}
-          aria-controls={panelId}
-          className="flex w-full items-center justify-between border border-line bg-surface px-4 py-3 text-sm font-medium text-paper lg:hidden"
-        >
-          <span>
+    <div className="lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-x-12">
+      {/* ---- Toolbar: sticky and compact on mobile, a plain row on desktop ---- */}
+      <div className="sticky top-0 z-20 -mx-5 border-b-2 border-paper bg-ink/95 px-5 py-3 backdrop-blur supports-[backdrop-filter]:bg-ink/85 lg:static lg:col-start-2 lg:row-start-1 lg:mx-0 lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none">
+        <div className="flex items-end gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={() => setPanelOpen((v) => !v)}
+            aria-expanded={panelOpen}
+            aria-controls={panelId}
+            className="flex shrink-0 items-center gap-1.5 border-2 border-paper bg-surface px-3 py-2.5 text-sm font-semibold text-paper lg:hidden"
+          >
+            <span aria-hidden="true">{panelOpen ? '−' : '+'}</span>
             Filters
             {activeCount > 0 && (
-              <span className="tnum ml-2 rounded-xs bg-shu-dim px-1.5 py-0.5 text-xs text-shu-bright">
-                {activeCount}
-              </span>
+              <span className="tnum bg-shu px-1.5 py-0.5 text-xs text-white">{activeCount}</span>
             )}
-          </span>
-          <span aria-hidden="true" className="text-muted">
-            {panelOpen ? '−' : '+'}
-          </span>
-        </button>
+          </button>
 
+          <div className="min-w-0 flex-1">
+            <label htmlFor={searchId} className="label-xs mb-1.5 hidden text-muted lg:block">
+              Search the desk
+            </label>
+            <input
+              id={searchId}
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="desk, lighting, convention, giftable…"
+              autoComplete="off"
+              aria-label="Search the desk"
+              aria-describedby={statusId}
+              className="w-full border-2 border-line bg-surface px-3 py-2.5 text-sm text-paper placeholder:text-muted focus:border-paper focus:outline-none"
+            />
+          </div>
+
+          <div className="w-28 shrink-0 sm:w-44 lg:w-56">
+            <label htmlFor={sortId} className="label-xs mb-1.5 hidden text-muted lg:block">
+              Sort by
+            </label>
+            <select
+              id={sortId}
+              value={sort}
+              onChange={(e) => applySort(e.target.value as SortKey)}
+              aria-label="Sort by"
+              className="w-full border-2 border-line bg-surface px-2 py-2.5 text-sm text-paper focus:border-paper focus:outline-none sm:px-3"
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* ---- Filter column ------------------------------------------------ */}
+      <div className="lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:sticky lg:top-6 lg:self-start">
         <div
           id={panelId}
-          className={`${panelOpen ? 'block' : 'hidden'} mt-3 flex flex-col gap-6 border border-line bg-surface p-4 lg:mt-0 lg:block lg:border-0 lg:bg-transparent lg:p-0`}
+          className={`${panelOpen ? 'block' : 'hidden'} panel-frame mt-3 flex flex-col gap-6 bg-surface p-4 lg:mt-0 lg:block lg:border-0 lg:bg-transparent lg:p-0`}
         >
           <div className="flex items-baseline justify-between">
-            <h2 className="label-xs text-muted">Refine</h2>
+            <h2 className="label-xs flex items-center gap-2 text-muted">
+              <RegistrationMark className="h-3 w-3 text-shu" />
+              Refine
+            </h2>
             {activeCount > 0 && (
               <button
                 type="button"
@@ -439,42 +571,140 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
       </div>
 
       {/* ---- Results column ---------------------------------------------- */}
-      <div className="min-w-0">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex-1">
-            <label htmlFor={searchId} className="label-xs mb-1.5 block text-muted">
-              Search the desk
-            </label>
-            <input
-              id={searchId}
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="desk, lighting, convention, giftable…"
-              autoComplete="off"
-              aria-describedby={statusId}
-              className="w-full border border-line bg-surface px-3 py-2.5 text-sm text-paper placeholder:text-muted focus:border-shu focus:outline-none"
-            />
-          </div>
-          <div className="sm:w-56">
-            <label htmlFor={sortId} className="label-xs mb-1.5 block text-muted">
-              Sort by
-            </label>
-            <select
-              id={sortId}
-              value={sort}
-              onChange={(e) => applySort(e.target.value as SortKey)}
-              className="w-full border border-line bg-surface px-3 py-2.5 text-sm text-paper focus:border-shu focus:outline-none"
-            >
-              {SORT_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className="mt-6 min-w-0 lg:col-start-2 lg:row-start-2 lg:mt-6">
+        {/* Browse aids: mood lens + curated setup. */}
+        <div className="flex flex-col gap-4 border-b-2 border-paper pb-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+          <fieldset className="min-w-0 flex-1" aria-describedby={moodId}>
+            <legend className="label-xs mb-2 text-muted">Setup mood</legend>
+            <div className="flex flex-wrap gap-1.5">
+              {MOODS.map((m) => {
+                const on = mood === m.value
+                const n = moodCount(m.value)
+                return (
+                  <button
+                    key={m.value}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => applyMood(on ? '' : m.value)}
+                    className={`flex items-center gap-1.5 border-2 px-2.5 py-1 text-xs font-semibold transition-colors ${
+                      on
+                        ? 'border-paper bg-paper text-ink'
+                        : 'border-line bg-surface text-paper-2 hover:border-paper hover:text-paper'
+                    }`}
+                  >
+                    {m.label}
+                    <span className={`tnum text-[10px] ${on ? 'text-ink/70' : 'text-muted'}`}>
+                      {n}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+            <p id={moodId} className="mt-2 text-[11px] leading-snug text-muted">
+              {activeMood ? (
+                <>
+                  <span className="text-paper-2">{activeMood.label}</span> is a shortcut over our
+                  tags: {activeMood.tags.join(', ')}.
+                </>
+              ) : (
+                <>A mood is a shortcut over our tags, not a judgement about the product.</>
+              )}
+            </p>
+          </fieldset>
+
+          {setups.length > 0 && (
+            <div className="shrink-0">
+              <button
+                type="button"
+                onClick={() => (setupOpen ? setSetupOpen(false) : revealSetup(setupIndex))}
+                aria-expanded={setupOpen}
+                aria-controls={setupId}
+                className="inline-flex items-center gap-2 border-2 border-paper bg-paper px-4 py-2.5 text-sm font-semibold text-ink transition-[box-shadow,transform] hover:-translate-x-px hover:-translate-y-px hover:offset-print-red"
+              >
+                <span aria-hidden="true" className="contents"><MascotMark className="h-4 w-4" /></span>
+                {setupOpen ? 'Hide the setup' : 'Show me a setup'}
+              </button>
+            </div>
+          )}
         </div>
 
+        {/* The curated setup — a staged dark spread. */}
+        {setupOpen && setup && (
+          <section
+            id={setupId}
+            aria-labelledby={`${setupId}-heading`}
+            className="panel-in relative mt-6 overflow-hidden border-2 border-paper bg-panel text-panel-type"
+          >
+            <div
+              aria-hidden="true"
+              style={ON_DARK}
+              className="halftone-lg pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(180deg,#000,transparent_70%)]"
+            />
+            <div className="relative p-5 sm:p-7">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0 max-w-[58ch]">
+                  <p className="label-xs flex flex-wrap items-center gap-2 text-panel-muted">
+                    <span>A setup, in reading order</span>
+                    <span aria-hidden="true">&middot;</span>
+                    <span className="tnum">
+                      {String((setupIndex % setups.length) + 1).padStart(2, '0')} /{' '}
+                      {String(setups.length).padStart(2, '0')}
+                    </span>
+                  </p>
+                  <h2
+                    id={`${setupId}-heading`}
+                    className="mt-2 font-display text-2xl text-panel-type sm:text-3xl"
+                  >
+                    {setup.name}
+                  </h2>
+                  <p className="mt-2 text-sm leading-relaxed text-panel-type/80">
+                    {setup.description}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {setups.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => revealSetup((setupIndex + 1) % setups.length)}
+                      className="border-2 border-panel-type px-3 py-2 text-sm font-semibold text-panel-type transition-colors hover:bg-panel-type hover:text-panel-2"
+                    >
+                      Show another
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setSetupOpen(false)}
+                    className="border-2 border-panel-line px-3 py-2 text-sm text-panel-muted transition-colors hover:border-panel-type hover:text-panel-type"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
+              <ol className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {setup.picks.map((p, i) => (
+                  <li key={p.id} className="relative min-w-0 pt-3">
+                    <span
+                      aria-hidden="true"
+                      className="tnum absolute top-0 left-3 z-10 bg-shu-electric px-2 py-0.5 text-xs font-semibold text-panel-2"
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="sr-only">Step {i + 1}.</span>
+                    <PickCard pick={p} ratio="standard" />
+                  </li>
+                ))}
+              </ol>
+
+              <p className="mt-5 max-w-[62ch] text-xs leading-relaxed text-panel-muted">
+                Not a bundle. Each pick has its own seller and its own page; there is no
+                combined price because no discount is ours to give.
+              </p>
+            </div>
+          </section>
+        )}
+
+        {/* Status + active chips */}
         <div className="mt-5 flex flex-wrap items-center gap-2 border-b border-line-soft pb-4">
           <p id={statusId} role="status" className="tnum text-sm text-paper-2">
             {results.length === picks.length ? (
@@ -495,7 +725,7 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
                   <button
                     type="button"
                     onClick={chip.onRemove}
-                    className="flex items-center gap-1.5 rounded-xs border border-line bg-surface px-2 py-1 text-xs text-paper-2 hover:border-shu hover:text-paper"
+                    className="flex items-center gap-1.5 border border-line bg-surface px-2 py-1 text-xs text-paper-2 hover:border-paper hover:text-paper"
                   >
                     {chip.label}
                     <span aria-hidden="true" className="text-muted">
@@ -510,37 +740,57 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
         </div>
 
         {results.length > 0 ? (
-          <ul className="mt-6 grid gap-x-6 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="mt-6 grid gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
             {results.map((pick, i) => (
-              <li key={pick.id}>
+              <li key={pick.id} className="min-w-0">
                 <PickCard pick={pick} priority={i < 3} />
               </li>
             ))}
           </ul>
         ) : (
           <div className="mt-6">
-            <div className="border border-line bg-surface p-6 sm:p-8">
-              <h2 className="font-display text-2xl font-extrabold tracking-tight text-paper">
-                Nothing matches that yet.
-              </h2>
-              <p className="mt-2 max-w-[52ch] text-sm leading-relaxed text-paper-2">
-                The catalog is small on purpose — every pick is verified by hand, so
-                gaps are real gaps rather than a search that missed. Try a broader
-                search, drop a filter, or start from one of the picks below.
-              </p>
-              <button
-                type="button"
-                onClick={clearAll}
-                className="mt-4 inline-block bg-shu px-4 py-2 text-sm font-semibold text-paper transition-colors hover:bg-shu-bright"
-              >
-                Clear search and filters
-              </button>
+            <div className="panel-frame relative overflow-hidden bg-surface p-6 sm:p-8">
+              <div aria-hidden="true" className="halftone pointer-events-none absolute inset-0 opacity-50" />
+              <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+                <span aria-hidden="true" className="contents"><MascotMark className="h-12 w-12 shrink-0 text-shu" /></span>
+                <div>
+                  <h2 className="font-display text-2xl font-extrabold tracking-tight text-paper">
+                    {moodIsEmpty
+                      ? `Nothing is tagged for a ${activeMood?.label.toLowerCase()} setup yet.`
+                      : 'Nothing matches that yet.'}
+                  </h2>
+                  <p className="mt-2 max-w-[52ch] text-sm leading-relaxed text-paper-2">
+                    {moodIsEmpty ? (
+                      <>
+                        Moods are built from the tags we have actually applied ({activeMood?.tags.join(', ')}),
+                        and no pick carries one of those right now. We would rather show an empty
+                        shelf than a pick that does not belong.
+                      </>
+                    ) : (
+                      <>
+                        The catalog is small on purpose — every pick is verified by hand, so gaps
+                        are real gaps rather than a search that missed. Try a broader search, drop
+                        a filter, or start from one of the picks below.
+                      </>
+                    )}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={clearAll}
+                    className="mt-4 inline-block bg-shu px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-shu-bright"
+                  >
+                    Clear search and filters
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <h3 className="label-xs mt-10 mb-4 text-muted">Start here instead</h3>
-            <ul className="grid gap-x-6 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
+            <h3 className="label-xs mt-10 mb-4 flex items-center gap-2 text-muted">
+              <EditorialBadge tone="ink">Start here instead</EditorialBadge>
+            </h3>
+            <ul className="grid gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
               {suggestions.map((pick) => (
-                <li key={pick.id}>
+                <li key={pick.id} className="min-w-0">
                   <PickCard pick={pick} />
                 </li>
               ))}

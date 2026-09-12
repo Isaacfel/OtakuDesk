@@ -1,116 +1,134 @@
 @import "tailwindcss";
 
 /* ===========================================================================
-   OtakuVault visual identity — white and red
+   Otakudesk design system — ink on paper
    ---------------------------------------------------------------------------
-   White stock, black text, one red spot colour. The reference is Japanese
-   print: manga runs black on white with red used sparingly for emphasis, and
-   a hanko stamp is red on paper. It is the same discipline as the previous
-   dark scheme — one accent, spent deliberately — just inverted, and it reads
-   as a clean gallery rather than a gamer RGB strip.
+   The reference is a manga volume rather than a dashboard: warm paper stock,
+   dense black ink, one electric red for action, and a small set of signal
+   colours used sparingly. Dark panels carry the drama (the hero, the arc
+   cards, the trust panels) the way a full-bleed spread does in print.
 
-   The neutrals are not pure grey. They carry a faint warm bias toward the red
-   so the whole page resolves as one temperature instead of red floating on
-   cold grey.
+   This reconciles two briefs. The palette is the night-room set requested in
+   the design upgrade; the GROUND is the warm paper rather than the ink,
+   because a page you read should be the paper and the dark should be the
+   moments you stage against it.
 
-   Red is expensive: it is the most attention-grabbing colour on a white
-   ground, so it is reserved for the buy action, the brand mark, and licence
-   emphasis. Nothing decorative gets it.
+   NAMING: the Tailwind colour names predate this palette and are kept so the
+   whole component tree does not have to be rewritten. Read them as ROLES,
+   not hues:
+       --ink       the page ground     (warm paper stock)
+       --paper     the type on it      (near-black ink)
+       --shu       the action colour   (electric red, darkened for contrast)
+   The brief's own token names are aliased underneath each one.
 
-   Light-first. The dark counterpart is a real second design for viewers whose
-   OS is set dark — the same red, a warm near-black ground — not an inversion.
-
-   Structure note (Tailwind v4): raw values live in :root as plain custom
-   properties so they can be swapped per theme, and `@theme inline` maps them
-   to utility namespaces. A non-inline @theme block would bake values in at
-   build time and the theme swap would silently do nothing.
+   CONTRAST: the brief's #FF3B4D scores about 3.0:1 on #F3EBDD — fine for a
+   large sticker badge, too low for body text or a button label. So the red is
+   darkened for anything that carries text on paper, and the electric value is
+   kept as --shu-electric for use on the dark panels, where it sings.
    ========================================================================= */
 
-/* `dark:` must follow our explicit toggle as well as the OS setting — v4's
-   default dark variant is a bare prefers-color-scheme query with no override. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root {
   color-scheme: light;
 
-  /* Ground: white stock, with warm-biased greys above it. */
-  --ink: #ffffff;
-  --surface: #faf8f7;
-  --surface-2: #f1ebea;
-  --line: #e0d7d5;
-  --line-soft: #efe9e8;
+  /* Ground — warm paper stock. */
+  --ink: #f3ebdd;          /* brief: paper        */
+  --surface: #fbf6ec;
+  --surface-2: #e7ddc9;    /* brief: paper_muted  */
+  --line: #c6b9a1;         /* brief: border       */
+  --line-soft: #e0d5c0;
 
-  /* Type: warm near-black, never pure #000 on white — it glares. */
-  --paper: #1a1413;
-  --paper-2: #4c413f;
-  --muted: #7b6d6a;
+  /* Type — near-black ink, warm so it sits on the paper. */
+  --paper: #17151a;        /* brief: ink          */
+  --paper-2: #45404b;
+  --muted: #726b78;
 
-  /* The one accent. AA on white at body size. */
-  --shu: #c8102e;
-  --shu-bright: #9e0c24;
-  --shu-dim: #fdeaed;
+  /* Action. Darkened from the brief's #FF3B4D to carry text on paper. */
+  --shu: #d31e33;          /* brief: electric_red */
+  --shu-bright: #ab1526;
+  --shu-dim: #fbe3e2;
+  --shu-electric: #ff3b4d; /* on dark panels only */
 
-  /* Ink-navy support. Carries category and structure, never competes. */
-  --ai: #2a3b5f;
-  --ai-soft: #e8ecf3;
+  /* Signals. One per meaning; never all in one section. */
+  --orange: #b55c06;       /* brief: warm_orange  */
+  --orange-soft: #fbead2;
+  --blue: #2f5ad6;         /* brief: signal_blue  */
+  --blue-soft: #e4e9fb;
+  --lilac: #6b55c9;        /* brief: soft_lilac   */
+  --lilac-soft: #ece7fb;
+  --green: #4a7a16;        /* brief: acid_green   */
+  --green-soft: #eaf4d8;
 
-  /* Semantic, deliberately separate from the accent so "verified" never
-     reads as merely "on brand". Darkened for legibility on white. */
-  --verified: #1b6f47;
-  --verified-soft: #e2f0e8;
-  --caution: #8a5a00;
-  --caution-soft: #fbeed6;
+  /* Staged dark panels. Constant across themes — they are the print spread. */
+  --panel: #242029;        /* brief: panel_dark   */
+  --panel-2: #17151a;
+  --panel-type: #f3ebdd;
+  --panel-muted: #a79e93;
+  --panel-line: #4a4248;
+
+  /* Legacy role aliases still referenced across the component tree. */
+  --ai: var(--blue);
+  --ai-soft: var(--blue-soft);
+  --verified: var(--green);
+  --verified-soft: var(--green-soft);
+  --caution: var(--orange);
+  --caution-soft: var(--orange-soft);
 }
 
-/* Dark counterpart — same red, warm near-black ground. A real design, not an
-   inversion. Declared for both the explicit toggle and the unstamped system
-   default that most viewers actually have. */
+/* Dark counterpart — the volume read at night. Same ink, inverted stock. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --ink: #141011;
-    --surface: #1c1718;
-    --surface-2: #272021;
-    --line: #372f30;
-    --line-soft: #241e1f;
-    --paper: #f7f3f2;
-    --paper-2: #cabfbd;
-    --muted: #918583;
-    --shu: #f2384a;
-    --shu-bright: #ff6172;
-    --shu-dim: #3a1219;
-    --ai: #8fa3cc;
-    --ai-soft: #1d2434;
-    --verified: #5fbc8c;
-    --verified-soft: #16291f;
-    --caution: #d3a44e;
-    --caution-soft: #2c2214;
+    --ink: #17151a;
+    --surface: #211d26;
+    --surface-2: #2c2733;
+    --line: #4a4248;
+    --line-soft: #322c38;
+    --paper: #f3ebdd;
+    --paper-2: #d8cdbb;
+    --muted: #9a9099;
+    --shu: #ff3b4d;
+    --shu-bright: #ff6d78;
+    --shu-dim: #3a1620;
+    --orange: #ff9d42;
+    --orange-soft: #38240f;
+    --blue: #7f9dff;
+    --blue-soft: #1b2340;
+    --lilac: #b7a4ff;
+    --lilac-soft: #241f3d;
+    --green: #c7f36b;
+    --green-soft: #222e12;
+    --panel: #242029;
+    --panel-2: #100e13;
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --ink: #141011;
-  --surface: #1c1718;
-  --surface-2: #272021;
-  --line: #372f30;
-  --line-soft: #241e1f;
-  --paper: #f7f3f2;
-  --paper-2: #cabfbd;
-  --muted: #918583;
-  --shu: #f2384a;
-  --shu-bright: #ff6172;
-  --shu-dim: #3a1219;
-  --ai: #8fa3cc;
-  --ai-soft: #1d2434;
-  --verified: #5fbc8c;
-  --verified-soft: #16291f;
-  --caution: #d3a44e;
-  --caution-soft: #2c2214;
+  --ink: #17151a;
+  --surface: #211d26;
+  --surface-2: #2c2733;
+  --line: #4a4248;
+  --line-soft: #322c38;
+  --paper: #f3ebdd;
+  --paper-2: #d8cdbb;
+  --muted: #9a9099;
+  --shu: #ff3b4d;
+  --shu-bright: #ff6d78;
+  --shu-dim: #3a1620;
+  --orange: #ff9d42;
+  --orange-soft: #38240f;
+  --blue: #7f9dff;
+  --blue-soft: #1b2340;
+  --lilac: #b7a4ff;
+  --lilac-soft: #241f3d;
+  --green: #c7f36b;
+  --green-soft: #222e12;
+  --panel: #242029;
+  --panel-2: #100e13;
 }
 
-/* Map the swappable vars into Tailwind's namespaces. `inline` emits var()
-   references rather than resolved values, which is what lets the theme swap. */
 @theme inline {
   --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
   --font-sans: var(--font-instrument), "Helvetica Neue", Arial, sans-serif;
@@ -129,14 +147,33 @@
   --color-shu: var(--shu);
   --color-shu-bright: var(--shu-bright);
   --color-shu-dim: var(--shu-dim);
+  --color-shu-electric: var(--shu-electric);
+
+  --color-orange: var(--orange);
+  --color-orange-soft: var(--orange-soft);
+  --color-blue: var(--blue);
+  --color-blue-soft: var(--blue-soft);
+  --color-lilac: var(--lilac);
+  --color-lilac-soft: var(--lilac-soft);
+  --color-green: var(--green);
+  --color-green-soft: var(--green-soft);
+
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-panel-type: var(--panel-type);
+  --color-panel-muted: var(--panel-muted);
+  --color-panel-line: var(--panel-line);
 
   --color-ai: var(--ai);
   --color-ai-soft: var(--ai-soft);
-
   --color-verified: var(--verified);
   --color-verified-soft: var(--verified-soft);
   --color-caution: var(--caution);
   --color-caution-soft: var(--caution-soft);
+
+  /* Manga-cover scale. Used once or twice a page, never as a default. */
+  --text-cover: 5.5rem;
+  --text-cover--line-height: 0.88;
 }
 
 /* --- Base ---------------------------------------------------------------- */
@@ -148,40 +185,123 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
   font-family: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
   font-weight: 800;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.028em;
   text-wrap: balance;
 }
 
-/* Prices, dates and counts line up in columns all over the catalog. */
 @utility tnum {
   font-family: var(--font-plex-mono), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
 }
 
-/* The uppercase utility label used by licence badges and seller types. */
 @utility label-xs {
   font-family: var(--font-plex-mono), ui-monospace, monospace;
   font-size: 0.625rem;
   font-weight: 600;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 
-/* Screentone — drawn from manga print rather than neon glow. On white stock
-   it reads as the halftone dots of a printed page. Masthead and section
-   breaks only. */
-@utility screentone {
+/* --- Print motifs --------------------------------------------------------
+   Every one of these is original CSS. No franchise artwork, no character
+   reference — the anime feeling comes from PRINT technique (halftone, speed
+   lines, registration marks, panel gutters), which is a vocabulary, not
+   somebody's intellectual property.
+   ----------------------------------------------------------------------- */
+
+/** Halftone dots — the screentone of a printed page. */
+@utility halftone {
   background-image: radial-gradient(
     circle at 1px 1px,
-    color-mix(in srgb, var(--paper) 16%, transparent) 1px,
+    color-mix(in srgb, var(--paper) 22%, transparent) 1px,
     transparent 0
   );
   background-size: 6px 6px;
+}
+
+/** Coarser halftone for large staged areas. */
+@utility halftone-lg {
+  background-image: radial-gradient(
+    circle at 2px 2px,
+    color-mix(in srgb, var(--paper) 16%, transparent) 2px,
+    transparent 0
+  );
+  background-size: 12px 12px;
+}
+
+/** Paper grain — a faint tooth so the cream reads as stock, not as a fill. */
+@utility paper-grain {
+  background-image:
+    repeating-linear-gradient(
+      113deg,
+      color-mix(in srgb, var(--paper) 3%, transparent) 0 1px,
+      transparent 1px 3px
+    ),
+    repeating-linear-gradient(
+      7deg,
+      color-mix(in srgb, var(--paper) 2%, transparent) 0 1px,
+      transparent 1px 4px
+    );
+}
+
+/** Speed lines radiating from a focal point. Motion implied, not animated. */
+@utility speed-lines {
+  background-image: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    color-mix(in srgb, var(--paper) 13%, transparent) 0deg 0.7deg,
+    transparent 0.7deg 3.4deg
+  );
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 28%, #000 72%);
+  mask-image: radial-gradient(circle at 50% 50%, transparent 28%, #000 72%);
+}
+
+/** Blueprint grid — used only in desk and setup contexts. */
+@utility blueprint {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--paper) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--paper) 8%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/** The offset ink-print edge: a second impression, slightly misregistered. */
+@utility offset-print {
+  box-shadow: 4px 4px 0 0 var(--paper);
+}
+
+@utility offset-print-red {
+  box-shadow: 4px 4px 0 0 var(--shu);
+}
+
+/** A manga panel: hard ink rule, square corners, no soft shadow. */
+@utility panel-frame {
+  border: 2px solid var(--paper);
+  border-radius: 0;
+}
+
+/* --- Motion ---------------------------------------------------------------
+   Subtle by rule. Every effect below is decorative; nothing depends on it. */
+
+@keyframes grain-drift {
+  0%   { background-position: 0 0, 0 0; }
+  100% { background-position: 120px 80px, -90px 60px; }
+}
+
+@utility grain-drift {
+  animation: grain-drift 28s linear infinite;
+}
+
+@keyframes panel-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Starts VISIBLE and animates only as a flourish — never parked at opacity 0,
+   so the page is complete in its first painted frame. */
+@utility panel-in {
+  animation: panel-in 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
 }
 
 :focus-visible {
@@ -191,10 +311,9 @@ h3 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
