@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import type { Pick } from '@/data/types'
+import type { CatalogPick } from '@/data/types'
 import { isPurchasable } from '@/data/types'
 import { PickThumb } from './PickThumb'
 import { PriceStamp } from './PriceStamp'
@@ -21,7 +21,7 @@ export function PickCard({
   pick,
   priority = false,
 }: {
-  pick: Pick
+  pick: CatalogPick
   priority?: boolean
 }) {
   const live = isPurchasable(pick)

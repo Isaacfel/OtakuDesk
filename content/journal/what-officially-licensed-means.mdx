@@ -1,0 +1,69 @@
+import { CATALOG_IS_SAMPLE } from '@/data/picks'
+
+export const metadata = {
+  title: "What 'officially licensed' actually means",
+  description:
+    'The label is printed everywhere and explained nowhere. What a licence is, what our three labels mean, and why a pick marked Verifying has no buy button.',
+  date: '2026-09-09',
+  picks: ['convention-utility-sling', 'sunset-city-metal-print'],
+}
+
+"Officially licensed" is printed on a great deal of merchandise and explained on almost none of it. Since we put a licence label on every pick, we owe you a definition, and an honest account of what we can and cannot verify.
+
+## What a licence is
+
+The studio, publisher, or production committee that owns an anime property does not usually make T-shirts. It grants a **licence**: a contract giving a manufacturer — the licensee — the right to make specific products, in specific territories, for a fixed period, in exchange for a royalty on each unit sold. The licensor approves designs before production and can withdraw the licence if quality slips.
+
+That approval step is what the label is actually promising. A licensed item is one the rights holder saw and signed off. It is not a promise about quality — plenty of licensed products are mediocre — but it is a promise that the people who made the thing you love were paid for it, and that someone with authority looked at the artwork before it went on a shelf.
+
+"Official" without "licensed" means something narrower: made or sold by the rights holder directly, or through their own storefront. That is the strongest version and also the rarest.
+
+## Our three labels
+
+Every pick in the Vault carries exactly one of these.
+
+**Officially licensed.** We found the licensee, confirmed it holds a licence for this property, and matched the specific product to their catalogue or to an official storefront. The copyright line on the product names the rights holder. All three had to check out.
+
+**Original design.** No licence exists because none is needed: the design is the seller's own work and contains no character art, logo, or franchise imagery. Independent artists and small brands live here. The [Sunset City Metal Print](/picks/sunset-city-metal-print) is an original skyline illustration; there is nobody to license it from except the person who drew it. We check that the design is genuinely theirs, which usually means looking at their wider body of work and how consistent their shop is.
+
+**Verifying.** We have not cleared it. Maybe the licensee is not yet confirmed, maybe the seller has not answered, maybe we found a copyright line and cannot yet match it to anything. Whatever the reason, this label means the same thing in every case: we do not know, and we are not going to guess.
+
+## What Verifying does on this site
+
+This is the part most guides skip, so we will be specific.
+
+<Callout label="The rule">
+A pick marked Verifying has no buy button. Not a greyed-out one, not one with a warning — none. The same check runs on our outbound redirect, so even a link copied from an old page or an email will not reach the merchant. This is enforced in code rather than by policy: the page and the redirect ask the same function whether a pick may link out, so they cannot disagree.
+</Callout>
+
+We built it that way because a policy is something a person has to remember in month three, when there are two hundred picks and a backlog. A check that runs on every page load does not forget.
+
+It also means we will sometimes withhold a link to a product that turns out to be perfectly legitimate. The [Convention Utility Sling](/picks/convention-utility-sling) is in the queue as we write this. We would rather be late than wrong. If you sell something marked Verifying and want to speed it up, the [contact page](/contact) explains what to send us.
+
+## What we are not claiming
+
+We are not affiliated with, endorsed by, or in contact with any anime studio, publisher, or licensor. Our labels are our own research, not a certification from anybody. When we say "officially licensed" we mean *we checked and it holds up*, in the way a friend who knows the space would say it — carefully, and with the receipts. If a rights holder tells us we have something wrong, we take the pick down first and discuss it second.
+
+We also do not use character art, series names, or franchise imagery in our own branding, titles, or descriptions. Partly that is respect for the people who own those things. Mostly it is because a guide that borrows a franchise's identity to sell you things is doing the very thing it claims to protect you from.
+
+## Why this matters for a desk or a room
+
+Licensing gets discussed as a collector's concern: figures, trading cards, limited runs. It matters at least as much for the categories we cover. A desk mat or a wall print is something you look at every day for years. Bootleg print fades and bands; the people who made the art you liked enough to hang were not paid; and the money went to whoever was quickest to steal a file. The licensed or original version costs more because it costs more to make honestly. That is the whole difference, and it is the one worth paying for.
+
+## What the label is not
+
+It is not a review. A licensed product can be badly made, and an original design from an independent artist can be the best thing on your desk. The licence label answers one question — *were the right people paid, and did anyone with authority approve this?* — and the three reasons we give on every pick answer the other one, which is whether it is any good. Read them separately. A site that blurs the two is selling you the label.
+
+{CATALOG_IS_SAMPLE && (
+  <>
+    <h2>Where the catalog stands</h2>
+    <p>
+      For transparency: every product on the site today is sample data used
+      while we build. Each one is marked as such, none links out, and none of
+      the labels above should be read as a verdict on a real product yet. As
+      real picks replace them, one at a time, each will have gone through the
+      process on this page before its label appears. This section removes
+      itself when the first real pick is published.
+    </p>
+  </>
+)}

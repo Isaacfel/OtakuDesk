@@ -1,11 +1,9 @@
-'use client'
-
 import type { Pick } from '@/data/types'
 import { isPurchasable } from '@/data/types'
 import { getMerchant } from '@/data/merchants'
 import { goHref, INLINE_DISCLOSURE } from '@/lib/affiliate'
-import { track } from '@/lib/analytics'
 import { PriceStamp } from './PriceStamp'
+import { TrackedLink } from './TrackedLink'
 
 /**
  * The ONLY sanctioned way to send a reader to a merchant.
@@ -18,6 +16,13 @@ import { PriceStamp } from './PriceStamp'
  * Building it in here is the point: there is no code path in the application
  * that produces an outbound link without a disclosure attached, so compliance
  * does not depend on anyone remembering it in month three.
+ *
+ * This is a SERVER component on purpose. It handles the whole `Pick` — which
+ * includes the raw `purchaseUrl` — and passes only primitives down to the
+ * client `TrackedLink`. Were this itself a client component, the entire pick
+ * would be serialized into the RSC payload and `purchaseUrl` would ship to the
+ * browser in the page source: invisible, but readable, and a route to the
+ * merchant that bypasses the tracking we are paid through.
  *
  * `from` records which page produced the click. It rides through /go into the
  * network's own reporting, which is the difference between knowing you earned
@@ -42,25 +47,18 @@ export function OutboundButton({
 
   return (
     <div className="flex flex-col gap-2.5">
-      <a
+      <TrackedLink
         href={goHref(pick, from)}
-        rel="sponsored nofollow noopener"
-        target="_blank"
-        onClick={() =>
-          track({
-            name: 'outbound_click',
-            pickSlug: pick.slug,
-            merchant: merchant.name,
-            network: merchant.network,
-            from,
-          })
-        }
+        pickSlug={pick.slug}
+        merchant={merchant.name}
+        network={merchant.network}
+        from={from}
         className="inline-flex items-center justify-center gap-2 rounded-sm bg-shu px-5 py-3 font-display text-sm font-semibold tracking-tight text-white transition-colors hover:bg-shu-bright focus-visible:bg-shu-bright"
       >
         Check price at {merchant.name}
         <span aria-hidden="true">→</span>
         <span className="sr-only">(opens in a new tab)</span>
-      </a>
+      </TrackedLink>
 
       {showPrice && (
         <PriceStamp price={pick.price} checkedAt={pick.priceCheckedAt} />
@@ -91,7 +89,11 @@ function UnavailablePanel({ pick }: { pick: Pick }) {
   return (
     <div className="rounded-sm border border-dashed border-line bg-surface p-4">
       <p className="label-xs mb-2 text-caution">
-        {verifying ? 'Verification in progress' : sample ? 'Sample listing' : 'Currently unavailable'}
+        {verifying
+          ? 'Verification in progress'
+          : sample
+            ? 'Sample listing'
+            : 'Currently unavailable'}
       </p>
       <p className="max-w-[52ch] text-sm leading-relaxed text-paper-2">
         {verifying ? (

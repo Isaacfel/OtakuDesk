@@ -159,6 +159,29 @@ export type CuratedSet = {
   pickIds: string[]
 }
 
+/**
+ * The catalog shape that is safe to hand to a Client Component.
+ *
+ * `purchaseUrl` is the raw, untagged merchant destination. A Client
+ * Component's props are serialized into the RSC payload and shipped to the
+ * browser, so passing a full `Pick` across that boundary publishes every
+ * merchant URL in the page source — invisible to a reader, trivially readable
+ * by anyone, and a route to the merchant that bypasses the /go tracking we are
+ * paid through.
+ *
+ * A TypeScript `Omit` alone does NOT fix this: types are erased at runtime and
+ * the property would still be serialized. The object has to be narrowed for
+ * real, which is what `toCatalogPick` does at the boundary.
+ */
+export type CatalogPick = Omit<Pick, 'purchaseUrl'>
+
+export function toCatalogPick(pick: Pick): CatalogPick {
+  // Destructured out rather than deleted, so the returned object genuinely
+  // lacks the key instead of carrying an undefined one.
+  const { purchaseUrl: _withheld, ...safe } = pick
+  return safe
+}
+
 // --- Display policy ---------------------------------------------------------
 
 /**
@@ -177,7 +200,7 @@ export function isPriceFresh(checkedAt: string, now = Date.now()): boolean {
  * Both the /go route and the OutboundButton call this, so the UI and the
  * redirect can never disagree about whether a link is live.
  */
-export function isPurchasable(pick: Pick): boolean {
+export function isPurchasable(pick: CatalogPick): boolean {
   return pick.licenseStatus !== 'unverified' && pick.linkStatus === 'ok'
 }
 

@@ -1,4 +1,4 @@
-import type { Pick } from '@/data/types'
+import type { CatalogPick } from '@/data/types'
 import { LICENSE_LABEL, SELLER_LABEL } from '@/data/types'
 import { getMerchant } from '@/data/merchants'
 
@@ -11,7 +11,7 @@ import { getMerchant } from '@/data/merchants'
  * kept separate from the brand accent so "verified" never reads as merely
  * "on brand".
  */
-export function LicenseBadge({ pick }: { pick: Pick }) {
+export function LicenseBadge({ pick }: { pick: CatalogPick }) {
   const tone = {
     officially_licensed: 'bg-verified-soft text-verified',
     original_design: 'bg-ai-soft text-ai',
@@ -33,7 +33,7 @@ export function SellerNote({
   pick,
   detailed = false,
 }: {
-  pick: Pick
+  pick: CatalogPick
   detailed?: boolean
 }) {
   const merchant = getMerchant(pick.merchantId)
@@ -83,7 +83,7 @@ export function SellerNote({
  * The last-verified stamp. Small, and load-bearing: it is how a reader tells
  * a maintained guide from an abandoned affiliate farm.
  */
-export function VerifiedStamp({ pick }: { pick: Pick }) {
+export function VerifiedStamp({ pick }: { pick: CatalogPick }) {
   return (
     <p className="tnum text-[11px] text-muted">
       Checked{' '}

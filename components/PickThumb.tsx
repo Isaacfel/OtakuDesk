@@ -1,4 +1,4 @@
-import type { Pick, PickImage } from '@/data/types'
+import type { CatalogPick, PickImage } from '@/data/types'
 
 /**
  * Product imagery, with provenance enforced.
@@ -24,7 +24,7 @@ export function PickThumb({
   className = '',
   priority = false,
 }: {
-  pick: Pick
+  pick: CatalogPick
   image?: PickImage
   className?: string
   priority?: boolean

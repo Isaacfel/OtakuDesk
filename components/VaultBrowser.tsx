@@ -2,14 +2,14 @@
 
 import { useEffect, useId, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import type { Category, LicenseStatus, Pick, SellerType } from '@/data/types'
+import type { Category, CatalogPick, LicenseStatus, SellerType } from '@/data/types'
 import {
   CATEGORIES,
   LICENSE_LABEL,
   SELLER_LABEL,
   isPriceFresh,
 } from '@/data/types'
-import { COLLECTIONS } from '@/data/picks'
+import { COLLECTIONS } from '@/data/collections'
 import { track } from '@/lib/analytics'
 import { PickCard } from './PickCard'
 
@@ -78,18 +78,18 @@ const EMPTY_FILTERS: Filters = {
  * (missing, or past its freshness window) is not one we should silently rank
  * by either — it is treated as unknown and sorts last.
  */
-function usablePrice(pick: Pick): number | null {
+function usablePrice(pick: CatalogPick): number | null {
   return pick.price !== null && isPriceFresh(pick.priceCheckedAt) ? pick.price : null
 }
 
-function inBand(pick: Pick, band: PriceBand): boolean {
+function inBand(pick: CatalogPick, band: PriceBand): boolean {
   const price = usablePrice(pick)
   if (price === null) return false
   const def = PRICE_BANDS.find((b) => b.value === band)!
   return price >= def.min && price < def.max
 }
 
-function matchesQuery(pick: Pick, q: string): boolean {
+function matchesQuery(pick: CatalogPick, q: string): boolean {
   if (!q) return true
   const hay = [pick.title, pick.description, pick.category, ...pick.tags]
     .join(' ')
@@ -101,7 +101,7 @@ function matchesQuery(pick: Pick, q: string): boolean {
     .every((term) => hay.includes(term))
 }
 
-function matchesFilters(pick: Pick, f: Filters, ignore?: keyof Filters): boolean {
+function matchesFilters(pick: CatalogPick, f: Filters, ignore?: keyof Filters): boolean {
   if (ignore !== 'category' && f.category && pick.category !== f.category) return false
   if (ignore !== 'licence' && f.licence && pick.licenseStatus !== f.licence) return false
   if (ignore !== 'seller' && f.seller && pick.sellerType !== f.seller) return false
@@ -111,11 +111,11 @@ function matchesFilters(pick: Pick, f: Filters, ignore?: keyof Filters): boolean
   return true
 }
 
-function sortPicks(picks: Pick[], sort: SortKey): Pick[] {
-  const byNewest = (a: Pick, b: Pick) =>
+function sortPicks(picks: CatalogPick[], sort: SortKey): CatalogPick[] {
+  const byNewest = (a: CatalogPick, b: CatalogPick) =>
     b.addedAt.localeCompare(a.addedAt) || a.title.localeCompare(b.title)
 
-  const byPrice = (dir: 1 | -1) => (a: Pick, b: Pick) => {
+  const byPrice = (dir: 1 | -1) => (a: CatalogPick, b: CatalogPick) => {
     const pa = usablePrice(a)
     const pb = usablePrice(b)
     // Unknown prices sort last in both directions; they are never treated as zero.
@@ -187,7 +187,7 @@ function writeUrlState(query: string, filters: Filters, sort: SortKey) {
   }
 }
 
-export function VaultBrowser({ picks }: { picks: Pick[] }) {
+export function VaultBrowser({ picks }: { picks: CatalogPick[] }) {
   // Initial state comes from a shared URL, read once. `useSearchParams` in a
   // statically rendered page defers this component to the client inside the
   // page's Suspense boundary, so there is no server/client mismatch.
@@ -220,7 +220,7 @@ export function VaultBrowser({ picks }: { picks: Pick[] }) {
 
   // Facet counts: how many picks would match if this facet were set to a given
   // value, holding the query and every OTHER facet constant.
-  const countFor = (facet: keyof Filters, predicate: (p: Pick) => boolean) =>
+  const countFor = (facet: keyof Filters, predicate: (p: CatalogPick) => boolean) =>
     picks.filter(
       (p) => matchesQuery(p, trimmed) && matchesFilters(p, filters, facet) && predicate(p),
     ).length

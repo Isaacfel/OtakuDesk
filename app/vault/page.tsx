@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import { Header, Footer } from '@/components/Shell'
 import { VaultBrowser } from '@/components/VaultBrowser'
 import { PICKS } from '@/data/picks'
+import { toCatalogPick } from '@/data/types'
 
 export const metadata: Metadata = {
   title: 'The Vault',
@@ -44,7 +45,8 @@ export default function VaultPage() {
             </p>
           }
         >
-          <VaultBrowser picks={PICKS} />
+          {/* Narrowed at the boundary: purchaseUrl must never reach the client. */}
+          <VaultBrowser picks={PICKS.map(toCatalogPick)} />
         </Suspense>
       </main>
       <Footer />
