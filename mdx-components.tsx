@@ -1,6 +1,7 @@
 import type { MDXComponents } from 'mdx/types'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import Link from 'next/link'
+import { VerifyingNow } from '@/components/VerifyingNow'
 
 /**
  * Global MDX component map.
@@ -110,6 +111,9 @@ const components: MDXComponents = {
   a: A,
   table: Table,
   Callout,
+  // Reads the catalog at build time so articles cannot assert a licence
+  // state that has since changed.
+  VerifyingNow,
 }
 
 export function useMDXComponents(): MDXComponents {

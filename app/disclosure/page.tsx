@@ -139,9 +139,8 @@ export default function DisclosurePage() {
           break a tie between two equally good products.
         </li>
         <li>
-          A product with no affiliate program can still be a pick. It simply
-          links out untracked, with the same disclosure removed because there is
-          nothing to disclose.
+          A product with no affiliate program can still be a pick. The
+          commission is a consequence of choosing it, not a condition.
         </li>
         <li>
           Sample listings and picks marked <em>Verifying</em> have no buy button
