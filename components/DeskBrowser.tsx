@@ -524,7 +524,7 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
             ))}
           </FacetGroup>
 
-          <FacetGroup legend="Price" hint="Picks without a current price are left out of a price band.">
+          <FacetGroup legend="Price" hint="Items without a current price are left out of a price band.">
             <FacetRadio
               name="price"
               value=""
@@ -709,12 +709,12 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
           <p id={statusId} role="status" className="tnum text-sm text-paper-2">
             {results.length === picks.length ? (
               <>
-                {picks.length} {picks.length === 1 ? 'pick' : 'picks'}
+                {picks.length} on the Desk
               </>
             ) : (
               <>
                 <span className="text-paper">{results.length}</span> of {picks.length}{' '}
-                picks
+                on the Desk
               </>
             )}
           </p>

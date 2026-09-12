@@ -185,14 +185,14 @@ export default function HomePage() {
           <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
             <SectionHead
               id="featured-heading"
-              kicker="Featured picks"
+              kicker="Featured on the Desk"
               title="The lookbook."
               aside={
                 <Link
                   href="/desk"
                   className="label-xs inline-flex items-center gap-2 border-2 border-paper px-4 py-2.5 text-paper transition-colors hover:bg-paper hover:text-ink"
                 >
-                  All {PICKS.length} picks
+                  All {PICKS.length} on the Desk
                   <span aria-hidden="true">→</span>
                 </Link>
               }

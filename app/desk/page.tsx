@@ -9,7 +9,7 @@ import { CATEGORIES, toCatalogPick } from '@/data/types'
 export const metadata: Metadata = {
   title: 'The Desk',
   description:
-    'Every Otakudesk pick in one place. Search and filter by category, licence status, seller type, price, and collection. Seller named and price dated on every pick.',
+    'Everything on The Desk in one place. Search and filter by category, licence status, seller type, price, and collection. Seller named and price dated on every pick.',
 }
 
 /**
@@ -45,19 +45,20 @@ export default function DeskPage() {
 
           <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-end lg:gap-12">
             <h1 className="text-4xl text-paper sm:text-6xl lg:text-cover">
-              Every pick, with the facts attached.
+              <span className="text-shu">The Desk</span>, with the facts
+              attached.
             </h1>
 
             <div className="max-w-[48ch]">
               <p className="text-base leading-relaxed text-paper-2">
                 Everything we have looked at closely enough to recommend. Each card
                 shows the licence status, who is selling it, and a price with the
-                date we last checked it. Open any pick for the three reasons we
+                date we last checked it. Open anything on the Desk for the three reasons we
                 chose it and the honest caveat.
               </p>
               <dl className="tnum mt-5 flex flex-wrap gap-x-8 gap-y-3 border-t border-line pt-4 text-sm">
                 <div>
-                  <dt className="label-xs text-muted">Picks</dt>
+                  <dt className="label-xs text-muted">On the Desk</dt>
                   <dd className="mt-1 text-2xl font-semibold text-paper">{PICKS.length}</dd>
                 </div>
                 <div>
@@ -79,7 +80,7 @@ export default function DeskPage() {
         <Suspense
           fallback={
             <p role="status" className="tnum text-sm text-muted">
-              Loading {PICKS.length} picks…
+              Loading {PICKS.length} items…
             </p>
           }
         >
