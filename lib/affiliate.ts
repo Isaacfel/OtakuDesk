@@ -74,7 +74,7 @@ export function buildTrackedUrl(pick: Pick, subId: string): string {
 
     case 'direct': {
       const u = new URL(dest)
-      u.searchParams.set('utm_source', 'otakuvault')
+      u.searchParams.set('utm_source', 'otakudesk')
       u.searchParams.set('utm_medium', 'referral')
       u.searchParams.set('utm_campaign', subId)
       return u.toString()

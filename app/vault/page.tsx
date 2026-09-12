@@ -8,7 +8,7 @@ import { toCatalogPick } from '@/data/types'
 export const metadata: Metadata = {
   title: 'The Vault',
   description:
-    'Every OtakuVault pick in one place. Search and filter by category, licence status, seller type, price, and collection. Seller named and price dated on every pick.',
+    'Every Otakudesk pick in one place. Search and filter by category, licence status, seller type, price, and collection. Seller named and price dated on every pick.',
 }
 
 /**

@@ -1,4 +1,4 @@
-# OtakuVault
+# Otakudesk
 
 A trusted anime room and desk shopping guide that earns commissions by helping
 fans make better product decisions.
@@ -90,8 +90,8 @@ The pre-launch compliance checklist lives in `PROJECT.md`.
 The affiliate model removes manufacturing liability — we are not producing
 anything, so we cannot infringe on the product itself. It removes nothing else.
 Image permission, no implied studio or franchise affiliation, no character art
-in OtakuVault's own branding, and per-pick licence verification all survive
+in Otakudesk's own branding, and per-pick licence verification all survive
 intact. See `PROJECT.md`.
 
-OtakuVault is an independent shopping guide, not affiliated with, endorsed by,
+Otakudesk is an independent shopping guide, not affiliated with, endorsed by,
 or sponsored by any anime studio, publisher, or licensor.

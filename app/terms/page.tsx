@@ -6,7 +6,7 @@ import { PRICE_MAX_AGE_DAYS } from '@/data/types'
 export const metadata: Metadata = {
   title: 'Terms of use',
   description:
-    'Plain terms for using OtakuVault: what the site is, what it is not responsible for, and how its content may be used.',
+    'Plain terms for using Otakudesk: what the site is, what it is not responsible for, and how its content may be used.',
 }
 
 /**
@@ -20,9 +20,9 @@ export default function TermsPage() {
       title="Terms of use"
       lede="Short, because a guide does not need long terms. The one thing to understand is that we are never a party to your purchase."
     >
-      <h2 id="what">What OtakuVault is</h2>
+      <h2 id="what">What Otakudesk is</h2>
       <p>
-        OtakuVault is an independent editorial shopping guide. We recommend
+        Otakudesk is an independent editorial shopping guide. We recommend
         products and link to the businesses that sell them. We do not sell,
         ship, or take payment for anything, and we are not the merchant of
         record for any purchase. When you buy, your contract is with the seller
@@ -50,7 +50,7 @@ export default function TermsPage() {
 
       <h2 id="ip">Intellectual property</h2>
       <p>
-        Our writing, design, photography, and the OtakuVault name are ours.
+        Our writing, design, photography, and the Otakudesk name are ours.
         Product names, brand names, and franchise names that appear on this site
         belong to their respective owners and are used only to identify the
         products discussed. No affiliation with, sponsorship by, or endorsement

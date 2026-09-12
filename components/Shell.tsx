@@ -27,7 +27,7 @@ export function Header() {
             href="/"
             className="font-display text-xl font-extrabold tracking-tight text-paper"
           >
-            Otaku<span className="text-shu">Vault</span>
+            Otaku<span className="text-shu">desk</span>
           </Link>
 
           <nav aria-label="Main">
@@ -56,7 +56,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 sm:grid-cols-[2fr_1fr_1fr]">
         <div>
           <p className="font-display text-lg font-extrabold tracking-tight text-paper">
-            Otaku<span className="text-shu">Vault</span>
+            Otaku<span className="text-shu">desk</span>
           </p>
           <p className="mt-2 max-w-[42ch] text-sm leading-relaxed text-muted">
             A trusted anime room and desk shopping guide. We name the seller and
@@ -101,7 +101,7 @@ export function Footer() {
 
       <div className="border-t border-line-soft">
         <p className="mx-auto max-w-6xl px-5 py-4 text-xs text-muted">
-          OtakuVault is an independent shopping guide. It is not affiliated with,
+          Otakudesk is an independent shopping guide. It is not affiliated with,
           endorsed by, or sponsored by any anime studio, publisher, or licensor.
         </p>
       </div>

@@ -5,7 +5,7 @@ import { LegalPage, Placeholder } from '@/app/_legal/LegalShell'
 export const metadata: Metadata = {
   title: 'Privacy',
   description:
-    'What OtakuVault collects, what it does not, and how to exercise your rights under GDPR and CCPA.',
+    'What Otakudesk collects, what it does not, and how to exercise your rights under GDPR and CCPA.',
 }
 
 /**

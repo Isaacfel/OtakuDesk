@@ -26,15 +26,15 @@ const plexMono = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://otakuvault.example'),
+  metadataBase: new URL('https://otakudesk.com'),
   title: {
-    default: 'OtakuVault — anime room and desk shopping guide',
-    template: '%s | OtakuVault',
+    default: 'Otakudesk — anime room and desk shopping guide',
+    template: '%s | Otakudesk',
   },
   description:
     'A trusted anime room and desk shopping guide. We name the seller and the licence on every pick, and we earn a commission when you buy.',
   openGraph: {
-    siteName: 'OtakuVault',
+    siteName: 'Otakudesk',
     type: 'website',
   },
   // The /go redirects are excluded from indexing in robots.ts as well; this is
@@ -44,8 +44,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f6f2ec' },
-    { media: '(prefers-color-scheme: dark)', color: '#121011' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#141011' },
   ],
 }
 

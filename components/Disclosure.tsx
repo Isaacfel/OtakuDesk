@@ -17,7 +17,7 @@ export function DisclosureBanner() {
   return (
     <div className="border-b border-line-soft bg-surface">
       <p className="mx-auto max-w-6xl px-5 py-2.5 text-xs leading-relaxed text-muted">
-        OtakuVault earns a commission when you buy through our links, at no
+        Otakudesk earns a commission when you buy through our links, at no
         extra cost to you. It does not change which products we pick or what we
         say about them.{' '}
         {usesAmazon && (

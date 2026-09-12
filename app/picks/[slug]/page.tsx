@@ -173,7 +173,7 @@ function bounceReason(pick: Pick): string {
  * Cheap credibility: a way to tell us the listing is wrong. Keep the address
  * in step with `metadataBase` in app/layout.tsx when the domain changes.
  */
-const REPORT_EMAIL = 'hello@otakuvault.example'
+const REPORT_EMAIL = 'hello@otakudesk.com'
 
 function ReportProblem({ pick }: { pick: Pick }) {
   const subject = encodeURIComponent(

@@ -8,7 +8,7 @@ import { INLINE_DISCLOSURE, AMAZON_ATTESTATION } from '@/lib/affiliate'
 export const metadata: Metadata = {
   title: 'Affiliate disclosure',
   description:
-    'How OtakuVault is paid: commission on referred purchases, which programs, and what does not influence a pick.',
+    'How Otakudesk is paid: commission on referred purchases, which programs, and what does not influence a pick.',
 }
 
 const NETWORK_LABEL: Record<AffiliateNetwork, string> = {
@@ -47,7 +47,7 @@ export default function DisclosurePage() {
     <LegalPage
       label="Legal"
       title="Affiliate disclosure"
-      lede="OtakuVault earns a commission when you buy through our links, at no extra cost to you. It does not change which products we pick or what we say about them. The rest of this page is the detail."
+      lede="Otakudesk earns a commission when you buy through our links, at no extra cost to you. It does not change which products we pick or what we say about them. The rest of this page is the detail."
     >
       <h2 id="short">The short version</h2>
       <p>
@@ -89,7 +89,7 @@ export default function DisclosurePage() {
           </strong>{' '}
           The programs listed are ones we intend to apply to. Naming them here
           is a statement of intent, not of partnership, and none of these
-          companies has endorsed or reviewed OtakuVault.
+          companies has endorsed or reviewed Otakudesk.
         </p>
       )}
       <table>
@@ -166,7 +166,7 @@ export default function DisclosurePage() {
 
       <h2 id="entity">Who is disclosing</h2>
       <p>
-        This disclosure is made by the operator of OtakuVault:{' '}
+        This disclosure is made by the operator of Otakudesk:{' '}
         <Placeholder what="legal entity name" />, located at{' '}
         <Placeholder what="business address" />. Questions about this page:{' '}
         <Placeholder what="contact email" />.

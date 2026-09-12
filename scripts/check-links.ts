@@ -18,7 +18,7 @@ import type { Pick } from '../data/types'
 
 const TIMEOUT_MS = 12_000
 const UA =
-  'Mozilla/5.0 (compatible; OtakuVaultLinkCheck/1.0; +https://otakuvault.example/about)'
+  'Mozilla/5.0 (compatible; OtakudeskLinkCheck/1.0; +https://otakudesk.com/about)'
 
 type Result = {
   pick: Pick

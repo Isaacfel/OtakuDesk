@@ -15,6 +15,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/go/'],
     },
-    sitemap: 'https://otakuvault.example/sitemap.xml',
+    sitemap: 'https://otakudesk.com/sitemap.xml',
   }
 }

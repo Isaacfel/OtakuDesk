@@ -17,7 +17,7 @@ import { PickThumb } from './PickThumb'
 const SOURCE_CAPTION: Record<ImageSource, string> = {
   merchant_feed: 'Image supplied by the seller',
   press_kit: "Image from the maker's press kit",
-  own: 'Photographed by OtakuVault',
+  own: 'Photographed by Otakudesk',
   placeholder: 'Generated placeholder — not a photograph of the product',
 }
 

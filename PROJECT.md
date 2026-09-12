@@ -1,4 +1,4 @@
-# OtakuVault — build brief
+# Otakudesk — build brief
 
 **Positioning (use this line; it governs tone, scope, and content):**
 
@@ -28,7 +28,7 @@ producing, or selling anything, so we cannot infringe on the product itself.
    feed, press kit, or our own camera. Enforced by `PickImage.source`.
 2. **No implied studio or franchise affiliation.** Not in copy, titles, meta
    descriptions, social handles, or collection names.
-3. **No character art in OtakuVault's own branding.** Logo, hero, dividers,
+3. **No character art in Otakudesk's own branding.** Logo, hero, dividers,
    favicon, social avatars — original work only.
 4. **Per-pick licence verification.** `licenseStatus: 'unverified'` blocks the
    outbound path in both the UI and the `/go` route. This is not advisory.

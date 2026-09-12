@@ -53,10 +53,10 @@ export function PickThumb({
       aria-label={`Placeholder graphic for ${pick.title}. No product photograph is available.`}
       className={`screentone relative flex aspect-[4/3] w-full max-w-full items-end overflow-hidden bg-surface-2 ${className}`}
       style={{
-        backgroundImage: `linear-gradient(${angle}deg, color-mix(in oklab, hsl(${hue} 30% 30%) 45%, var(--surface)) 0%, var(--surface-2) 70%)`,
+        backgroundImage: `linear-gradient(${angle}deg, color-mix(in oklab, hsl(${hue} 42% 55%) 22%, var(--surface)) 0%, var(--surface-2) 72%)`,
       }}
     >
-      <span className="label-xs m-3 rounded-xs bg-ink/70 px-2 py-1 text-muted">
+      <span className="label-xs m-3 rounded-xs bg-ink/85 px-2 py-1 text-muted ring-1 ring-line">
         No product photo
       </span>
     </div>

@@ -35,7 +35,7 @@ export function PickCard({
         <div className="relative overflow-hidden border border-line-soft">
           <PickThumb pick={pick} priority={priority} />
           {!live && (
-            <span className="label-xs absolute top-0 right-0 m-2 rounded-xs bg-ink/80 px-2 py-1 text-caution">
+            <span className="label-xs absolute top-0 right-0 m-2 rounded-xs bg-ink/85 px-2 py-1 text-caution ring-1 ring-line">
               {pick.linkStatus === 'sample' ? 'Sample' : 'Verifying'}
             </span>
           )}

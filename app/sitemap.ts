@@ -9,7 +9,7 @@ import { loadAllPosts } from '@/app/journal/_posts'
  * redirects are deliberately absent: they are tracking endpoints, disallowed
  * in robots.txt and tagged noindex by the route handler.
  */
-const BASE = 'https://otakuvault.example'
+const BASE = 'https://otakudesk.com'
 
 const STATIC_ROUTES: Array<{
   path: string

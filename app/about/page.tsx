@@ -11,7 +11,7 @@ import { INLINE_DISCLOSURE, AMAZON_ATTESTATION } from '@/lib/affiliate'
 export const metadata: Metadata = {
   title: 'About',
   description:
-    'Who curates OtakuVault, how a pick is chosen and verified, and exactly how the site makes money.',
+    'Who curates Otakudesk, how a pick is chosen and verified, and exactly how the site makes money.',
 }
 
 /**
@@ -40,7 +40,7 @@ export default function AboutPage() {
               A guide, not a store.
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-paper-2">
-              OtakuVault is a shopping guide for anime rooms, desks, and
+              Otakudesk is a shopping guide for anime rooms, desks, and
               convention days. We find products worth owning, tell you who is
               actually selling them and whether they are licensed, and send you
               to the seller. We are paid on referral. This page explains all of
@@ -71,7 +71,7 @@ export default function AboutPage() {
             <p>
               People, one pick at a time. There is no feed import and no
               automated catalog. Every pick was chosen by a member of the
-              OtakuVault team who found the product, read the seller&rsquo;s
+              Otakudesk team who found the product, read the seller&rsquo;s
               listing, checked the licence, and wrote the three reasons you see
               on its card. If we would not put it on our own desk, it is not in
               the Vault.

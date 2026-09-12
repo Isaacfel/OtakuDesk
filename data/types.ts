@@ -1,5 +1,5 @@
 /**
- * The OtakuVault data contract.
+ * The Otakudesk data contract.
  *
  * This is an AFFILIATE site: we never hold stock, set a price, take payment,
  * ship, or process returns. Every field below is shaped by that fact. If a
