@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const merchant = getMerchant(pick.merchantId)
   const description = `${pick.description} ${META_LICENCE[pick.licenseStatus]}, sold by ${merchant.name}.`
-  const path = `/picks/${pick.slug}`
+  const path = `/desk/${pick.slug}`
 
   return {
     title: pick.title,
@@ -271,7 +271,7 @@ function ReportProblem({ pick }: { pick: Pick }) {
     `Problem with listing: ${pick.title} (${pick.slug})`,
   )
   const body = encodeURIComponent(
-    `Pick: /picks/${pick.slug}\n\nWhat is wrong? (stale price, dead link, licensing concern, wrong seller, something else)\n\n`,
+    `Pick: /desk/${pick.slug}\n\nWhat is wrong? (stale price, dead link, licensing concern, wrong seller, something else)\n\n`,
   )
 
   return (

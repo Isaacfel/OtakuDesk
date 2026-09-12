@@ -45,7 +45,7 @@ These are the same work aimed at a different surface, not residual footnotes.
 |---|---|
 | `/` | Home. Positioning, trust, featured picks, journal preview, email. |
 | `/desk` | All picks: search, filter, sort. Client-side over static data. |
-| `/picks/[slug]` | Pick detail. The most important page on the site. |
+| `/desk/[slug]` | Pick detail. The most important page on the site. |
 | `/journal`, `/journal/[slug]` | MDX. The traffic engine. |
 | `/about` | Who curates, how picks are chosen, how we are paid. |
 | `/go/[slug]` | Outbound redirect. `noindex`. |

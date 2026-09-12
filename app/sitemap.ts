@@ -36,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   const pickEntries: MetadataRoute.Sitemap = PICKS.map((pick) => ({
-    url: `${BASE}/picks/${pick.slug}`,
+    url: `${BASE}/desk/${pick.slug}`,
     lastModified: new Date(`${pick.lastVerifiedAt}T00:00:00Z`),
     changeFrequency: 'weekly',
     priority: 0.7,

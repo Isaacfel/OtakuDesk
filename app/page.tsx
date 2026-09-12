@@ -82,7 +82,7 @@ function LookCard({
       }`}
     >
       <Link
-        href={`/picks/${pick.slug}`}
+        href={`/desk/${pick.slug}`}
         className={`panel-frame flex h-full flex-col bg-surface transition-[box-shadow,transform] duration-200 group-hover:offset-print group-hover:-translate-x-px group-hover:-translate-y-px ${
           lead ? '' : 'lg:flex-row'
         }`}

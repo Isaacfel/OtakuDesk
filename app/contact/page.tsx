@@ -34,7 +34,7 @@ export default function ContactPage() {
       </ul>
       <p>Include, where you can:</p>
       <ol>
-        <li>The pick&rsquo;s address on this site (it starts with <code>/picks/</code>).</li>
+        <li>The pick&rsquo;s address on this site (it starts with <code>/desk/</code>).</li>
         <li>What is wrong, in a sentence.</li>
         <li>A screenshot if it is about a price or the listing itself.</li>
       </ol>

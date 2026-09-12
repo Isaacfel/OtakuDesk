@@ -7,7 +7,7 @@ const isProd = process.env.NODE_ENV === 'production'
  * Content-Security-Policy.
  *
  * Why no nonces: nonces require every page to render per request, and the
- * whole point of this site's architecture is that /picks/[slug] and the
+ * whole point of this site's architecture is that /desk/[slug] and the
  * journal are prerendered and served from a CDN (see BouncedNotice.tsx for the
  * same trade-off made deliberately). Without nonces, Next's own inline
  * bootstrap scripts (`self.__next_f.push`) and React's inline `style=`

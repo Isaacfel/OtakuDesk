@@ -35,7 +35,7 @@ export function VerifyingNow() {
       {waiting.map((p, i) => (
         <span key={p.id}>
           {i > 0 && (i === waiting.length - 1 ? ' and ' : ', ')}
-          <Link href={`/picks/${p.slug}`}>{p.title}</Link>
+          <Link href={`/desk/${p.slug}`}>{p.title}</Link>
         </span>
       ))}
       . Not because we think anything is counterfeit, but because the check is

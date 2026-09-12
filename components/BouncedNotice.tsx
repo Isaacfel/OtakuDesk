@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation'
  *
  * This reads the query string on the CLIENT deliberately. Reading
  * `searchParams` in the page itself would opt the whole route into
- * request-time rendering, and `/picks/[slug]` is the most valuable page on the
+ * request-time rendering, and `/desk/[slug]` is the most valuable page on the
  * site — it is what search traffic lands on and what has to be fast. Keeping
  * it prerendered means it is served from a CDN rather than rendered per
  * request, for the sake of a notice almost nobody sees.

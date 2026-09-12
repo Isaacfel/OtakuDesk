@@ -61,7 +61,7 @@ export function PickCard({
   return (
     <article className="group flex h-full flex-col">
       <Link
-        href={`/picks/${pick.slug}`}
+        href={`/desk/${pick.slug}`}
         className="panel-frame flex flex-1 flex-col bg-surface transition-[box-shadow,transform] duration-200 group-hover:offset-print group-hover:-translate-x-px group-hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-shu"
       >
         {/* Artwork */}

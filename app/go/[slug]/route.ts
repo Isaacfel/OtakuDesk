@@ -82,7 +82,7 @@ export async function GET(
   // picks bounce back to their own page, which explains the state — far
   // better than dropping someone on a merchant 404.
   if (!isPurchasable(pick)) {
-    return bounce(`/picks/${pick.slug}?unavailable=1`)
+    return bounce(`/desk/${pick.slug}?unavailable=1`)
   }
 
   // `from` is attribution only. Bounded and reduced to a safe charset here so
@@ -116,7 +116,7 @@ export async function GET(
         reason: err instanceof Error ? err.message : String(err),
       }),
     )
-    return bounce(`/picks/${pick.slug}?unavailable=1`)
+    return bounce(`/desk/${pick.slug}?unavailable=1`)
   }
 
   // Fire-and-forget: the reader never waits on our analytics.
