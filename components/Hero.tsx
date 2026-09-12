@@ -1,24 +1,27 @@
 import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import { isQuizReady } from '@/data/picks'
-import { EditorialBadge, RegistrationMark, SpeedBurst } from './motifs'
+import { EnergyBurst, GlowOrb, Mascot, SparkleField } from './motifs'
 
 /**
- * The masthead — a full-bleed dark spread, the way a volume opens.
+ * The masthead — stepping into a late-night anime room.
  *
- * The scene is an ORIGINAL illustration drawn in SVG below: a monitor on a
- * riser, a desk mat, a shelf with a generic collectible silhouette, a wall
- * print of an abstract skyline, headphones on a stand. There is no character,
- * logo, screenshot or franchise reference anywhere in it — the anime feeling
- * comes from print technique (halftone, panel gutters, a sticker badge) and
- * from the lighting, which is warm on the shelf and cool off the screen.
+ * The scene is an ORIGINAL illustration drawn in SVG below: a window with the
+ * blinds half down and the night coming through, a shelf lit warm from
+ * underneath, a monitor blooming cool blue over a desk mat, a lamp pooling
+ * orange on the desk, headphones on a stand, a mug going cold — and the
+ * site's own desk spirit peeking over the desk edge. There is no character
+ * from anywhere else, no logo, no screenshot and no franchise reference.
+ *
+ * The scene is not framed. Its edges dissolve into the page with a mask so the
+ * page reads as the room rather than as a page with a picture on it.
  *
  * The gift-quiz CTA is gated on `isQuizReady()`. There is no other way to
  * reach the quiz from here, so it cannot be linked prematurely.
  */
 
-/* Motif utilities are drawn in `--paper` (the ink). On a dark panel the ink
-   has to be the light stock instead, so the variable is flipped locally. */
+/* Motif utilities are drawn in `--paper`. The hero stays a night room in both
+   themes, so the light stock is pinned to the constant panel type colour. */
 const ON_DARK = { '--paper': 'var(--panel-type)' } as CSSProperties
 
 export function Hero() {
@@ -30,66 +33,64 @@ export function Hero() {
       className="relative overflow-hidden bg-panel-2 text-panel-type"
       style={ON_DARK}
     >
-      {/* Drifting paper grain. Decorative; reduced-motion collapses it to a still. */}
+      {/* The room's ambient light: lamp left, screen right, night air below. */}
+      <div aria-hidden="true" className="room-light pointer-events-none absolute inset-0" />
       <div
         aria-hidden="true"
-        className="paper-grain grain-drift pointer-events-none absolute inset-0 opacity-70"
+        className="paper-grain grain-drift pointer-events-none absolute inset-0 opacity-60"
       />
-      <div
-        aria-hidden="true"
-        className="halftone-lg pointer-events-none absolute inset-y-0 right-0 w-1/2 opacity-40 [mask-image:linear-gradient(90deg,transparent,#000_40%)]"
-      />
+      <GlowOrb tone="blue" size="min(70vw, 720px)" intensity="mid" blend="screen" className="-top-1/4 right-[-10%]" />
+      <GlowOrb tone="orange" size="min(50vw, 480px)" intensity="low" blend="screen" className="top-1/3 -left-1/4" />
 
-      <div className="relative mx-auto max-w-6xl px-5 pt-8 pb-12 sm:pt-12 sm:pb-16 lg:pt-16 lg:pb-20">
-        {/* Top rule with registration marks, like the trim edge of a sheet. */}
-        <div className="flex items-center justify-between text-panel-muted">
-          <RegistrationMark className="h-4 w-4" />
-          <p className="label-xs text-panel-muted">
-            Vol. 01 &middot; The anime room &amp; desk guide
-          </p>
-          <RegistrationMark className="h-4 w-4" />
-        </div>
+      <div className="relative mx-auto max-w-6xl px-5 pt-5 pb-14 sm:pt-8 sm:pb-16 lg:pt-10 lg:pb-24">
+        <p className="label-xs flex items-center gap-3 text-panel-muted">
+          <span aria-hidden="true" className="inline-block h-px w-8 bg-shu-electric" />
+          Vol. 01 &middot; The anime room &amp; desk guide
+        </p>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-stretch lg:gap-8">
-          {/* ---- The scene panel. First in DOM on mobile so the page opens on a picture. */}
-          <div className="relative order-first lg:order-last">
-            <div className="relative border-2 border-panel-type bg-panel offset-print">
+        <div className="mt-4 grid gap-4 lg:mt-8 lg:grid-cols-12 lg:items-center lg:gap-6">
+          {/* ---- The scene. First in DOM on mobile so the page opens on the room. */}
+          <div className="relative order-first -mx-5 lg:order-last lg:col-span-7 lg:mx-0 lg:-mr-[8vw] xl:-mr-[10vw]">
+            <div
+              className="relative [mask-image:linear-gradient(to_bottom,transparent,#000_10%,#000_84%,transparent)] lg:[mask-image:linear-gradient(to_right,transparent,#000_14%,#000_86%,transparent),linear-gradient(to_bottom,transparent,#000_14%,#000_82%,transparent)] lg:[mask-composite:intersect]"
+            >
               <DeskScene />
-              <EditorialBadge
-                tone="red"
-                className="absolute -top-3 left-4"
-              >
-                Original scene
-              </EditorialBadge>
-              <p className="label-xs absolute right-3 bottom-3 bg-panel-2/80 px-2 py-1 text-panel-muted">
-                Fig. 01 &middot; drawn, not licensed
-              </p>
+              <SparkleField seed="hero-dust" count={9} tone="lilac" minSize={6} maxSize={14} className="opacity-70" />
             </div>
+            <p className="label-xs absolute bottom-3 left-5 text-panel-muted/80 lg:left-4">
+              Original scene &middot; drawn for this page
+            </p>
           </div>
 
-          {/* ---- The type panel. */}
-          <div className="relative flex flex-col justify-between border-2 border-panel-line bg-panel/60 p-6 sm:p-8 lg:p-10">
-            <SpeedBurst className="opacity-40 [mask-image:radial-gradient(circle_at_20%_30%,#000_0,transparent_60%)]" />
+          {/* ---- The type. */}
+          <div className="relative lg:col-span-5">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-x-10 -inset-y-16 opacity-90 [mask-image:radial-gradient(circle_at_24%_38%,#000_0,transparent_62%)]"
+            >
+              <EnergyBurst tone="electric" intensity="high" originX={22} originY={38} seed="hero-arc" />
+            </div>
 
             <div className="relative">
               <p className="label-xs text-shu-electric">Gear for the setup, not the stall</p>
 
               <h1
                 id="hero-heading"
-                className="mt-4 text-5xl text-panel-type sm:text-6xl lg:text-cover"
+                className="mt-4 text-5xl leading-[0.9] text-panel-type sm:text-6xl lg:text-7xl xl:text-cover"
               >
-                Gear for your next arc.
+                Gear for your next{' '}
+                <span className="text-glow-red text-shu-electric">arc.</span>
               </h1>
 
-              <p className="mt-6 max-w-[46ch] text-base leading-relaxed text-panel-type/80 sm:text-lg">
+              <p className="mt-6 max-w-[44ch] text-base leading-relaxed text-panel-type/80 sm:text-lg">
                 Curated desk, room, and convention finds for fans who care what
-                they bring into their space.
+                they bring into their space. Lights low, standards high.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   href="/desk"
-                  className="inline-flex items-center gap-2 bg-shu-electric px-6 py-3 text-base font-semibold text-panel-2 transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:[box-shadow:4px_4px_0_0_var(--panel-type)]"
+                  className="bloom-red inline-flex items-center gap-2 bg-shu-electric px-6 py-3 text-base font-semibold text-panel-2 transition-transform hover:-translate-y-0.5 focus-visible:outline-panel-type"
                 >
                   Enter the Desk
                   <span aria-hidden="true">→</span>
@@ -104,19 +105,15 @@ export function Hero() {
                   </Link>
                 )}
               </div>
-            </div>
 
-            <p className="label-xs relative mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 text-panel-muted">
-              <span>Seller named</span>
-              <span aria-hidden="true" className="text-shu-electric">
-                ·
-              </span>
-              <span>License stated</span>
-              <span aria-hidden="true" className="text-shu-electric">
-                ·
-              </span>
-              <span>Price dated</span>
-            </p>
+              <p className="label-xs relative mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 text-panel-muted">
+                <span>Seller named</span>
+                <span aria-hidden="true" className="text-shu-electric">·</span>
+                <span>License stated</span>
+                <span aria-hidden="true" className="text-shu-electric">·</span>
+                <span>Price dated</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -125,161 +122,247 @@ export function Hero() {
 }
 
 /* -------------------------------------------------------------------------
-   The desk scene. Constant colours: the dark panel does not change with the
-   theme, so neither does the drawing. Everything is geometry — there is no
-   raster, no traced reference, and nothing that depicts a real product.
+   The desk scene, at night. Constant colours: a night room does not change
+   with the theme. Everything is geometry — no raster, no traced reference,
+   nothing that depicts a real product or anyone's character.
    ---------------------------------------------------------------------- */
+
+const INK = '#17151a'
+const PAPER = '#f3ebdd'
+const RED = '#ff3b4d'
+const ORANGE = '#ff9d42'
+const BLUE = '#4d7cfe'
+const LILAC = '#b7a4ff'
 
 function DeskScene() {
   return (
     <svg
-      viewBox="0 0 800 520"
+      viewBox="0 0 960 540"
       role="img"
-      aria-label="An original illustration of a late-night desk: a monitor on a steel riser glowing cool blue over a printed desk mat, a shelf lit warm from below holding a small collectible silhouette and a display case, a framed abstract skyline print on the wall, and headphones resting on a stand."
+      aria-label="An original illustration of a late-night anime room: a window with the blinds half down and lilac night light coming through, a shelf lit warm from underneath holding volumes and a display case, a monitor glowing cool blue over a printed desk mat, a desk lamp pooling orange light, headphones on a stand, a mug of tea, and a small paper-slip desk spirit peeking over the edge of the desk beside the monitor."
       className="block h-auto w-full"
     >
       <defs>
         <linearGradient id="hs-wall" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#2b2532" />
-          <stop offset="1" stopColor="#1a1720" />
+          <stop offset="0" stopColor="#1d1925" />
+          <stop offset="1" stopColor="#120f16" />
         </linearGradient>
         <linearGradient id="hs-desk" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#3b3242" />
-          <stop offset="1" stopColor="#241f2a" />
+          <stop offset="0" stopColor="#3c3143" />
+          <stop offset="1" stopColor="#1e1923" />
         </linearGradient>
         <linearGradient id="hs-screen" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#2f5ad6" />
-          <stop offset="0.55" stopColor="#4b3fa8" />
-          <stop offset="1" stopColor="#17151a" />
+          <stop offset="0" stopColor="#5b8cff" />
+          <stop offset="0.5" stopColor="#4a3fb8" />
+          <stop offset="1" stopColor="#1a1630" />
+        </linearGradient>
+        <linearGradient id="hs-night" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#2a2350" />
+          <stop offset="1" stopColor="#4a3f8a" />
         </linearGradient>
         <linearGradient id="hs-sun" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ff9d42" />
-          <stop offset="1" stopColor="#ff3b4d" />
+          <stop offset="0" stopColor={ORANGE} />
+          <stop offset="1" stopColor={RED} />
         </linearGradient>
         <radialGradient id="hs-cool" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#7f9dff" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#7f9dff" stopOpacity="0" />
+          <stop offset="0" stopColor={BLUE} stopOpacity="0.62" />
+          <stop offset="0.6" stopColor={BLUE} stopOpacity="0.16" />
+          <stop offset="1" stopColor={BLUE} stopOpacity="0" />
         </radialGradient>
         <radialGradient id="hs-warm" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#ff9d42" stopOpacity="0.5" />
-          <stop offset="1" stopColor="#ff9d42" stopOpacity="0" />
+          <stop offset="0" stopColor={ORANGE} stopOpacity="0.6" />
+          <stop offset="1" stopColor={ORANGE} stopOpacity="0" />
         </radialGradient>
+        <radialGradient id="hs-lilac" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor={LILAC} stopOpacity="0.32" />
+          <stop offset="1" stopColor={LILAC} stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="hs-cone" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor={ORANGE} stopOpacity="0.28" />
+          <stop offset="1" stopColor={ORANGE} stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id="hs-floor-fade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#100e13" stopOpacity="0" />
+          <stop offset="1" stopColor="#100e13" stopOpacity="0.9" />
+        </linearGradient>
         <pattern id="hs-halftone" width="7" height="7" patternUnits="userSpaceOnUse">
-          <circle cx="1.2" cy="1.2" r="1.1" fill="#f3ebdd" opacity="0.11" />
+          <circle cx="1.2" cy="1.2" r="1.1" fill={PAPER} opacity="0.09" />
         </pattern>
         <pattern id="hs-grid" width="18" height="18" patternUnits="userSpaceOnUse">
-          <path d="M18 0H0v18" fill="none" stroke="#f3ebdd" strokeOpacity="0.16" strokeWidth="1" />
+          <path d="M18 0H0v18" fill="none" stroke={PAPER} strokeOpacity="0.16" strokeWidth="1" />
         </pattern>
         <clipPath id="hs-screen-clip">
-          <rect x="312" y="164" width="238" height="140" rx="3" />
+          <rect x="346" y="166" width="268" height="158" rx="3" />
+        </clipPath>
+        <clipPath id="hs-window-clip">
+          <rect x="70" y="44" width="184" height="176" />
         </clipPath>
       </defs>
 
       {/* Room */}
-      <rect width="800" height="520" fill="url(#hs-wall)" />
-      <rect width="800" height="520" fill="url(#hs-halftone)" />
+      <rect width="960" height="540" fill="url(#hs-wall)" />
+      <rect width="960" height="540" fill="url(#hs-halftone)" />
 
-      {/* Light: warm off the shelf, cool off the screen */}
-      <ellipse cx="170" cy="200" rx="240" ry="150" fill="url(#hs-warm)" />
-      <ellipse cx="440" cy="250" rx="300" ry="190" fill="url(#hs-cool)" />
+      {/* Light in the room: lilac from the window, warm off the shelf, cool off the screen */}
+      <ellipse cx="160" cy="250" rx="220" ry="200" fill="url(#hs-lilac)" />
+      <ellipse cx="460" cy="120" rx="260" ry="90" fill="url(#hs-warm)" />
+      <ellipse cx="480" cy="250" rx="330" ry="220" fill="url(#hs-cool)" />
 
-      {/* Wall print: an abstract skyline. Matte, magnet-mounted, original. */}
+      {/* Window, blinds half down, the night coming through */}
       <g>
-        <rect x="586" y="72" width="150" height="190" fill="#17151a" stroke="#f3ebdd" strokeOpacity="0.7" strokeWidth="3" />
-        <rect x="598" y="84" width="126" height="166" fill="#241f2a" />
-        <circle cx="661" cy="150" r="30" fill="url(#hs-sun)" />
-        <path d="M598 170h126M598 178h126M598 186h126" stroke="#17151a" strokeWidth="3" />
-        <path
-          d="M598 250V206h14v-22h12v30h10v-40h16v18h12v-10h18v30h10v-20h14v22h20v36z"
-          fill="#17151a"
-        />
-        <path d="M604 232h6M626 224h6M672 220h6M694 236h6" stroke="#ff9d42" strokeWidth="2" opacity="0.8" />
+        <rect x="62" y="36" width="200" height="192" fill={INK} />
+        <g clipPath="url(#hs-window-clip)">
+          <rect x="70" y="44" width="184" height="176" fill="url(#hs-night)" />
+          {/* Moon: a disc with a second disc of night cut across it. */}
+          <circle cx="206" cy="150" r="22" fill={PAPER} fillOpacity="0.92" />
+          <circle cx="216" cy="142" r="20" fill="#3a3070" />
+          <circle cx="102" cy="118" r="1.8" fill={PAPER} opacity="0.9" />
+          <circle cx="140" cy="176" r="1.4" fill={PAPER} opacity="0.7" />
+          <circle cx="172" cy="98" r="1.2" fill={PAPER} opacity="0.6" />
+          <circle cx="118" cy="200" r="1.6" fill={PAPER} opacity="0.8" />
+          {/* Blinds, drawn to just past halfway. */}
+          {Array.from({ length: 7 }, (_, i) => (
+            <rect key={i} x="70" y={44 + i * 14} width="184" height="10" fill="#15121b" />
+          ))}
+          <rect x="70" y="140" width="184" height="6" fill="#15121b" />
+          <path d="M240 44v104" stroke={PAPER} strokeOpacity="0.35" strokeWidth="1" />
+        </g>
+        <rect x="70" y="44" width="184" height="176" fill="none" stroke={PAPER} strokeOpacity="0.5" strokeWidth="2" />
+        <path d="M162 44v176" stroke={INK} strokeWidth="4" />
+        {/* Sill and its spill of light onto the wall */}
+        <rect x="56" y="228" width="212" height="8" fill="#0f0d12" />
+        <path d="M70 236h184l60 164H10z" fill={LILAC} opacity="0.07" />
       </g>
 
-      {/* Shelf with a light bar underneath */}
+      {/* Shelf over the monitor, lit from underneath */}
       <g>
-        <rect x="48" y="196" width="250" height="10" fill="#0f0d12" />
-        <rect x="56" y="206" width="234" height="4" fill="#ff9d42" opacity="0.9" />
-        <path d="M56 210h234l40 60H16z" fill="#ff9d42" opacity="0.12" />
-        {/* Generic collectible silhouette on a plinth: a shape, not a character */}
-        <rect x="80" y="186" width="44" height="10" fill="#2c2733" />
-        <path d="M102 116c-13 0-20 9-20 20 0 8 4 13 8 16-10 4-16 12-16 22v12h56v-12c0-10-6-18-16-22 4-3 8-8 8-16 0-11-7-20-20-20z" fill="#0f0d12" />
-        <path d="M102 116c-13 0-20 9-20 20 0 8 4 13 8 16-10 4-16 12-16 22v12h56v-12c0-10-6-18-16-22 4-3 8-8 8-16 0-11-7-20-20-20z" fill="none" stroke="#ff9d42" strokeOpacity="0.5" strokeWidth="1.5" />
-        {/* Acrylic display case */}
-        <rect x="160" y="128" width="62" height="68" fill="#f3ebdd" fillOpacity="0.06" stroke="#f3ebdd" strokeOpacity="0.55" strokeWidth="2" />
-        <path d="M166 134l50 56" stroke="#f3ebdd" strokeOpacity="0.18" strokeWidth="6" />
-        <rect x="176" y="150" width="30" height="46" fill="#0f0d12" />
-        {/* A short stack of volumes */}
-        <rect x="238" y="152" width="14" height="44" fill="#d31e33" />
-        <rect x="254" y="160" width="12" height="36" fill="#2f5ad6" />
-        <rect x="268" y="146" width="12" height="50" fill="#f3ebdd" fillOpacity="0.8" />
+        <rect x="318" y="88" width="300" height="10" fill="#0f0d12" />
+        <rect x="326" y="98" width="284" height="3" fill={ORANGE} opacity="0.95" />
+        <path d="M326 101h284l50 60H276z" fill={ORANGE} opacity="0.12" />
+        {/* A short run of volumes, spines out */}
+        <rect x="334" y="44" width="14" height="44" fill="#d31e33" />
+        <rect x="350" y="52" width="12" height="36" fill={BLUE} />
+        <rect x="364" y="40" width="12" height="48" fill={PAPER} fillOpacity="0.8" />
+        <rect x="378" y="50" width="10" height="38" fill={LILAC} />
+        <rect x="390" y="46" width="14" height="42" fill="#d31e33" opacity="0.8" />
+        {/* Acrylic display case with a shape inside — a shape, not a character */}
+        <rect x="436" y="26" width="60" height="62" fill={PAPER} fillOpacity="0.06" stroke={PAPER} strokeOpacity="0.55" strokeWidth="2" />
+        <path d="M442 32l48 50" stroke={PAPER} strokeOpacity="0.16" strokeWidth="6" />
+        <rect x="454" y="50" width="24" height="38" fill="#0f0d12" />
+        <path d="M466 40c-6 0-9 4-9 9 0 3 1 5 3 7-4 2-6 5-6 9v23h24V65c0-4-2-7-6-9 2-2 3-4 3-7 0-5-3-9-9-9z" fill="#0f0d12" stroke={ORANGE} strokeOpacity="0.55" strokeWidth="1.5" />
+        {/* A small potted plant, because rooms have them */}
+        <rect x="546" y="70" width="26" height="18" fill="#2c2733" stroke={PAPER} strokeOpacity="0.4" strokeWidth="1.5" />
+        <path d="M559 70c-10-6-14-16-8-26 6 8 8 14 8 26zM559 70c10-6 14-16 8-26-6 8-8 14-8 26zM559 70V44" stroke="#8fd15a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      </g>
+
+      {/* Wall print, right: an abstract sun over a skyline. Original. */}
+      <g>
+        <rect x="716" y="96" width="150" height="190" fill={INK} stroke={PAPER} strokeOpacity="0.65" strokeWidth="3" />
+        <rect x="728" y="108" width="126" height="166" fill="#241f2a" />
+        <circle cx="791" cy="172" r="30" fill="url(#hs-sun)" />
+        <path d="M728 192h126M728 200h126M728 208h126" stroke="#241f2a" strokeWidth="3" />
+        <path d="M728 274v-44h14v-22h12v30h10v-40h16v18h12v-10h18v30h10v-20h14v22h20v36z" fill={INK} />
+        <path d="M734 256h6M756 248h6M802 244h6M824 260h6" stroke={ORANGE} strokeWidth="2" opacity="0.85" />
       </g>
 
       {/* Desk */}
-      <path d="M0 372h800v148H0z" fill="url(#hs-desk)" />
-      <path d="M0 372h800" stroke="#f3ebdd" strokeOpacity="0.35" strokeWidth="2" />
-      <rect x="0" y="372" width="800" height="148" fill="url(#hs-halftone)" opacity="0.5" />
+      <path d="M0 400h960v140H0z" fill="url(#hs-desk)" />
+      <rect x="0" y="400" width="960" height="140" fill="url(#hs-halftone)" opacity="0.5" />
+      {/* Lamp pool and screen spill on the desk surface */}
+      <ellipse cx="270" cy="470" rx="200" ry="52" fill={ORANGE} opacity="0.13" />
+      <ellipse cx="500" cy="450" rx="220" ry="40" fill={BLUE} opacity="0.12" />
 
       {/* Desk mat with a panel-gutter print */}
       <g>
-        <rect x="190" y="392" width="440" height="96" rx="6" fill="#1c1922" stroke="#f3ebdd" strokeOpacity="0.45" strokeWidth="2" />
-        <path d="M330 392v96M470 392v96M190 442h140M470 442h160" stroke="#f3ebdd" strokeOpacity="0.25" strokeWidth="3" />
-        <path d="M204 404l36 24M480 458l40 22" stroke="#ff3b4d" strokeOpacity="0.7" strokeWidth="2" />
+        <rect x="250" y="424" width="440" height="92" rx="6" fill="#1c1922" stroke={PAPER} strokeOpacity="0.4" strokeWidth="2" />
+        <path d="M390 424v92M530 424v92M250 474h140M530 474h160" stroke={PAPER} strokeOpacity="0.22" strokeWidth="3" />
+        <path d="M264 436l36 24M542 490l40 22" stroke={RED} strokeOpacity="0.75" strokeWidth="2" />
+        <ellipse cx="480" cy="440" rx="150" ry="14" fill={BLUE} opacity="0.16" />
       </g>
 
-      {/* Monitor on a steel riser */}
+      {/* LED strip glow on the wall behind the monitor */}
+      <rect x="318" y="140" width="324" height="220" rx="12" fill={BLUE} opacity="0.1" />
+      <rect x="326" y="148" width="308" height="204" rx="8" fill={LILAC} opacity="0.08" />
+
+      {/* Monitor on a stand */}
       <g>
-        <rect x="330" y="342" width="200" height="12" fill="#0f0d12" stroke="#f3ebdd" strokeOpacity="0.4" strokeWidth="1.5" />
-        <path d="M336 354v18M524 354v18" stroke="#0f0d12" strokeWidth="6" />
-        <rect x="410" y="318" width="42" height="24" fill="#0f0d12" />
-        <rect x="300" y="150" width="262" height="168" rx="6" fill="#0f0d12" stroke="#4a4248" strokeWidth="3" />
-        <rect x="312" y="164" width="238" height="140" rx="3" fill="url(#hs-screen)" />
+        <rect x="410" y="378" width="140" height="10" rx="2" fill="#0f0d12" stroke={PAPER} strokeOpacity="0.35" strokeWidth="1.5" />
+        <rect x="462" y="344" width="36" height="36" fill="#0f0d12" />
+        <rect x="332" y="150" width="296" height="196" rx="6" fill="#0f0d12" stroke="#4a4248" strokeWidth="3" />
+        <rect x="346" y="166" width="268" height="158" rx="3" fill="url(#hs-screen)" />
         <g clipPath="url(#hs-screen-clip)">
-          <rect x="312" y="164" width="238" height="140" fill="url(#hs-grid)" />
-          <rect x="332" y="186" width="96" height="60" fill="#17151a" fillOpacity="0.55" stroke="#f3ebdd" strokeOpacity="0.7" strokeWidth="2" />
-          <rect x="440" y="186" width="90" height="26" fill="#17151a" fillOpacity="0.55" stroke="#f3ebdd" strokeOpacity="0.7" strokeWidth="2" />
-          <rect x="440" y="220" width="90" height="26" fill="#ff3b4d" fillOpacity="0.85" />
-          <path d="M332 262h198M332 274h150M332 286h172" stroke="#f3ebdd" strokeOpacity="0.55" strokeWidth="3" />
+          <rect x="346" y="166" width="268" height="158" fill="url(#hs-grid)" />
+          <rect x="366" y="188" width="110" height="66" fill={INK} fillOpacity="0.5" stroke={PAPER} strokeOpacity="0.7" strokeWidth="2" />
+          <rect x="488" y="188" width="106" height="28" fill={INK} fillOpacity="0.5" stroke={PAPER} strokeOpacity="0.7" strokeWidth="2" />
+          <rect x="488" y="226" width="106" height="28" fill={RED} fillOpacity="0.9" />
+          <path d="M366 270h228M366 284h170M366 298h196" stroke={PAPER} strokeOpacity="0.55" strokeWidth="3" />
+          {/* A diagonal panel cut across the screen — the desktop is a manga page too */}
+          <path d="M346 324L614 166" stroke={PAPER} strokeOpacity="0.14" strokeWidth="2" />
         </g>
-        <circle cx="431" cy="311" r="2.5" fill="#7f9dff" />
+        {/* Screen bloom over the bezel */}
+        <rect x="346" y="166" width="268" height="158" rx="3" fill="none" stroke={BLUE} strokeOpacity="0.55" strokeWidth="6" />
+        <circle cx="480" cy="336" r="2.5" fill="#8fb0ff" />
       </g>
+
+      {/* The desk spirit, peeking over the desk edge beside the monitor. Its
+          own desk-edge line sits exactly on the desk top, so the two read as
+          one edge. */}
+      <g transform="translate(646 290)">
+        <Mascot
+          pose="peek"
+          size={200}
+          title={null}
+          fill={PAPER}
+          accent={RED}
+          animate={false}
+          className="text-[#17151a]"
+        />
+      </g>
+      {/* Desk front edge: a dark rule the spirit's hands rest on. */}
+      <path d="M0 400h960" stroke="#0f0d12" strokeWidth="5" />
+      <path d="M0 397h960" stroke={PAPER} strokeOpacity="0.28" strokeWidth="1" />
 
       {/* Keyboard and mouse */}
       <g>
-        <rect x="340" y="414" width="180" height="34" rx="4" fill="#2c2733" stroke="#f3ebdd" strokeOpacity="0.5" strokeWidth="2" />
-        <path d="M352 424h156M352 432h156M352 440h156" stroke="#f3ebdd" strokeOpacity="0.25" strokeWidth="2" strokeDasharray="6 4" />
-        <path d="M340 448h180" stroke="#7f9dff" strokeOpacity="0.8" strokeWidth="2" />
-        <rect x="548" y="410" width="30" height="46" rx="14" fill="#2c2733" stroke="#f3ebdd" strokeOpacity="0.5" strokeWidth="2" />
-        <path d="M563 414v14" stroke="#f3ebdd" strokeOpacity="0.5" strokeWidth="2" />
+        <rect x="380" y="444" width="210" height="34" rx="4" fill="#2c2733" stroke={PAPER} strokeOpacity="0.5" strokeWidth="2" />
+        <path d="M392 454h186M392 462h186M392 470h186" stroke={PAPER} strokeOpacity="0.25" strokeWidth="2" strokeDasharray="6 4" />
+        <path d="M380 480h210" stroke="#8fb0ff" strokeOpacity="0.9" strokeWidth="2.5" />
+        <rect x="622" y="440" width="30" height="46" rx="14" fill="#2c2733" stroke={PAPER} strokeOpacity="0.5" strokeWidth="2" />
+        <path d="M637 444v14" stroke={PAPER} strokeOpacity="0.5" strokeWidth="2" />
       </g>
 
       {/* Headphones on a stand */}
       <g>
-        <path d="M700 372v-118" stroke="#0f0d12" strokeWidth="6" />
-        <rect x="672" y="366" width="56" height="8" rx="2" fill="#0f0d12" />
-        <path d="M660 300c0-24 18-42 40-42s40 18 40 42" fill="none" stroke="#f3ebdd" strokeOpacity="0.85" strokeWidth="6" strokeLinecap="round" />
-        <rect x="650" y="296" width="20" height="34" rx="6" fill="#0f0d12" stroke="#f3ebdd" strokeOpacity="0.7" strokeWidth="2" />
-        <rect x="730" y="296" width="20" height="34" rx="6" fill="#0f0d12" stroke="#f3ebdd" strokeOpacity="0.7" strokeWidth="2" />
-        <path d="M660 330l-10 30M740 330l10 30" stroke="#f3ebdd" strokeOpacity="0.3" strokeWidth="2" />
+        <path d="M880 400V286" stroke="#0f0d12" strokeWidth="6" />
+        <rect x="852" y="394" width="56" height="8" rx="2" fill="#0f0d12" />
+        <path d="M840 330c0-24 18-42 40-42s40 18 40 42" fill="none" stroke={PAPER} strokeOpacity="0.85" strokeWidth="6" strokeLinecap="round" />
+        <rect x="830" y="326" width="20" height="34" rx="6" fill="#0f0d12" stroke={PAPER} strokeOpacity="0.7" strokeWidth="2" />
+        <rect x="910" y="326" width="20" height="34" rx="6" fill="#0f0d12" stroke={PAPER} strokeOpacity="0.7" strokeWidth="2" />
+        <path d="M840 360l-10 30M920 360l10 30" stroke={PAPER} strokeOpacity="0.3" strokeWidth="2" />
+        <circle cx="840" cy="343" r="2" fill={RED} />
       </g>
 
-      {/* Desk lamp, left, adding to the warm side */}
+      {/* Desk lamp, left: the warm side of the room */}
       <g>
-        <path d="M110 372v-70l50-40" fill="none" stroke="#0f0d12" strokeWidth="6" strokeLinecap="round" />
-        <path d="M150 256l30 10-10 20-30-10z" fill="#0f0d12" stroke="#ff9d42" strokeOpacity="0.6" strokeWidth="1.5" />
-        <path d="M172 284l70 88H100z" fill="#ff9d42" opacity="0.1" />
-        <rect x="86" y="368" width="48" height="8" rx="2" fill="#0f0d12" />
+        <path d="M150 264l150 132H124z" fill="url(#hs-cone)" />
+        <path d="M140 398v-90l50-44" fill="none" stroke="#0f0d12" strokeWidth="6" strokeLinecap="round" />
+        <path d="M180 258l34 10-10 22-34-10z" fill="#0f0d12" stroke={ORANGE} strokeOpacity="0.7" strokeWidth="1.5" />
+        <path d="M204 290l-8-8" stroke={ORANGE} strokeWidth="3" strokeLinecap="round" />
+        <circle cx="196" cy="284" r="14" fill={ORANGE} opacity="0.35" />
+        <rect x="114" y="394" width="52" height="8" rx="2" fill="#0f0d12" />
       </g>
 
-      {/* A small mug, because it is late */}
+      {/* A mug, because it is late */}
       <g>
-        <rect x="258" y="416" width="34" height="38" rx="3" fill="#f3ebdd" fillOpacity="0.85" />
-        <path d="M292 424h10a6 6 0 0 1 0 12h-10" fill="none" stroke="#f3ebdd" strokeOpacity="0.85" strokeWidth="3" />
-        <path d="M268 408c0-6 6-6 6-12M280 408c0-6 6-6 6-12" stroke="#f3ebdd" strokeOpacity="0.35" strokeWidth="2" strokeLinecap="round" />
+        <rect x="206" y="444" width="34" height="38" rx="3" fill={PAPER} fillOpacity="0.88" />
+        <path d="M240 452h10a6 6 0 0 1 0 12h-10" fill="none" stroke={PAPER} strokeOpacity="0.88" strokeWidth="3" />
+        <path d="M216 436c0-6 6-6 6-12M228 436c0-6 6-6 6-12" stroke={PAPER} strokeOpacity="0.4" strokeWidth="2" strokeLinecap="round" />
+        <rect x="212" y="452" width="22" height="6" fill={RED} opacity="0.85" />
       </g>
 
-      {/* Panel gutter cutting the spread, like a manga page */}
-      <path d="M0 372h800" stroke="#f3ebdd" strokeOpacity="0.5" strokeWidth="1" strokeDasharray="2 6" />
+      {/* A trailing cable and the floor falling into shadow */}
+      <path d="M552 388c30 14 60 8 90 30s60 40 100 50" fill="none" stroke="#0f0d12" strokeWidth="3" strokeLinecap="round" />
+      <rect x="0" y="470" width="960" height="70" fill="url(#hs-floor-fade)" />
     </svg>
   )
 }

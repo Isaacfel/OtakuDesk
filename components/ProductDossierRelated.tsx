@@ -3,6 +3,7 @@ import type { Pick } from '@/data/types'
 import { getPickBySlug } from '@/data/picks'
 import { loadAllPosts, formatPostDate } from '@/app/journal/_posts'
 import { DossierHeading } from './ProductDossierSection'
+import { glowVars, GLOW_HOVER } from './PickThumb'
 
 /**
  * Related journal stories.
@@ -13,6 +14,8 @@ import { DossierHeading } from './ProductDossierSection'
  * pick's category or tags. The reason for each match is printed on the card,
  * because a "related" label with no visible rule is exactly the kind of
  * recommendation this site refuses to make.
+ *
+ * The cards glow lilac — the night-air colour — on hover: reading, not buying.
  *
  * Runs at build time in a static page; there is no request-time cost.
  */
@@ -84,19 +87,23 @@ export async function ProductDossierRelated({
 
       <ul className="mt-6 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
         {posts.map((post) => (
-          <li key={post.slug} className="min-w-0">
+          <li key={post.slug} className="min-w-0" style={glowVars('--lilac')}>
             <Link
               href={`/journal/${post.slug}`}
-              className="group panel-frame flex h-full flex-col bg-surface p-5 transition-[box-shadow,transform] hover:-translate-x-px hover:-translate-y-px hover:offset-print focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-shu"
+              className={`group relative flex h-full flex-col border border-line bg-surface p-5 transition-[box-shadow,transform,border-color] duration-300 hover:-translate-y-1 hover:border-lilac/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-shu ${GLOW_HOVER}`}
             >
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-1.5 border border-paper/10"
+              />
               <p className="label-xs flex flex-wrap items-center gap-x-2 gap-y-1 text-muted">
-                <span className="text-shu">Journal</span>
+                <span className="text-lilac">Journal</span>
                 <span aria-hidden="true">&middot;</span>
                 <time dateTime={post.date} className="tnum normal-case tracking-normal">
                   {formatPostDate(post.date)}
                 </time>
               </p>
-              <h3 className="mt-3 font-display text-lg leading-tight font-bold text-paper transition-colors group-hover:text-shu">
+              <h3 className="mt-3 font-display text-lg leading-tight font-bold text-paper transition-colors group-hover:text-lilac">
                 {post.title}
               </h3>
               <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-paper-2">

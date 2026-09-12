@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import type { Category, CatalogPick, LicenseStatus, SellerType } from '@/data/types'
 import {
@@ -11,11 +11,12 @@ import {
 } from '@/data/types'
 import { COLLECTIONS, SETS } from '@/data/collections'
 import { track } from '@/lib/analytics'
-import { EditorialBadge, MascotMark, RegistrationMark } from '@/components/motifs'
-import { PickCard } from './PickCard'
+import { GlowOrb, Mascot, SparkleField, SpeedStreaks } from '@/components/motifs'
+import { PickCard, Sticker } from './PickCard'
+import { glowVars, GLOW, GLOW_HOVER } from './PickThumb'
 
 /**
- * The browse surface for /desk.
+ * The browse surface for /desk — a lit shelf at night.
  *
  * Everything happens client-side over the static PICKS array — with a catalog
  * that is hand-verified one row at a time, there is no size at which a search
@@ -36,6 +37,10 @@ import { PickCard } from './PickCard'
  *   - "Show me a setup", which reveals one of the curated SETS as a reading
  *     order. Sets are not bundles: no bundle price, each pick links out on its
  *     own page through its own seller.
+ *
+ * The room's light is the visual system: inputs glow screen-blue on focus,
+ * the active mood glows in its own colour, the setup is a dark spread with
+ * a red lamp behind it, and the desk spirit turns up when a shelf is empty.
  */
 
 type PriceBand = 'under-25' | '25-50' | '50-100' | '100-plus'
@@ -71,17 +76,19 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 /* --- Moods ------------------------------------------------------------------
    A mood is a named bag of EXISTING tags. Nothing is inferred from the copy or
    the price; a pick is in a mood only if it carries one of the listed tags, and
-   the list is printed next to the selector so the reader can see the rule. */
+   the list is printed next to the selector so the reader can see the rule.
+   `light` is purely the colour the chip glows when it is on. */
 
 type Mood = 'calm' | 'colourful' | 'cyber' | 'cozy' | 'minimal' | 'collector'
+type Light = '--shu' | '--blue' | '--lilac' | '--green' | '--orange' | '--paper'
 
-const MOODS: { value: Mood; label: string; tags: string[] }[] = [
-  { value: 'calm', label: 'Calm', tags: ['subtle', 'ergonomics', 'renter friendly'] },
-  { value: 'colourful', label: 'Colourful', tags: ['original design', 'wall art'] },
-  { value: 'cyber', label: 'Cyber', tags: ['gaming', 'lighting'] },
-  { value: 'cozy', label: 'Cozy', tags: ['lighting', 'room decor', 'everyday', 'outerwear'] },
-  { value: 'minimal', label: 'Minimal', tags: ['subtle', 'small space', 'ergonomics'] },
-  { value: 'collector', label: 'Collector', tags: ['collector', 'display', 'pins', 'protection'] },
+const MOODS: { value: Mood; label: string; tags: string[]; light: Light }[] = [
+  { value: 'calm', label: 'Calm', tags: ['subtle', 'ergonomics', 'renter friendly'], light: '--blue' },
+  { value: 'colourful', label: 'Colourful', tags: ['original design', 'wall art'], light: '--lilac' },
+  { value: 'cyber', label: 'Cyber', tags: ['gaming', 'lighting'], light: '--shu' },
+  { value: 'cozy', label: 'Cozy', tags: ['lighting', 'room decor', 'everyday', 'outerwear'], light: '--orange' },
+  { value: 'minimal', label: 'Minimal', tags: ['subtle', 'small space', 'ergonomics'], light: '--paper' },
+  { value: 'collector', label: 'Collector', tags: ['collector', 'display', 'pins', 'protection'], light: '--green' },
 ]
 
 function matchesMood(pick: CatalogPick, mood: Mood | ''): boolean {
@@ -221,10 +228,10 @@ function writeUrlState(query: string, filters: Filters, sort: SortKey) {
   }
 }
 
-/* Motif utilities draw in `--paper`. On a dark panel that has to be the light
-   stock, so the variable is flipped on DECORATIVE layers only — never on a
-   subtree that contains a PickCard, whose own text would invert with it. */
-const ON_DARK = { '--paper': 'var(--panel-type)' } as CSSProperties
+/* Shared control styling: a hard-edged field that lights up screen-blue when
+   it has focus, the way a monitor does in a dark room. */
+const FIELD =
+  'w-full border border-line bg-surface text-sm text-paper placeholder:text-muted transition-[border-color,box-shadow] focus:border-blue focus:outline-none focus:bloom-blue'
 
 export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
   // Initial state comes from a shared URL, read once. `useSearchParams` in a
@@ -380,21 +387,27 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
   const moodIsEmpty = Boolean(mood) && picks.every((p) => !matchesMood(p, mood))
 
   return (
-    <div className="lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-x-12">
+    <div className="lg:grid lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-x-12">
       {/* ---- Toolbar: sticky and compact on mobile, a plain row on desktop ---- */}
-      <div className="sticky top-0 z-20 -mx-5 border-b-2 border-paper bg-ink/95 px-5 py-3 backdrop-blur supports-[backdrop-filter]:bg-ink/85 lg:static lg:col-start-2 lg:row-start-1 lg:mx-0 lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none">
+      <div className="sticky top-0 z-20 -mx-5 border-b border-line bg-ink/92 px-5 py-2.5 backdrop-blur supports-[backdrop-filter]:bg-ink/80 lg:static lg:col-start-2 lg:row-start-1 lg:mx-0 lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none">
         <div className="flex items-end gap-2 sm:gap-3">
           <button
             type="button"
             onClick={() => setPanelOpen((v) => !v)}
             aria-expanded={panelOpen}
             aria-controls={panelId}
-            className="flex shrink-0 items-center gap-1.5 border-2 border-paper bg-surface px-3 py-2.5 text-sm font-semibold text-paper lg:hidden"
+            className={`flex shrink-0 items-center gap-1.5 border px-3 py-2.5 text-sm font-semibold transition-colors lg:hidden ${
+              panelOpen ? 'border-paper bg-paper text-ink' : 'border-line bg-surface text-paper'
+            }`}
           >
-            <span aria-hidden="true">{panelOpen ? '−' : '+'}</span>
+            <span aria-hidden="true" className="tnum">
+              {panelOpen ? '−' : '+'}
+            </span>
             Filters
             {activeCount > 0 && (
-              <span className="tnum bg-shu px-1.5 py-0.5 text-xs text-white">{activeCount}</span>
+              <span className="tnum bg-shu px-1.5 py-0.5 text-xs font-semibold text-white">
+                {activeCount}
+              </span>
             )}
           </button>
 
@@ -411,7 +424,7 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
               autoComplete="off"
               aria-label="Search the desk"
               aria-describedby={statusId}
-              className="w-full border-2 border-line bg-surface px-3 py-2.5 text-sm text-paper placeholder:text-muted focus:border-paper focus:outline-none"
+              className={`${FIELD} px-3 py-2.5`}
             />
           </div>
 
@@ -424,7 +437,7 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
               value={sort}
               onChange={(e) => applySort(e.target.value as SortKey)}
               aria-label="Sort by"
-              className="w-full border-2 border-line bg-surface px-2 py-2.5 text-sm text-paper focus:border-paper focus:outline-none sm:px-3"
+              className={`${FIELD} px-2 py-2.5 sm:px-3`}
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -440,12 +453,15 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
       <div className="lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:sticky lg:top-6 lg:self-start">
         <div
           id={panelId}
-          className={`${panelOpen ? 'block' : 'hidden'} panel-frame mt-3 flex flex-col gap-6 bg-surface p-4 lg:mt-0 lg:block lg:border-0 lg:bg-transparent lg:p-0`}
+          className={`${panelOpen ? 'block' : 'hidden'} mt-3 flex flex-col gap-6 border border-line bg-surface p-4 lg:mt-0 lg:block lg:border-0 lg:bg-transparent lg:p-0`}
         >
           <div className="flex items-baseline justify-between">
             <h2 className="label-xs flex items-center gap-2 text-muted">
-              <RegistrationMark className="h-3 w-3 text-shu" />
-              Refine
+              <span
+                aria-hidden="true"
+                className="pulse-glow h-1.5 w-1.5 rounded-full bg-shu shadow-[0_0_10px_var(--shu)]"
+              />
+              Refine the shelf
             </h2>
             {activeCount > 0 && (
               <button
@@ -573,7 +589,7 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
       {/* ---- Results column ---------------------------------------------- */}
       <div className="mt-6 min-w-0 lg:col-start-2 lg:row-start-2 lg:mt-6">
         {/* Browse aids: mood lens + curated setup. */}
-        <div className="flex flex-col gap-4 border-b-2 border-paper pb-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <div className="flex flex-col gap-4 border-b border-line pb-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
           <fieldset className="min-w-0 flex-1" aria-describedby={moodId}>
             <legend className="label-xs mb-2 text-muted">Setup mood</legend>
             <div className="flex flex-wrap gap-1.5">
@@ -586,12 +602,21 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
                     type="button"
                     aria-pressed={on}
                     onClick={() => applyMood(on ? '' : m.value)}
-                    className={`flex items-center gap-1.5 border-2 px-2.5 py-1 text-xs font-semibold transition-colors ${
+                    style={glowVars(m.light)}
+                    className={`flex items-center gap-1.5 border px-2.5 py-1 text-xs font-semibold transition-[color,border-color,box-shadow] ${
                       on
-                        ? 'border-paper bg-paper text-ink'
-                        : 'border-line bg-surface text-paper-2 hover:border-paper hover:text-paper'
+                        ? `border-paper bg-paper text-ink ${GLOW}`
+                        : 'border-line bg-surface text-paper-2 hover:border-paper-2 hover:text-paper'
                     }`}
                   >
+                    <span
+                      aria-hidden="true"
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{
+                        background: `var(${m.light})`,
+                        boxShadow: on ? `0 0 8px var(${m.light})` : undefined,
+                      }}
+                    />
                     {m.label}
                     <span className={`tnum text-[10px] ${on ? 'text-ink/70' : 'text-muted'}`}>
                       {n}
@@ -613,38 +638,58 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
           </fieldset>
 
           {setups.length > 0 && (
-            <div className="shrink-0">
+            <div className="shrink-0" style={glowVars('--shu')}>
               <button
                 type="button"
                 onClick={() => (setupOpen ? setSetupOpen(false) : revealSetup(setupIndex))}
                 aria-expanded={setupOpen}
                 aria-controls={setupId}
-                className="inline-flex items-center gap-2 border-2 border-paper bg-paper px-4 py-2.5 text-sm font-semibold text-ink transition-[box-shadow,transform] hover:-translate-x-px hover:-translate-y-px hover:offset-print-red"
+                className={`inline-flex items-center gap-2.5 border border-paper bg-paper py-2 pr-4 pl-2.5 text-sm font-semibold text-ink transition-[box-shadow,transform] hover:-translate-y-0.5 ${GLOW_HOVER}`}
               >
-                <span aria-hidden="true" className="contents"><MascotMark className="h-4 w-4" /></span>
+                <Mascot
+                  pose="point"
+                  size={26}
+                  animate={false}
+                  title={null}
+                  fill="var(--ink)"
+                  accent="var(--shu)"
+                  className="text-paper"
+                />
                 {setupOpen ? 'Hide the setup' : 'Show me a setup'}
               </button>
             </div>
           )}
         </div>
 
-        {/* The curated setup — a staged dark spread. */}
+        {/* The curated setup — a dark spread with a lamp behind it. */}
         {setupOpen && setup && (
           <section
             id={setupId}
             aria-labelledby={`${setupId}-heading`}
-            className="panel-in relative mt-6 overflow-hidden border-2 border-paper bg-panel text-panel-type"
+            className="panel-in relative mt-6 overflow-hidden border border-line bg-panel-2 text-panel-type"
           >
-            <div
-              aria-hidden="true"
-              style={ON_DARK}
-              className="halftone-lg pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(180deg,#000,transparent_70%)]"
+            <GlowOrb
+              tone="shu"
+              size={520}
+              intensity="mid"
+              blend="screen"
+              pulse
+              className="-top-64 -right-40"
+            />
+            <GlowOrb tone="blue" size={380} intensity="low" blend="screen" className="-bottom-52 -left-32" />
+            <SpeedStreaks
+              direction="diagonal"
+              from="right"
+              density="low"
+              tone="ink"
+              seed={setup.slug}
+              className="opacity-30"
             />
             <div className="relative p-5 sm:p-7">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0 max-w-[58ch]">
                   <p className="label-xs flex flex-wrap items-center gap-2 text-panel-muted">
-                    <span>A setup, in reading order</span>
+                    <span className="text-shu-electric">A setup, in reading order</span>
                     <span aria-hidden="true">&middot;</span>
                     <span className="tnum">
                       {String((setupIndex % setups.length) + 1).padStart(2, '0')} /{' '}
@@ -666,7 +711,7 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
                     <button
                       type="button"
                       onClick={() => revealSetup((setupIndex + 1) % setups.length)}
-                      className="border-2 border-panel-type px-3 py-2 text-sm font-semibold text-panel-type transition-colors hover:bg-panel-type hover:text-panel-2"
+                      className="border border-panel-type px-3 py-2 text-sm font-semibold text-panel-type transition-colors hover:bg-panel-type hover:text-panel-2"
                     >
                       Show another
                     </button>
@@ -674,7 +719,7 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
                   <button
                     type="button"
                     onClick={() => setSetupOpen(false)}
-                    className="border-2 border-panel-line px-3 py-2 text-sm text-panel-muted transition-colors hover:border-panel-type hover:text-panel-type"
+                    className="border border-panel-line px-3 py-2 text-sm text-panel-muted transition-colors hover:border-panel-type hover:text-panel-type"
                   >
                     Close
                   </button>
@@ -686,7 +731,7 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
                   <li key={p.id} className="relative min-w-0 pt-3">
                     <span
                       aria-hidden="true"
-                      className="tnum absolute top-0 left-3 z-10 bg-shu-electric px-2 py-0.5 text-xs font-semibold text-panel-2"
+                      className="tnum absolute top-0 left-3 z-30 bg-shu-electric px-2 py-0.5 text-xs font-bold text-panel-2 shadow-[0_0_14px_var(--shu)]"
                     >
                       {String(i + 1).padStart(2, '0')}
                     </span>
@@ -725,7 +770,7 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
                   <button
                     type="button"
                     onClick={chip.onRemove}
-                    className="flex items-center gap-1.5 border border-line bg-surface px-2 py-1 text-xs text-paper-2 hover:border-paper hover:text-paper"
+                    className="flex items-center gap-1.5 border border-line bg-surface px-2 py-1 text-xs text-paper-2 transition-colors hover:border-shu hover:text-paper"
                   >
                     {chip.label}
                     <span aria-hidden="true" className="text-muted">
@@ -740,7 +785,7 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
         </div>
 
         {results.length > 0 ? (
-          <ul className="mt-6 grid gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
+          <ul className="mt-6 grid gap-6 sm:grid-cols-2 sm:gap-7 xl:grid-cols-3">
             {results.map((pick, i) => (
               <li key={pick.id} className="min-w-0">
                 <PickCard pick={pick} priority={i < 3} />
@@ -749,46 +794,73 @@ export function DeskBrowser({ picks }: { picks: CatalogPick[] }) {
           </ul>
         ) : (
           <div className="mt-6">
-            <div className="panel-frame relative overflow-hidden bg-surface p-6 sm:p-8">
-              <div aria-hidden="true" className="halftone pointer-events-none absolute inset-0 opacity-50" />
-              <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
-                <span aria-hidden="true" className="contents"><MascotMark className="h-12 w-12 shrink-0 text-shu" /></span>
-                <div>
-                  <h2 className="font-display text-2xl font-extrabold tracking-tight text-paper">
-                    {moodIsEmpty
-                      ? `Nothing is tagged for a ${activeMood?.label.toLowerCase()} setup yet.`
-                      : 'Nothing matches that yet.'}
-                  </h2>
-                  <p className="mt-2 max-w-[52ch] text-sm leading-relaxed text-paper-2">
-                    {moodIsEmpty ? (
-                      <>
-                        Moods are built from the tags we have actually applied ({activeMood?.tags.join(', ')}),
-                        and no pick carries one of those right now. We would rather show an empty
-                        shelf than a pick that does not belong.
-                      </>
-                    ) : (
-                      <>
-                        The catalog is small on purpose — every pick is verified by hand, so gaps
-                        are real gaps rather than a search that missed. Try a broader search, drop
-                        a filter, or start from one of the picks below.
-                      </>
-                    )}
-                  </p>
+            {/* An empty shelf, with the desk spirit peeking over its edge. The
+                mascot's own desk-edge line sits exactly on the panel's top
+                border: at 132px its edge is 72.6px down, hence the offset. */}
+            <div className="relative mt-16 border border-line bg-surface" style={glowVars('--lilac')}>
+              <div
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 ${GLOW}`}
+              />
+              <SparkleField seed="empty-shelf" count={5} tone="lilac" minSize={8} maxSize={16} />
+              <div className="absolute -top-[72px] left-5 sm:left-8">
+                <Mascot
+                  pose="peek"
+                  size={132}
+                  fill="var(--paper)"
+                  className="text-ink"
+                  title="The desk spirit peeking over the edge of an empty shelf"
+                />
+              </div>
+
+              <div className="relative p-6 pt-14 sm:p-8 sm:pt-16">
+                <p className="label-xs text-lilac">Empty shelf</p>
+                <h2 className="mt-2 font-display text-2xl font-extrabold tracking-tight text-paper sm:text-3xl">
+                  {moodIsEmpty
+                    ? `Nothing is tagged for a ${activeMood?.label.toLowerCase()} setup yet.`
+                    : 'Nothing on this shelf matches that yet.'}
+                </h2>
+                <p className="mt-3 max-w-[54ch] text-sm leading-relaxed text-paper-2">
+                  {moodIsEmpty ? (
+                    <>
+                      Moods are built from the tags we have actually applied ({activeMood?.tags.join(', ')}),
+                      and no pick carries one of those right now. We would rather show an empty
+                      shelf than a pick that does not belong.
+                    </>
+                  ) : (
+                    <>
+                      The catalog is small on purpose — every pick is verified by hand, so gaps
+                      are real gaps rather than a search that missed. Try a broader word, drop
+                      a filter, or start from one of the picks below.
+                    </>
+                  )}
+                </p>
+                <div className="mt-5 flex flex-wrap items-center gap-3">
                   <button
                     type="button"
                     onClick={clearAll}
-                    className="mt-4 inline-block bg-shu px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-shu-bright"
+                    className="inline-flex items-center gap-2 bg-shu px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-shu-bright"
                   >
                     Clear search and filters
                   </button>
+                  {activeChips.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={activeChips[activeChips.length - 1].onRemove}
+                      className="border border-line px-4 py-2.5 text-sm text-paper-2 transition-colors hover:border-paper hover:text-paper"
+                    >
+                      Drop the last filter only
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
 
-            <h3 className="label-xs mt-10 mb-4 flex items-center gap-2 text-muted">
-              <EditorialBadge tone="ink">Start here instead</EditorialBadge>
+            <h3 className="mt-10 mb-4 flex items-center gap-3">
+              <Sticker tone="red">Start here instead</Sticker>
+              <span className="text-xs text-muted">Featured picks, or the newest if nothing is featured.</span>
             </h3>
-            <ul className="grid gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
+            <ul className="grid gap-6 sm:grid-cols-2 sm:gap-7 xl:grid-cols-3">
               {suggestions.map((pick) => (
                 <li key={pick.id} className="min-w-0">
                   <PickCard pick={pick} />
@@ -816,7 +888,7 @@ function FacetGroup({
   return (
     <fieldset className="border-t border-line-soft pt-4">
       <legend className="label-xs float-left mb-3 text-muted">{legend}</legend>
-      <div className="clear-left flex flex-col gap-1.5">{children}</div>
+      <div className="clear-left flex flex-col gap-1">{children}</div>
       {hint && <p className="mt-2 text-[11px] leading-snug text-muted">{hint}</p>}
     </fieldset>
   )
@@ -842,8 +914,12 @@ function FacetRadio({
   const disabled = count === 0 && !checked
   return (
     <label
-      className={`flex cursor-pointer items-center justify-between gap-3 text-sm ${
-        disabled ? 'cursor-not-allowed text-muted/60' : checked ? 'text-paper' : 'text-paper-2 hover:text-paper'
+      className={`-mx-2 flex cursor-pointer items-center justify-between gap-3 border-l-2 px-2 py-0.5 text-sm transition-colors ${
+        disabled
+          ? 'cursor-not-allowed border-transparent text-muted/60'
+          : checked
+            ? 'border-shu bg-shu-dim/60 text-paper'
+            : 'border-transparent text-paper-2 hover:border-line hover:text-paper'
       }`}
     >
       <span className="flex items-center gap-2">
@@ -858,7 +934,7 @@ function FacetRadio({
         />
         <span>{label}</span>
       </span>
-      <span className="tnum text-xs text-muted">{count}</span>
+      <span className={`tnum text-xs ${checked ? 'text-shu-bright' : 'text-muted'}`}>{count}</span>
     </label>
   )
 }

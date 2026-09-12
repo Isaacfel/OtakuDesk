@@ -1,15 +1,16 @@
 import type { ImageSource, Pick } from '@/data/types'
-import { EditorialBadge, RegistrationMark } from '@/components/motifs'
-import { PickThumb } from './PickThumb'
-import { CATEGORY_ACCENT } from './PickCard'
+import { EnergyBurst, GlowOrb, SparkleField } from '@/components/motifs'
+import { PickThumb, accentFor, glowVars, GLOW } from './PickThumb'
+import { Sticker } from './PickCard'
 
 /**
- * The image area of the pick page — a mounted print.
+ * The image area of the pick page — a lit display case.
  *
- * The product visual sits inside a paper mat with a hard ink rule and a
- * second, offset impression, on a coarse-halftone backdrop with registration
- * marks at the corners: the treatment of a plate in a printed catalogue, and
- * entirely original. The category sticker is applied at the top edge.
+ * The product visual sits on a dark plate behind a hairline frame, lit from
+ * behind by the category's colour: an impact burst radiating out from the
+ * centre, a soft lamp, a few sparkles, and a glow around the frame. It is
+ * the collectible-card treatment — the thing itself, presented — and
+ * entirely original: no artwork, no character, nothing traced.
  *
  * Most picks carry one image; a gallery is handled by leading with the first
  * and laying the rest out as a tile row beneath it. No client-side carousel:
@@ -30,26 +31,44 @@ const SOURCE_CAPTION: Record<ImageSource, string> = {
 
 export function PickGallery({ pick }: { pick: Pick }) {
   const [lead, ...rest] = pick.images
-  const accent = CATEGORY_ACCENT[pick.category] ?? CATEGORY_ACCENT['Desk & Room']
+  const accent = accentFor(pick.category)
 
   return (
-    <figure className="flex min-w-0 flex-col gap-3">
-      <div className="halftone-lg relative border-2 border-paper bg-surface-2 p-5 sm:p-8">
-        <RegistrationMark className="pointer-events-none absolute top-1.5 left-1.5 h-3.5 w-3.5 text-paper/60" />
-        <RegistrationMark className="pointer-events-none absolute top-1.5 right-1.5 h-3.5 w-3.5 text-paper/60" />
-        <RegistrationMark className="pointer-events-none absolute bottom-1.5 left-1.5 h-3.5 w-3.5 text-paper/60" />
-        <RegistrationMark className="pointer-events-none absolute right-1.5 bottom-1.5 h-3.5 w-3.5 text-paper/60" />
-
-        {/* The mat and the plate. */}
-        <div className="panel-frame offset-print bg-surface p-2 sm:p-3">
-          <div className="border border-line-soft">
-            <PickThumb pick={pick} image={lead} priority ratio="standard" />
-          </div>
+    <figure className="flex min-w-0 flex-col gap-3" style={glowVars(accent.cssVar)}>
+      <div className={`relative overflow-visible border border-line bg-panel-2 p-4 sm:p-6 ${GLOW}`}>
+        {/* The light behind the plate. All decorative. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <EnergyBurst
+            intensity="low"
+            tone={accent.motifTone}
+            seed={`plate:${pick.slug}`}
+            className="opacity-80"
+          />
+          <GlowOrb
+            tone={accent.motifTone}
+            size="110%"
+            intensity="mid"
+            blend="screen"
+            pulse
+            className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          />
+          <SparkleField
+            seed={`plate:${pick.slug}`}
+            count={6}
+            tone={accent.motifTone}
+            minSize={8}
+            maxSize={18}
+          />
         </div>
 
-        <EditorialBadge tone={accent.tone} className="absolute -top-3 left-5 sm:left-8">
+        {/* The plate. */}
+        <div className="relative border border-paper/20 bg-surface shadow-[0_18px_40px_-18px_rgba(0,0,0,0.7)]">
+          <PickThumb pick={pick} image={lead} priority ratio="standard" />
+        </div>
+
+        <Sticker tone={accent.tone} className="absolute -top-3 left-4 sm:left-6">
           {pick.category}
-        </EditorialBadge>
+        </Sticker>
       </div>
 
       {rest.length > 0 && (
@@ -57,7 +76,7 @@ export function PickGallery({ pick }: { pick: Pick }) {
           {rest.map((img, i) => (
             <li
               key={`${img.src || 'placeholder'}-${i}`}
-              className="panel-frame min-w-0 overflow-hidden bg-surface p-1"
+              className="min-w-0 overflow-hidden border border-line bg-surface p-1"
             >
               <PickThumb pick={pick} image={img} ratio="standard" />
               <span className="label-xs mt-1 block text-muted">

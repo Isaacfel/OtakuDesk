@@ -23,12 +23,18 @@ const EXPLAINER: Record<LicenseStatus, (merchantName: string) => string> = {
     `"Verifying" means we have not yet confirmed who holds the rights to this design, or that ${m} is authorised to sell it. Until both are confirmed there is no buy link on this page. That is not a formality: we do not send readers to a product we cannot vouch for.`,
 }
 
+const LIGHT: Record<LicenseStatus, string> = {
+  officially_licensed: 'text-green',
+  original_design: 'text-blue',
+  unverified: 'text-orange',
+}
+
 export function PickLicenseNote({ pick }: { pick: Pick }) {
   const merchant = getMerchant(pick.merchantId)
 
   return (
     <section aria-labelledby="licence-heading" className="min-w-0">
-      <h3 id="licence-heading" className="label-xs mb-3 text-muted">
+      <h3 id="licence-heading" className={`label-xs mb-3 ${LIGHT[pick.licenseStatus]}`}>
         Authenticity &amp; licensing
       </h3>
 

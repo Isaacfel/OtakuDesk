@@ -3,7 +3,7 @@ import { DisclosureBanner, SampleCatalogNotice } from './Disclosure'
 import { MascotMark, RegistrationMark } from './motifs'
 
 /**
- * The site shell, as a print object.
+ * The site shell — the door and the floor of the night room.
  *
  * Nav is deliberately short. v1 ships Desk, Journal and About — collections,
  * new-drops and saved are deferred (their data already exists, so the routes
@@ -11,8 +11,9 @@ import { MascotMark, RegistrationMark } from './motifs'
  * destinations is how a small site announces that it is padding.
  *
  * The two banners above the header are compliance, not decoration: the
- * sample-catalog notice and the affiliate disclosure stay first and unstyled
- * away. Registration marks sit at the sheet's corners, quietly.
+ * sample-catalog notice and the affiliate disclosure stay first and are not
+ * styled away. The header's bottom rule is the room's light strip — red into
+ * blue into lilac — rather than a printed border.
  */
 
 const NAV = [
@@ -24,8 +25,12 @@ const NAV = [
 function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
   return (
     <span className="inline-flex items-center gap-2.5">
-      <span className="flex h-8 w-8 items-center justify-center bg-paper text-ink">
-        <MascotMark className="h-6 w-6" title="Otakudesk" />
+      <span
+        className={`bloom-red flex items-center justify-center border border-shu/50 bg-panel-2 text-paper ${
+          size === 'lg' ? 'h-10 w-10' : 'h-8 w-8'
+        }`}
+      >
+        <MascotMark className={size === 'lg' ? 'h-8 w-8' : 'h-6 w-6'} title="Otakudesk desk spirit" />
       </span>
       <span
         className={`font-display font-extrabold tracking-tight text-paper ${
@@ -38,16 +43,31 @@ function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
   )
 }
 
+/** The light strip: one thin line of the room's three colours. */
+function LightStrip({ className = '' }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`pointer-events-none block h-0.5 w-full ${className}`}
+      style={{
+        background:
+          'linear-gradient(90deg, var(--shu) 0%, var(--shu) 28%, var(--blue) 52%, var(--lilac) 78%, transparent 100%)',
+      }}
+    />
+  )
+}
+
 export function Header() {
   return (
     <>
       <SampleCatalogNotice />
       <DisclosureBanner />
-      <header className="paper-grain relative border-b-2 border-paper bg-ink">
+      <header className="relative bg-ink">
+        <div aria-hidden="true" className="room-light pointer-events-none absolute inset-0 opacity-60" />
         <RegistrationMark className="pointer-events-none absolute top-1.5 left-1.5 h-3 w-3 text-line" />
         <RegistrationMark className="pointer-events-none absolute top-1.5 right-1.5 h-3 w-3 text-line" />
 
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4">
+        <div className="relative mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4">
           <Link href="/" aria-label="Otakudesk home">
             <Wordmark />
           </Link>
@@ -67,6 +87,7 @@ export function Header() {
             </ul>
           </nav>
         </div>
+        <LightStrip />
       </header>
     </>
   )
@@ -74,10 +95,12 @@ export function Header() {
 
 export function Footer() {
   return (
-    <footer className="relative mt-24 border-t-2 border-paper bg-surface">
-      <div aria-hidden="true" className="halftone absolute inset-x-0 top-0 h-6 opacity-70" />
+    <footer className="relative mt-24 overflow-hidden bg-surface">
+      <LightStrip className="absolute inset-x-0 top-0 opacity-70" />
+      <div aria-hidden="true" className="room-light pointer-events-none absolute inset-0 opacity-70" />
+      <div aria-hidden="true" className="halftone pointer-events-none absolute inset-x-0 top-0 h-6 opacity-50" />
 
-      <div className="mx-auto grid max-w-6xl gap-10 px-5 pt-14 pb-10 sm:grid-cols-[2fr_1fr_1fr]">
+      <div className="relative mx-auto grid max-w-6xl gap-10 px-5 pt-14 pb-10 sm:grid-cols-[2fr_1fr_1fr]">
         <div>
           <Wordmark size="lg" />
           <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-paper-2">
@@ -137,7 +160,7 @@ export function Footer() {
             endorsed by, or sponsored by any anime studio, publisher, or licensor.
             All marks and illustrations on this site are original.
           </p>
-          <p className="label-xs text-muted">Printed on paper stock #f3ebdd</p>
+          <p className="label-xs text-muted">Lights on late. Drawn by hand.</p>
         </div>
       </div>
     </footer>

@@ -1,14 +1,17 @@
 import type { CSSProperties } from 'react'
 import { PRICE_MAX_AGE_DAYS } from '@/data/types'
-import { AnimePanel, RegistrationMark } from './motifs'
+import { AnimePanel, GlowOrb, RegistrationMark } from './motifs'
 
 /**
- * The trust panel — three collectible manga-style panels: Seller, License,
- * Price. This is the site's whole argument and it is made before the picks,
- * so the picks are read in its light.
+ * The trust panel — three manga panels: Seller, License, Price. This is the
+ * site's whole argument.
  *
  * Every sentence here is a description of how the site works, not a promise
  * about outcomes. Nothing is a guarantee, a rating, or a count.
+ *
+ * Each panel is lit in one colour, by role: the seller panel in lamplight
+ * (who is in the room with you), the licence panel in the verified green,
+ * the price panel in screen blue (a number checked on a date).
  */
 
 const ON_DARK = { '--paper': 'var(--panel-type)' } as CSSProperties
@@ -21,12 +24,24 @@ type Panel = {
   why: string
   icon: React.ReactNode
   motif: string
+  tone: 'orange' | 'green' | 'blue'
+}
+
+const TONE = {
+  orange: { text: 'text-orange', ring: 'bloom-orange border-orange/60', glow: 'orange' as const },
+  green: {
+    text: 'text-green',
+    ring: 'border-green/60 [box-shadow:0_0_0_1px_color-mix(in_srgb,var(--green)_40%,transparent),0_0_34px_-6px_color-mix(in_srgb,var(--green)_55%,transparent)]',
+    glow: 'green' as const,
+  },
+  blue: { text: 'text-blue', ring: 'bloom-blue border-blue/60', glow: 'blue' as const },
 }
 
 const PANELS: Panel[] = [
   {
     n: '01',
     kicker: 'Seller',
+    tone: 'orange',
     title: 'We name the seller.',
     body: 'Every pick says whether you are buying from a licensed retailer, the brand itself, a marketplace seller, or an independent artist — and names them.',
     why: 'The seller decides your returns, your shipping time, and whether the thing that arrives is the thing in the photo.',
@@ -43,6 +58,7 @@ const PANELS: Panel[] = [
   {
     n: '02',
     kicker: 'License',
+    tone: 'green',
     title: 'We state the licence.',
     body: 'Each pick is marked officially licensed, original design, or still being verified. A pick we have not verified never gets a buy link — it gets a panel saying we are still checking.',
     why: 'Bootleg merchandise pays nobody who made the work you love, and telling the difference is the hardest part of shopping this space.',
@@ -59,6 +75,7 @@ const PANELS: Panel[] = [
   {
     n: '03',
     kicker: 'Price',
+    tone: 'blue',
     title: 'We date every price.',
     body: `A price is shown with the day we last checked it, and a price older than ${PRICE_MAX_AGE_DAYS} days is not shown at all. There is no “was / now” pricing anywhere on this site.`,
     why: 'A stale price is a small lie, and a guide that tells small lies is not a guide.',
@@ -80,47 +97,49 @@ const PANELS: Panel[] = [
 export function TrustPanels() {
   return (
     <ol className="grid gap-5 md:grid-cols-3 md:gap-6">
-      {PANELS.map((panel) => (
-        <AnimePanel
-          key={panel.n}
-          as="li"
-          tone="dark"
-          offset
-          className="group flex flex-col overflow-hidden"
-        >
-          <div style={ON_DARK} className="relative flex h-full flex-col p-6">
-            {/* Subtle print motif, top-right, faded so the copy stays readable. */}
-            <div
-              aria-hidden="true"
-              className={`${panel.motif} pointer-events-none absolute -top-8 -right-8 h-44 w-44 opacity-50 [mask-image:radial-gradient(circle_at_70%_30%,#000_10%,transparent_75%)]`}
-            />
+      {PANELS.map((panel, i) => {
+        const tone = TONE[panel.tone]
+        return (
+          <AnimePanel
+            key={panel.n}
+            as="li"
+            tone="dark"
+            className={`group flex flex-col overflow-hidden ${i === 1 ? 'md:-translate-y-4' : ''}`}
+          >
+            <div style={ON_DARK} className="relative flex h-full flex-col p-6">
+              {/* The panel's light source, top-right, behind everything. */}
+              <GlowOrb tone={tone.glow} size={260} intensity="low" blend="screen" className="-top-24 -right-20" />
+              {/* Subtle print motif, faded so the copy stays readable. */}
+              <div
+                aria-hidden="true"
+                className={`${panel.motif} pointer-events-none absolute -top-8 -right-8 h-44 w-44 opacity-40 [mask-image:radial-gradient(circle_at_70%_30%,#000_10%,transparent_75%)]`}
+              />
 
-            <div className="relative flex items-start justify-between">
-              <span className="label-xs text-shu-electric">
-                Panel {panel.n} &middot; {panel.kicker}
-              </span>
-              <RegistrationMark className="h-4 w-4 text-panel-line" />
+              <div className="relative flex items-start justify-between">
+                <span className={`label-xs ${tone.text}`}>
+                  Panel {panel.n} &middot; {panel.kicker}
+                </span>
+                <RegistrationMark className="h-4 w-4 text-panel-line" />
+              </div>
+
+              <div
+                aria-hidden="true"
+                className={`relative mt-6 flex h-20 w-20 items-center justify-center border-2 bg-panel-2 ${tone.ring} ${tone.text}`}
+              >
+                <svg viewBox="0 0 64 64" fill="none" className="h-12 w-12">
+                  {panel.icon}
+                </svg>
+              </div>
+
+              <h3 className="relative mt-6 text-2xl text-panel-type">{panel.title}</h3>
+              <p className="relative mt-3 text-sm leading-relaxed text-panel-type/80">{panel.body}</p>
+              <p className={`relative mt-auto border-l-2 pt-4 pl-4 text-sm leading-relaxed text-panel-muted ${tone.text.replace('text-', 'border-')}`}>
+                {panel.why}
+              </p>
             </div>
-
-            <div
-              aria-hidden="true"
-              className="relative mt-6 flex h-20 w-20 items-center justify-center border-2 border-panel-type text-panel-type"
-            >
-              <svg viewBox="0 0 64 64" fill="none" className="h-12 w-12">
-                {panel.icon}
-              </svg>
-            </div>
-
-            <h3 className="relative mt-6 text-2xl text-panel-type">{panel.title}</h3>
-            <p className="relative mt-3 text-sm leading-relaxed text-panel-type/80">
-              {panel.body}
-            </p>
-            <p className="relative mt-auto border-l-2 border-shu-electric pt-4 pl-4 text-sm leading-relaxed text-panel-muted">
-              {panel.why}
-            </p>
-          </div>
-        </AnimePanel>
-      ))}
+          </AnimePanel>
+        )
+      })}
     </ol>
   )
 }
