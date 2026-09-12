@@ -1,26 +1,197 @@
 @import "tailwindcss";
 
+/* ===========================================================================
+   OtakuVault visual identity
+   ---------------------------------------------------------------------------
+   The brief asked for "dark futuristic anime convention meets premium
+   streetwear shop" and proposed a violet/cyan neon palette. That exact pairing
+   (#8B5CF6 + #22D3EE on #0B1020) is the most-generated colour scheme on the
+   web right now, and this brand's whole claim is that it does not look like a
+   templated dropshipping catalog. Direction kept; palette replaced.
+
+   The reference is Japanese print rather than cyberpunk neon: sumi ink ground,
+   kinari (unbleached paper) type, and shu — the vermilion of a hanko stamp and
+   a torii gate — as the single accent. Ai indigo supports it, never competes.
+   It reads as a Tokyo boutique rather than an RGB strip, and it is
+   unmistakably not the default.
+
+   Dark-first. The light theme is a real second design, not an inversion.
+
+   Structure note (Tailwind v4): raw values live in :root as plain custom
+   properties so they can be swapped per theme, and `@theme inline` maps them
+   to utility namespaces. A non-inline @theme block would bake the value in at
+   build time and the theme swap would silently do nothing.
+   ========================================================================= */
+
+/* `dark:` must follow our explicit toggle as well as the OS setting, so it is
+   redefined here — v4's default dark variant is a bare prefers-color-scheme
+   media query with no way to override it from the page. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+
+  /* Ground: warm sumi black, not the usual blue-black. */
+  --ink: #121011;
+  --surface: #1b1819;
+  --surface-2: #262122;
+  --line: #352e2f;
+  --line-soft: #241f20;
+
+  /* Type on that ground: kinari, unbleached paper. */
+  --paper: #f4efe9;
+  --paper-2: #c9c0b8;
+  --muted: #918681;
+
+  /* Shu — the one accent. Spend boldness here and nowhere else. */
+  --shu: #e24e28;
+  --shu-bright: #ff6a3d;
+  --shu-dim: #3a1a11;
+
+  /* Ai indigo, support only. */
+  --ai: #6b7cb0;
+  --ai-soft: #1c2235;
+
+  /* Semantic, deliberately separate from the accent hue so that "verified"
+     never reads as "on brand" and vice versa. */
+  --verified: #5fa882;
+  --verified-soft: #16281f;
+  --caution: #c9963f;
+  --caution-soft: #2b2113;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Light theme — a second design. Warm paper ground, ink type, shu pulled
+   deeper so it still holds contrast on a light field. Declared for both the
+   explicit toggle and the unstamped system default that most viewers have. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --ink: #f6f2ec;
+    --surface: #ffffff;
+    --surface-2: #ede7df;
+    --line: #d9d0c5;
+    --line-soft: #e7e0d6;
+    --paper: #1a1617;
+    --paper-2: #4a4142;
+    --muted: #6f6360;
+    --shu: #c43c18;
+    --shu-bright: #a83214;
+    --shu-dim: #f7e2da;
+    --ai: #3e4c7a;
+    --ai-soft: #e4e7f0;
+    --verified: #2f7856;
+    --verified-soft: #deede5;
+    --caution: #8a6412;
+    --caution-soft: #f5ead3;
   }
 }
 
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ink: #f6f2ec;
+  --surface: #ffffff;
+  --surface-2: #ede7df;
+  --line: #d9d0c5;
+  --line-soft: #e7e0d6;
+  --paper: #1a1617;
+  --paper-2: #4a4142;
+  --muted: #6f6360;
+  --shu: #c43c18;
+  --shu-bright: #a83214;
+  --shu-dim: #f7e2da;
+  --ai: #3e4c7a;
+  --ai-soft: #e4e7f0;
+  --verified: #2f7856;
+  --verified-soft: #deede5;
+  --caution: #8a6412;
+  --caution-soft: #f5ead3;
+}
+
+/* Map the swappable vars into Tailwind's namespaces. `inline` emits var()
+   references rather than resolved values, which is what lets the theme swap. */
+@theme inline {
+  --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-instrument), "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-muted: var(--muted);
+
+  --color-shu: var(--shu);
+  --color-shu-bright: var(--shu-bright);
+  --color-shu-dim: var(--shu-dim);
+
+  --color-ai: var(--ai);
+  --color-ai-soft: var(--ai-soft);
+
+  --color-verified: var(--verified);
+  --color-verified-soft: var(--verified-soft);
+  --color-caution: var(--caution);
+  --color-caution-soft: var(--caution-soft);
+}
+
+/* --- Base ---------------------------------------------------------------- */
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-instrument), "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+
+/* Prices, dates and counts line up in columns all over the catalog. */
+@utility tnum {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The uppercase utility label used by licence badges and seller types. */
+@utility label-xs {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+/* Screentone — one flourish, drawn from manga print rather than neon glow.
+   Masthead and section breaks only. */
+@utility screentone {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in srgb, var(--paper) 14%, transparent) 1px,
+    transparent 0
+  );
+  background-size: 6px 6px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--shu-bright);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
