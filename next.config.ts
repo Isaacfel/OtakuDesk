@@ -66,6 +66,17 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  /**
+   * Pin the workspace root to this project.
+   *
+   * A stray package-lock.json sits in the user's home directory, so Next
+   * inferred the root from there and traced files against it. That matters
+   * beyond the warning: file tracing decides what gets bundled, and the
+   * Cloudflare Worker build (see DEPLOY.md) ships whatever tracing collects.
+   * Left alone it risks a bloated or incorrect bundle on deploy.
+   */
+  outputFileTracingRoot: __dirname,
+
   // Let .mdx files be imported as modules (journal articles live in content/).
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
 
