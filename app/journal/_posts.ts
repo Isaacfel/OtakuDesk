@@ -39,11 +39,30 @@ export function isJournalSlug(slug: string): slug is JournalSlug {
 }
 
 /**
- * Load one article. The template-literal import lets Turbopack bundle every
- * file under content/journal/ while resolving one at request time.
+ * Load one article.
+ *
+ * Written out one per slug rather than as a template-literal import. Both work
+ * — a template literal was NOT the cause of the production 404s, despite a
+ * first guess that said so; that was a missing incremental cache, fixed in
+ * open-next.config.ts. An explicit map is kept because it is analysable by any
+ * bundler rather than relying on one bundler's glob behaviour, and because a
+ * missing article becomes a type error here instead of a runtime rejection.
+ *
+ * Cost is one line per article, which the slug registry above already requires.
  */
+const LOADERS: Record<JournalSlug, () => Promise<PostModule>> = {
+  'licensed-vs-bootleg': () =>
+    import('@/content/journal/licensed-vs-bootleg.mdx') as Promise<PostModule>,
+  'what-officially-licensed-means': () =>
+    import('@/content/journal/what-officially-licensed-means.mdx') as Promise<PostModule>,
+  'anime-desk-without-the-merch-stall': () =>
+    import('@/content/journal/anime-desk-without-the-merch-stall.mdx') as Promise<PostModule>,
+  'convention-sling-packing-checklist': () =>
+    import('@/content/journal/convention-sling-packing-checklist.mdx') as Promise<PostModule>,
+}
+
 export async function loadPost(slug: JournalSlug): Promise<PostModule> {
-  return (await import(`@/content/journal/${slug}.mdx`)) as PostModule
+  return LOADERS[slug]()
 }
 
 /** Every article's metadata, newest first. */

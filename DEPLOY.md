@@ -81,3 +81,22 @@ So the sequence that works:
 Attaching the domain earlier is not harmful, only premature. The deploy
 pipeline being ready is the useful part; using it on the real domain is a
 decision with a right moment, and this is not quite it.
+
+## Deploying (after the one-time setup)
+
+```
+npm run cf:deploy
+```
+
+That runs `opennextjs-cloudflare build && opennextjs-cloudflare deploy`. Use the
+adapter's own `deploy`, **not** a bare `wrangler deploy`: only the adapter runs
+`populateCache`, which writes the prerendered pages into
+`.open-next/assets/cdn-cgi/_next_cache/<buildId>/`. A bare `wrangler deploy`
+uploads 41 files instead of 85, the Worker finds no prerendered output, and
+every route with `dynamicParams = false` returns 404 with `NoFallbackError`
+while the rest of the site looks perfectly fine.
+
+That failure mode is production-only: `next build`, `next start` and even
+`wrangler dev` on a freshly populated bundle all pass. The only way to catch it
+is to hit the deployed URL, so after every deploy check one journal article,
+not just the home page.
