@@ -1,38 +1,21 @@
 import type { Metadata, Viewport } from 'next'
-import { Archivo, Instrument_Sans, IBM_Plex_Mono } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 
-/* Display / body / data. Deliberately not Inter or Space Grotesk — the brand
-   argument is that this does not look like every other generated storefront,
-   and the typeface is the first thing that either proves or disproves it. */
-const archivo = Archivo({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-archivo',
-  display: 'swap',
-})
-
-const instrument = Instrument_Sans({
-  subsets: ['latin'],
-  variable: '--font-instrument',
-  display: 'swap',
-})
-
-// IBM Plex Mono is not a variable font; weights must be listed.
-const plexMono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-plex-mono',
+  variable: '--font-inter',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://otakudesk.com'),
   title: {
-    default: 'Otakudesk — anime room and desk shopping guide',
+    default: 'Otakudesk — anime merch, checked',
     template: '%s | Otakudesk',
   },
   description:
-    'A trusted anime room and desk shopping guide. We name the seller and the licence on every pick, and we earn a commission when you buy.',
+    'Anime figures, manga, and desk gear with the licence status, the seller, and a dated price on every item. Every link goes to the real seller.',
   openGraph: {
     siteName: 'Otakudesk',
     type: 'website',
@@ -43,10 +26,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f3ebdd' },
-    { media: '(prefers-color-scheme: dark)', color: '#17151a' },
-  ],
+  themeColor: '#ffffff',
 }
 
 export default function RootLayout({
@@ -55,13 +35,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html
-      lang="en"
-      className={`${archivo.variable} ${instrument.variable} ${plexMono.variable}`}
-    >
-      <body className="min-h-screen bg-ink text-paper antialiased">
-        {children}
-      </body>
+    <html lang="en" className={inter.variable}>
+      <body className="min-h-screen bg-bg text-fg antialiased">{children}</body>
     </html>
   )
 }

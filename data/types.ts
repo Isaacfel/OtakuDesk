@@ -49,8 +49,19 @@ export type LicenseStatus =
  */
 export type LinkStatus = 'ok' | 'broken' | 'discontinued' | 'sample'
 
-/** Provenance for every image. If it cannot be attributed, it does not ship. */
-export type ImageSource = 'merchant_feed' | 'press_kit' | 'own' | 'placeholder'
+/**
+ * Provenance for every image.
+ *
+ * 'merchant_listing' is the seller's own listing image, used by the owner's
+ * decision ahead of a granted right; it is recorded as such rather than
+ * passed off as 'merchant_feed'.
+ */
+export type ImageSource =
+  | 'merchant_feed'
+  | 'merchant_listing'
+  | 'press_kit'
+  | 'own'
+  | 'placeholder'
 
 export type PickImage = {
   src: string

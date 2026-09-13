@@ -1,166 +1,163 @@
 import Link from 'next/link'
-import { DisclosureBanner, SampleCatalogNotice } from './Disclosure'
-import { MascotMark, RegistrationMark } from './motifs'
+import { PICKS } from '@/data/picks'
+import { MERCHANTS } from '@/data/merchants'
+import type { Category } from '@/data/types'
+import { AMAZON_ATTESTATION } from '@/lib/affiliate'
 
 /**
- * The site shell — the door and the floor of the night room.
- *
- * Nav is deliberately short. v1 ships Desk, Journal and About — collections,
- * new-drops and saved are deferred (their data already exists, so the routes
- * can be added later without rework). A nav with six entries and three real
- * destinations is how a small site announces that it is padding.
- *
- * The two banners above the header are compliance, not decoration: the
- * sample-catalog notice and the affiliate disclosure stay first and are not
- * styled away. The header's bottom rule is the room's light strip — red into
- * blue into lilac — rather than a printed border.
+ * Site shell: a store header with search and category links, and a footer
+ * that carries the disclosures. Both are server components; nothing from the
+ * catalog beyond category names reaches the client.
  */
 
-const NAV = [
-  { href: '/desk', label: 'The Desk' },
-  { href: '/journal', label: 'Journal' },
-  { href: '/about', label: 'About' },
+const SHORT_LABEL: Record<Category, string> = {
+  'Figures & Collectibles': 'Figures',
+  'Manga & Books': 'Manga',
+  'Desk & Room': 'Desk',
+  'Wall Art': 'Wall Art',
+  Apparel: 'Apparel',
+  Accessories: 'Accessories',
+  'Storage & Display': 'Storage',
+}
+
+const NAV_ORDER: Category[] = [
+  'Figures & Collectibles',
+  'Manga & Books',
+  'Desk & Room',
+  'Wall Art',
+  'Apparel',
+  'Accessories',
+  'Storage & Display',
 ]
 
-function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
+export type CategoryLink = { value: Category; label: string; href: string }
+
+/** Categories that currently have at least one pick, in nav order. */
+export function categoryLinks(): CategoryLink[] {
+  return NAV_ORDER.filter((c) => PICKS.some((p) => p.category === c)).map((c) => ({
+    value: c,
+    label: SHORT_LABEL[c],
+    href: `/desk?category=${encodeURIComponent(c)}`,
+  }))
+}
+
+export function Wordmark({ className = '' }: { className?: string }) {
   return (
-    <span className="inline-flex items-center gap-2.5">
-      <span
-        className={`bloom-red flex items-center justify-center border border-shu/50 bg-panel-2 text-paper ${
-          size === 'lg' ? 'h-10 w-10' : 'h-8 w-8'
-        }`}
-      >
-        <MascotMark className={size === 'lg' ? 'h-8 w-8' : 'h-6 w-6'} title="Otakudesk desk spirit" />
-      </span>
-      <span
-        className={`font-display font-extrabold tracking-tight text-paper ${
-          size === 'lg' ? 'text-2xl' : 'text-xl'
-        }`}
-      >
-        Otaku<span className="text-shu">desk</span>
-      </span>
+    <span className={`text-xl font-extrabold tracking-tight text-fg ${className}`}>
+      Otaku<span className="text-accent">desk</span>
     </span>
   )
 }
 
-/** The light strip: one thin line of the room's three colours. */
-function LightStrip({ className = '' }: { className?: string }) {
+export function Header() {
+  const categories = categoryLinks()
+
   return (
-    <span
-      aria-hidden="true"
-      className={`pointer-events-none block h-0.5 w-full ${className}`}
-      style={{
-        background:
-          'linear-gradient(90deg, var(--shu) 0%, var(--shu) 28%, var(--blue) 52%, var(--lilac) 78%, transparent 100%)',
-      }}
-    />
+    <header className="border-b border-line bg-bg">
+      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:gap-6">
+        <Link href="/" aria-label="Otakudesk home" className="shrink-0">
+          <Wordmark />
+        </Link>
+
+        {/* Plain GET form: works without JavaScript and keeps the header static. */}
+        <form action="/desk" role="search" className="min-w-0 flex-1 sm:max-w-xl">
+          <label htmlFor="site-search" className="sr-only">
+            Search products
+          </label>
+          <input
+            id="site-search"
+            name="q"
+            type="search"
+            placeholder="Search products"
+            autoComplete="off"
+            className="w-full rounded-full border border-line bg-bg-soft px-4 py-2 text-sm text-fg placeholder:text-fg-muted focus:border-line-strong focus:bg-bg focus:outline-none"
+          />
+        </form>
+
+        <Link
+          href="/journal"
+          className="hidden shrink-0 text-sm font-medium text-fg transition-colors hover:text-accent sm:block"
+        >
+          Journal
+        </Link>
+      </div>
+
+      <nav aria-label="Categories" className="border-t border-line">
+        <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-2 text-sm">
+          <li>
+            <Link
+              href="/desk"
+              className="block whitespace-nowrap px-2 py-2.5 font-medium text-fg transition-colors hover:text-accent"
+            >
+              All
+            </Link>
+          </li>
+          {categories.map((c) => (
+            <li key={c.value}>
+              <Link
+                href={c.href}
+                className="block whitespace-nowrap px-2 py-2.5 text-fg-muted transition-colors hover:text-accent"
+              >
+                {c.label}
+              </Link>
+            </li>
+          ))}
+          <li className="sm:hidden">
+            <Link
+              href="/journal"
+              className="block whitespace-nowrap px-2 py-2.5 text-fg-muted transition-colors hover:text-accent"
+            >
+              Journal
+            </Link>
+          </li>
+        </ul>
+      </nav>
+    </header>
   )
 }
 
-export function Header() {
+const FOOTER_LINKS = [
+  { href: '/desk', label: 'All products' },
+  { href: '/journal', label: 'Journal' },
+  { href: '/about', label: 'About' },
+  { href: '/disclosure', label: 'Affiliate disclosure' },
+  { href: '/privacy', label: 'Privacy' },
+  { href: '/terms', label: 'Terms' },
+  { href: '/contact', label: 'Contact' },
+]
+
+export function Footer() {
+  const usesAmazon = MERCHANTS.some(
+    (m) => m.network === 'amazon' && Boolean(m.termsVerifiedAt),
+  )
+
   return (
-    <>
-      <SampleCatalogNotice />
-      <DisclosureBanner />
-      <header className="relative bg-ink">
-        <div aria-hidden="true" className="room-light pointer-events-none absolute inset-0 opacity-60" />
-        <RegistrationMark className="pointer-events-none absolute top-1.5 left-1.5 h-3 w-3 text-line" />
-        <RegistrationMark className="pointer-events-none absolute top-1.5 right-1.5 h-3 w-3 text-line" />
-
-        <div className="relative mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4">
-          <Link href="/" aria-label="Otakudesk home">
-            <Wordmark />
-          </Link>
-
-          <nav aria-label="Main">
-            <ul className="flex items-center gap-5 sm:gap-7">
-              {NAV.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="label-xs relative py-2 text-paper-2 transition-colors hover:text-shu"
-                  >
-                    {item.label}
+    <footer className="mt-16 border-t border-line bg-bg-soft">
+      <div className="mx-auto max-w-6xl px-4 py-10">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+          <Wordmark />
+          <nav aria-label="Footer">
+            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              {FOOTER_LINKS.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="text-fg-muted transition-colors hover:text-accent">
+                    {l.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
         </div>
-        <LightStrip />
-      </header>
-    </>
-  )
-}
 
-export function Footer() {
-  return (
-    <footer className="relative mt-24 overflow-hidden bg-surface">
-      <LightStrip className="absolute inset-x-0 top-0 opacity-70" />
-      <div aria-hidden="true" className="room-light pointer-events-none absolute inset-0 opacity-70" />
-      <div aria-hidden="true" className="halftone pointer-events-none absolute inset-x-0 top-0 h-6 opacity-50" />
-
-      <div className="relative mx-auto grid max-w-6xl gap-10 px-5 pt-14 pb-10 sm:grid-cols-[2fr_1fr_1fr]">
-        <div>
-          <Wordmark size="lg" />
-          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-paper-2">
-            A trusted anime room and desk shopping guide. We name the seller and
-            state the licence on every pick, and we date every price.
+        <div className="mt-8 border-t border-line pt-6 text-xs leading-relaxed text-fg-muted">
+          <p>
+            We earn a commission when you buy through links on this site, at no extra cost to
+            you.{usesAmazon && <> {AMAZON_ATTESTATION}</>}
           </p>
-          <p className="label-xs mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-muted">
-            <span>Seller named</span>
-            <span aria-hidden="true" className="text-shu">·</span>
-            <span>License stated</span>
-            <span aria-hidden="true" className="text-shu">·</span>
-            <span>Price dated</span>
+          <p className="mt-2">
+            Otakudesk is an independent guide and is not affiliated with any anime studio,
+            publisher, or licensor.
           </p>
-        </div>
-
-        <nav aria-label="Browse">
-          <h2 className="label-xs mb-4 border-b border-line pb-2 text-muted">Browse</h2>
-          <ul className="flex flex-col gap-2.5 text-sm">
-            {NAV.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="text-paper-2 transition-colors hover:text-shu">
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <nav aria-label="Legal">
-          <h2 className="label-xs mb-4 border-b border-line pb-2 text-muted">Legal</h2>
-          <ul className="flex flex-col gap-2.5 text-sm">
-            <li>
-              <Link href="/disclosure" className="text-paper-2 transition-colors hover:text-shu">
-                Affiliate disclosure
-              </Link>
-            </li>
-            <li>
-              <Link href="/privacy" className="text-paper-2 transition-colors hover:text-shu">
-                Privacy
-              </Link>
-            </li>
-            <li>
-              <Link href="/terms" className="text-paper-2 transition-colors hover:text-shu">
-                Terms
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
-
-      <div className="relative border-t border-line">
-        <RegistrationMark className="pointer-events-none absolute bottom-1.5 left-1.5 h-3 w-3 text-line" />
-        <RegistrationMark className="pointer-events-none absolute right-1.5 bottom-1.5 h-3 w-3 text-line" />
-        <div className="mx-auto flex max-w-6xl flex-wrap items-start justify-between gap-3 px-5 py-4">
-          <p className="max-w-[70ch] text-xs leading-relaxed text-muted">
-            Otakudesk is an independent shopping guide. It is not affiliated with,
-            endorsed by, or sponsored by any anime studio, publisher, or licensor.
-            All marks and illustrations on this site are original.
-          </p>
-          <p className="label-xs text-muted">Lights on late. Drawn by hand.</p>
         </div>
       </div>
     </footer>

@@ -1,11 +1,6 @@
 import { ImageResponse } from 'next/og'
-import { MascotMark } from '@/components/motifs'
 
-/**
- * The favicon, generated from the mascot mark so the tab shows the same
- * original emblem as the wordmark. Ink on the dark panel colour, which reads
- * in both light and dark browser chrome. Statically generated at build time.
- */
+/** Favicon: a red tile with the wordmark's initial. Generated at build time. */
 
 export const size = { width: 64, height: 64 }
 export const contentType = 'image/png'
@@ -20,14 +15,15 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#17151a',
-          color: '#f3ebdd',
-          borderRadius: 8,
+          background: '#dc1a2b',
+          color: '#ffffff',
+          borderRadius: 12,
+          fontSize: 40,
+          fontWeight: 800,
+          fontFamily: 'sans-serif',
         }}
       >
-        <div style={{ display: 'flex', width: 48, height: 48 }}>
-          <MascotMark title="Otakudesk" />
-        </div>
+        O
       </div>
     ),
     { ...size },

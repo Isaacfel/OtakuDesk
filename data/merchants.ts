@@ -20,15 +20,6 @@ import type { Merchant } from './types'
  */
 export const MERCHANTS: Merchant[] = [
   {
-    id: 'sample',
-    name: 'Example Seller',
-    network: 'direct',
-    blurb:
-      'Placeholder seller used by the sample catalog. No real purchase path is configured.',
-    termsVerifiedAt: '2026-09-11',
-    termsNotes: ['Not a real program. Sample picks never link out.'],
-  },
-  {
     id: 'displate',
     name: 'Displate',
     network: 'impact',
@@ -108,7 +99,6 @@ const TERMS_MAX_AGE_DAYS = 92
  */
 export function merchantsNeedingTermsReview(now = Date.now()): Merchant[] {
   return MERCHANTS.filter((m) => {
-    if (m.id === 'sample') return false
     if (!m.termsVerifiedAt) return true
     const age = now - new Date(m.termsVerifiedAt).getTime()
     return !Number.isFinite(age) || age > TERMS_MAX_AGE_DAYS * 864e5
