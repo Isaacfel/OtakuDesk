@@ -51,6 +51,8 @@ export const CATEGORY_ACCENT: Record<Category, CategoryAccent> = {
   Accessories: { bar: 'bg-orange', text: 'text-orange', tone: 'orange', motif: 'carry', motifTone: 'orange', cssVar: '--orange' },
   Apparel: { bar: 'bg-green', text: 'text-green', tone: 'green', motif: 'stitch', motifTone: 'green', cssVar: '--green' },
   'Storage & Display': { bar: 'bg-shu', text: 'text-shu', tone: 'red', motif: 'plinth', motifTone: 'shu', cssVar: '--shu' },
+  'Figures & Collectibles': { bar: 'bg-orange', text: 'text-orange', tone: 'orange', motif: 'pedestal', motifTone: 'orange', cssVar: '--orange' },
+  'Manga & Books': { bar: 'bg-lilac', text: 'text-lilac', tone: 'lilac', motif: 'spines', motifTone: 'lilac', cssVar: '--lilac' },
 }
 
 export function accentFor(category: Category): CategoryAccent {

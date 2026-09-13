@@ -8,9 +8,13 @@
 Not a store. Not a catalog. A guide that happens to be paid on referral.
 
 **Niche order:** anime room, desk, and setup products first; convention and
-travel accessories second. Figures and collectibles are out of scope for v1 —
-dominated by incumbents, ruthlessly price-compared, and the hardest category
-in which to keep a licence-verification promise.
+travel accessories second. Figures and collectibles were out of scope for the
+original v1 brief — dominated by incumbents, ruthlessly price-compared, and the
+hardest category in which to keep a licence-verification promise. That was
+revised on 2026-09-13: figures and manga ship as their own categories, with
+the rule that only pieces whose manufacturer of record is a known licensee are
+marked `officially_licensed`; everything else stays `unverified` and does
+not link out.
 
 ---
 

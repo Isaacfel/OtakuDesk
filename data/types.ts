@@ -131,6 +131,8 @@ export type Category =
   | 'Accessories'
   | 'Apparel'
   | 'Storage & Display'
+  | 'Figures & Collectibles'
+  | 'Manga & Books'
 
 export const CATEGORIES: Category[] = [
   'Desk & Room',
@@ -138,6 +140,8 @@ export const CATEGORIES: Category[] = [
   'Accessories',
   'Apparel',
   'Storage & Display',
+  'Figures & Collectibles',
+  'Manga & Books',
 ]
 
 export type Collection = {

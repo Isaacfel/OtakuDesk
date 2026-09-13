@@ -577,6 +577,34 @@ const PATTERNS: Record<Category, { accent: string; render: React.ReactNode }> = 
       </>
     ),
   },
+  // A pedestal with an abstract silhouette on it — the idea of a figure on
+  // display, deliberately not any character.
+  'Figures & Collectibles': {
+    accent: 'text-orange',
+    render: (
+      <>
+        <path d="M28 86h64" stroke="currentColor" strokeWidth="2" />
+        <rect x="40" y="76" width="40" height="10" stroke="currentColor" strokeWidth="2" />
+        <circle cx="60" cy="34" r="8" stroke="currentColor" strokeWidth="2" />
+        <path d="M50 76V56a10 10 0 0 1 20 0v20" stroke="currentColor" strokeWidth="2" />
+        <path d="M46 64l4-10M74 64l-4-10" stroke="currentColor" strokeWidth="2" opacity=".6" />
+      </>
+    ),
+  },
+  // Four spines on a shelf, one pulled slightly proud of the row.
+  'Manga & Books': {
+    accent: 'text-lilac',
+    render: (
+      <>
+        <path d="M24 86h72" stroke="currentColor" strokeWidth="2" />
+        <rect x="30" y="26" width="14" height="60" stroke="currentColor" strokeWidth="2" />
+        <rect x="46" y="22" width="14" height="64" stroke="currentColor" strokeWidth="2" />
+        <rect x="62" y="28" width="14" height="58" stroke="currentColor" strokeWidth="2" />
+        <rect x="78" y="24" width="12" height="62" stroke="currentColor" strokeWidth="2" />
+        <path d="M33 36h8M49 32h8M65 38h8M81 34h6" stroke="currentColor" strokeWidth="1" opacity=".6" />
+      </>
+    ),
+  },
 }
 
 export function CategoryPattern({

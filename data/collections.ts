@@ -37,8 +37,8 @@ export const COLLECTIONS: Collection[] = [
     slug: 'collector-arc',
     name: 'Collector Arc',
     description:
-      'Display, protection, and lighting. We cover what surrounds a collection rather than the figures themselves — the market for those is well served and hard to verify.',
-    blurb: 'Display pieces and the gear that protects them.',
+      'Figures, plush, and the volumes they came from, plus the display, protection, and lighting around them. Every figure here names its manufacturer, and anything we cannot trace to a licensee is marked as still being verified.',
+    blurb: 'Figures, manga, and the gear that displays and protects them.',
   },
   {
     slug: 'convention-ready',

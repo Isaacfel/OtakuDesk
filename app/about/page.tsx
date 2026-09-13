@@ -115,10 +115,12 @@ export default function AboutPage() {
               is more persuasive than four and a half stars nobody believes.
             </p>
             <p>
-              What we skip: figures and collectibles, which are well served
-              elsewhere and the hardest category in which to keep a licence
-              promise; anything whose seller we cannot identify; and anything we
-              cannot source an image for legally.
+              What we skip: anything whose seller we cannot identify, and
+              anything we cannot source an image for legally. Figures and
+              collectibles are the hardest category in which to keep a licence
+              promise, so every figure here names its manufacturer of record,
+              and one we cannot trace to a licensee stays marked{' '}
+              <em>Verifying</em> and never links out.
             </p>
 
             <h2 id="verify">How we verify, and keep verifying</h2>
