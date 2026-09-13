@@ -8,25 +8,13 @@ import { TrackedLink } from './TrackedLink'
 /**
  * The ONLY sanctioned way to send a reader to a merchant.
  *
- * The disclosure is rendered by this component, as a full sentence, adjacent
- * to the control — not a bare "affiliate link" tag, and not a line in the
- * footer. The FTC standard is that disclosure be clear, conspicuous, and
- * placed before the reader acts.
+ * The disclosure sentence renders with the button, so no code path produces
+ * an outbound link without it. `isPurchasable` is the same predicate the /go
+ * route uses, so the button and the redirect cannot disagree.
  *
- * Building it in here is the point: there is no code path in the application
- * that produces an outbound link without a disclosure attached, so compliance
- * does not depend on anyone remembering it in month three.
- *
- * This is a SERVER component on purpose. It handles the whole `Pick` — which
- * includes the raw `purchaseUrl` — and passes only primitives down to the
- * client `TrackedLink`. Were this itself a client component, the entire pick
- * would be serialized into the RSC payload and `purchaseUrl` would ship to the
- * browser in the page source: invisible, but readable, and a route to the
- * merchant that bypasses the tracking we are paid through.
- *
- * `from` records which page produced the click. It rides through /go into the
- * network's own reporting, which is the difference between knowing you earned
- * $40 and knowing which article earned it.
+ * Server component on purpose: it handles the full `Pick` (which carries the
+ * raw `purchaseUrl`) and passes only primitives to the client `TrackedLink`,
+ * so the merchant URL never reaches the browser.
  */
 export function OutboundButton({
   pick,
@@ -39,79 +27,41 @@ export function OutboundButton({
 }) {
   const merchant = getMerchant(pick.merchantId)
 
-  // Sample data and unverified licences never get a buy button. Same predicate
-  // the /go route uses, so the UI and the redirect cannot disagree.
   if (!isPurchasable(pick)) {
-    return <UnavailablePanel pick={pick} />
+    return (
+      <p className="rounded-md border border-line bg-bg-soft px-4 py-3 text-sm text-fg-muted">
+        {pick.licenseStatus === 'unverified'
+          ? "We're still confirming this item's licence, so there is no buy link yet."
+          : 'This listing is no longer available.'}
+      </p>
+    )
   }
 
+  const label = merchant.network === 'amazon' ? 'Buy on Amazon' : `Buy at ${merchant.name}`
+
   return (
-    <div className="flex flex-col gap-2.5">
+    <div>
+      {showPrice && (
+        <div className="mb-3">
+          <PriceStamp price={pick.price} checkedAt={pick.priceCheckedAt} size="lg" />
+        </div>
+      )}
       <TrackedLink
         href={goHref(pick, from)}
         pickSlug={pick.slug}
         merchant={merchant.name}
         network={merchant.network}
         from={from}
-        className="inline-flex items-center justify-center gap-2 rounded-sm bg-shu px-5 py-3 font-display text-sm font-semibold tracking-tight text-white transition-colors hover:bg-shu-bright focus-visible:bg-shu-bright"
+        className="inline-flex w-full items-center justify-center rounded-md bg-accent px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-accent-hover sm:w-auto sm:min-w-56"
       >
-        Check price at {merchant.name}
-        <span aria-hidden="true">→</span>
-        <span className="sr-only">(opens in a new tab)</span>
+        {label}
+        <span className="sr-only"> (opens in a new tab)</span>
       </TrackedLink>
-
-      {showPrice && (
-        <PriceStamp price={pick.price} checkedAt={pick.priceCheckedAt} />
-      )}
-
-      {/* Ships with the button, by construction. */}
-      <p className="max-w-[46ch] text-xs leading-relaxed text-muted">
+      <p className="mt-2 text-xs leading-relaxed text-fg-muted">
         {INLINE_DISCLOSURE}{' '}
-        <a className="text-paper-2 underline underline-offset-2" href="/disclosure">
-          How this works
+        <a className="underline underline-offset-2 hover:text-fg" href="/disclosure">
+          Details
         </a>
-      </p>
-    </div>
-  )
-}
-
-/**
- * What a reader sees instead of a buy button.
- *
- * Two different states, deliberately distinguished: one says our verification
- * is incomplete, the other says the purchase path is not configured. Blurring
- * them into a generic "unavailable" would waste the trust the distinction buys.
- */
-function UnavailablePanel({ pick }: { pick: Pick }) {
-  const verifying = pick.licenseStatus === 'unverified'
-  const sample = pick.linkStatus === 'sample'
-
-  return (
-    <div className="rounded-sm border border-dashed border-line bg-surface p-4">
-      <p className="label-xs mb-2 text-caution">
-        {verifying
-          ? 'Verification in progress'
-          : sample
-            ? 'Sample listing'
-            : 'Currently unavailable'}
-      </p>
-      <p className="max-w-[52ch] text-sm leading-relaxed text-paper-2">
-        {verifying ? (
-          <>
-            We verify the seller and the licensing on every pick before we link
-            to it. This one has not cleared yet, so there is no buy link.
-          </>
-        ) : sample ? (
-          <>
-            This is sample catalog data used while the site is being built. No
-            purchase path is configured and nothing here is for sale.
-          </>
-        ) : (
-          <>
-            The seller&rsquo;s listing is no longer reachable. We have pulled the
-            link rather than send you to a dead page.
-          </>
-        )}
       </p>
     </div>
   )

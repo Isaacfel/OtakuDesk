@@ -1,15 +1,8 @@
 import { isPriceFresh, PRICE_MAX_AGE_DAYS } from '@/data/types'
 
 /**
- * A price, or nothing, and never a bare number.
- *
- * Merchant prices go stale within days, and several affiliate programs
- * prohibit displaying a stale price outright. So the rule is: no fresh
- * `priceCheckedAt`, no price. Suppressing is always safe; guessing never is.
- *
- * The visible date is not decoration — it is the reader's means of judging how
- * much to trust the number, and it is the difference between a price quote and
- * a price claim.
+ * A price with the date it was checked, or nothing. A price older than
+ * PRICE_MAX_AGE_DAYS is suppressed rather than shown stale.
  */
 export function PriceStamp({
   price,
@@ -24,9 +17,8 @@ export function PriceStamp({
 
   if (!fresh) {
     return (
-      <p className="text-sm text-muted">
-        Price not current —{' '}
-        <span className="text-paper-2">check at the seller</span>
+      <p className="text-sm text-fg-muted">
+        Price not current. Check at the seller.
         <span className="sr-only">
           {' '}
           (we only show prices verified within {PRICE_MAX_AGE_DAYS} days)
@@ -35,20 +27,18 @@ export function PriceStamp({
     )
   }
 
-  const scale =
-    size === 'lg' ? 'text-3xl' : size === 'sm' ? 'text-base' : 'text-xl'
+  const scale = size === 'lg' ? 'text-3xl' : size === 'sm' ? 'text-base' : 'text-xl'
 
   return (
-    <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-      <span className={`tnum font-semibold text-paper ${scale}`}>
-        ${price.toFixed(2)}
-      </span>
-      <span className="tnum text-[11px] text-muted">
+    <p className="flex flex-wrap items-baseline gap-x-2">
+      <span className={`tnum font-bold text-fg ${scale}`}>${price.toFixed(2)}</span>
+      <span className="tnum text-xs text-fg-muted">
         checked{' '}
         <time dateTime={checkedAt}>
-          {new Date(checkedAt).toLocaleDateString('en-US', {
+          {new Date(`${checkedAt}T00:00:00Z`).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
+            timeZone: 'UTC',
           })}
         </time>
       </span>

@@ -1,283 +1,92 @@
 @import "tailwindcss";
 
 /* ===========================================================================
-   Otakudesk — night-room art direction
+   Otakudesk — storefront
    ---------------------------------------------------------------------------
-   Corrected direction. The previous pass put the warm paper on the page and
-   staged the dark, which read as tasteful print design rather than anime. The
-   brief asked for a "night-time anime room" and a "late-night gaming desk";
-   that means the DARK is the room you are standing in, and the paper is what
-   glows inside it — a lit shelf, a monitor, a page under a lamp.
-
-   So: ink is the ground, paper is the light, and the accents are atmosphere
-   rather than badge decoration. Electric red drives action, warm orange is
-   lamplight, signal blue is screen glow, lilac is the night air, acid green
-   flags verification. Never all of them in one section.
-
-   Print technique (halftone, registration marks, panel gutters) is kept, but
-   demoted: it is texture underneath the light, not the main event.
+   White page, one red accent, grey hairlines. Product photos carry the look;
+   the chrome stays out of the way. No effects, textures, or motion.
    ========================================================================= */
 
-@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
-
 :root {
-  color-scheme: dark;
-
-  /* The room. */
-  --ink: #17151a;
-  --surface: #1f1c25;
-  --surface-2: #2a2532;
-  --line: #4a4248;
-  --line-soft: #2f2a36;
-  --panel: #242029;
-  --panel-2: #100e13;
-
-  /* The light in it. */
-  --paper: #f3ebdd;
-  --paper-2: #d8cdbb;
-  --muted: #9a9098;
-
-  /* Action. Electric on this ground, as intended. */
-  --shu: #ff3b4d;
-  --shu-bright: #ff6d78;
-  --shu-dim: #3a1620;
-  --shu-electric: #ff3b4d;
-
-  /* Atmosphere. */
-  --orange: #ff9d42;        /* lamplight   */
-  --orange-soft: #3a2513;
-  --blue: #4d7cfe;          /* screen glow */
-  --blue-soft: #17203c;
-  --lilac: #b7a4ff;         /* night air   */
-  --lilac-soft: #221d38;
-  --green: #c7f36b;         /* verified    */
-  --green-soft: #202e12;
-
-  --panel-type: #f3ebdd;
-  --panel-muted: #a79e93;
-  --panel-line: #4a4248;
-
-  --ai: var(--blue);
-  --ai-soft: var(--blue-soft);
-  --verified: var(--green);
-  --verified-soft: var(--green-soft);
-  --caution: var(--orange);
-  --caution-soft: var(--orange-soft);
-}
-
-/* Daylight variant — the same room with the blinds open. Kept legible rather
-   than merely inverted: accents darken so they hold contrast on paper. */
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    color-scheme: light;
-    --ink: #f3ebdd;
-    --surface: #fbf6ec;
-    --surface-2: #e7ddc9;
-    --line: #c6b9a1;
-    --line-soft: #e0d5c0;
-    --paper: #17151a;
-    --paper-2: #45404b;
-    --muted: #6f6772;
-    --shu: #d31e33;
-    --shu-bright: #ab1526;
-    --shu-dim: #fbe3e2;
-    --orange: #b55c06;
-    --orange-soft: #fbead2;
-    --blue: #2f5ad6;
-    --blue-soft: #e4e9fb;
-    --lilac: #6b55c9;
-    --lilac-soft: #ece7fb;
-    --green: #4a7a16;
-    --green-soft: #eaf4d8;
-  }
-}
-
-:root[data-theme="light"] {
   color-scheme: light;
-  --ink: #f3ebdd;
-  --surface: #fbf6ec;
-  --surface-2: #e7ddc9;
-  --line: #c6b9a1;
-  --line-soft: #e0d5c0;
-  --paper: #17151a;
-  --paper-2: #45404b;
-  --muted: #6f6772;
-  --shu: #d31e33;
-  --shu-bright: #ab1526;
-  --shu-dim: #fbe3e2;
-  --orange: #b55c06;
-  --orange-soft: #fbead2;
-  --blue: #2f5ad6;
-  --blue-soft: #e4e9fb;
-  --lilac: #6b55c9;
-  --lilac-soft: #ece7fb;
-  --green: #4a7a16;
-  --green-soft: #eaf4d8;
+
+  --bg: #ffffff;
+  --bg-soft: #f6f6f7;
+  --fg: #141416;
+  --fg-muted: #6b6b73;
+  --line: #e6e6ea;
+  --line-strong: #cfcfd6;
+
+  --accent: #dc1a2b;
+  --accent-hover: #b3121f;
+  --accent-soft: #fdeaec;
+
+  --ok: #15803d;
+  --ok-soft: #e7f6ec;
+  --caution: #8a5a0b;
+  --caution-soft: #fdf3dc;
 }
 
 @theme inline {
-  --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
-  --font-sans: var(--font-instrument), "Helvetica Neue", Arial, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: var(--font-inter), system-ui, "Segoe UI", Arial, sans-serif;
 
-  --color-ink: var(--ink);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
   --color-line: var(--line);
-  --color-line-soft: var(--line-soft);
-  --color-paper: var(--paper);
-  --color-paper-2: var(--paper-2);
-  --color-muted: var(--muted);
-  --color-shu: var(--shu);
-  --color-shu-bright: var(--shu-bright);
-  --color-shu-dim: var(--shu-dim);
-  --color-shu-electric: var(--shu-electric);
-  --color-orange: var(--orange);
-  --color-orange-soft: var(--orange-soft);
-  --color-blue: var(--blue);
-  --color-blue-soft: var(--blue-soft);
-  --color-lilac: var(--lilac);
-  --color-lilac-soft: var(--lilac-soft);
-  --color-green: var(--green);
-  --color-green-soft: var(--green-soft);
-  --color-panel: var(--panel);
-  --color-panel-2: var(--panel-2);
-  --color-panel-type: var(--panel-type);
-  --color-panel-muted: var(--panel-muted);
-  --color-panel-line: var(--panel-line);
-  --color-ai: var(--ai);
-  --color-ai-soft: var(--ai-soft);
-  --color-verified: var(--verified);
-  --color-verified-soft: var(--verified-soft);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
   --color-caution: var(--caution);
   --color-caution-soft: var(--caution-soft);
 
-  --text-cover: 5.5rem;
-  --text-cover--line-height: 0.86;
+  /* Legacy names still used by the long-form pages (about, legal, MDX prose).
+     They map onto the palette above so those pages render light without a
+     rewrite. New components use the names above. */
+  --color-ink: var(--bg);
+  --color-surface: var(--bg-soft);
+  --color-surface-2: var(--line);
+  --color-line-soft: var(--line);
+  --color-paper: var(--fg);
+  --color-paper-2: #3f3f46;
+  --color-muted: var(--fg-muted);
+  --color-shu: var(--accent);
+  --color-shu-bright: var(--accent-hover);
+  --color-shu-dim: var(--accent-soft);
+  --color-green: var(--ok);
+  --color-green-soft: var(--ok-soft);
 }
 
 body {
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-instrument), "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
-  font-family: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.028em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
 @utility tnum {
-  font-family: var(--font-plex-mono), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
 }
 
 @utility label-xs {
-  font-family: var(--font-plex-mono), ui-monospace, monospace;
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-/* --- Texture (kept, demoted) --------------------------------------------- */
-
-@utility halftone {
-  background-image: radial-gradient(
-    circle at 1px 1px,
-    color-mix(in srgb, var(--paper) 18%, transparent) 1px,
-    transparent 0
-  );
-  background-size: 6px 6px;
-}
-
-@utility halftone-lg {
-  background-image: radial-gradient(
-    circle at 2px 2px,
-    color-mix(in srgb, var(--paper) 12%, transparent) 2px,
-    transparent 0
-  );
-  background-size: 12px 12px;
-}
-
-@utility paper-grain {
-  background-image:
-    repeating-linear-gradient(113deg, color-mix(in srgb, var(--paper) 3%, transparent) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(7deg, color-mix(in srgb, var(--paper) 2%, transparent) 0 1px, transparent 1px 4px);
-}
-
-@utility speed-lines {
-  background-image: repeating-conic-gradient(
-    from 0deg at 50% 50%,
-    color-mix(in srgb, var(--paper) 16%, transparent) 0deg 0.7deg,
-    transparent 0.7deg 3.4deg
-  );
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 26%, #000 70%);
-  mask-image: radial-gradient(circle at 50% 50%, transparent 26%, #000 70%);
-}
-
-@utility blueprint {
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--blue) 14%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--blue) 14%, transparent) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
-
-@utility offset-print { box-shadow: 4px 4px 0 0 var(--paper); }
-@utility offset-print-red { box-shadow: 4px 4px 0 0 var(--shu); }
-@utility panel-frame { border: 2px solid var(--paper); border-radius: 0; }
-
-/* --- Light in the room ---------------------------------------------------
-   The night-room look lives or dies on bloom. These are cheap: no images, no
-   filters heavy enough to cost a frame. */
-
-@utility bloom-red   { box-shadow: 0 0 0 1px color-mix(in srgb, var(--shu) 45%, transparent), 0 0 28px -4px color-mix(in srgb, var(--shu) 55%, transparent); }
-@utility bloom-blue  { box-shadow: 0 0 0 1px color-mix(in srgb, var(--blue) 40%, transparent), 0 0 34px -6px color-mix(in srgb, var(--blue) 55%, transparent); }
-@utility bloom-orange{ box-shadow: 0 0 0 1px color-mix(in srgb, var(--orange) 40%, transparent), 0 0 34px -6px color-mix(in srgb, var(--orange) 55%, transparent); }
-@utility bloom-lilac { box-shadow: 0 0 0 1px color-mix(in srgb, var(--lilac) 40%, transparent), 0 0 34px -6px color-mix(in srgb, var(--lilac) 55%, transparent); }
-
-/** Text that reads as lit rather than printed. Use once or twice per page. */
-@utility text-glow-red { text-shadow: 0 0 18px color-mix(in srgb, var(--shu) 55%, transparent); }
-@utility text-glow-blue { text-shadow: 0 0 18px color-mix(in srgb, var(--blue) 55%, transparent); }
-
-/** An ambient wash — the room's light sources, behind content. */
-@utility room-light {
-  background-image:
-    radial-gradient(60% 45% at 18% 12%, color-mix(in srgb, var(--orange) 16%, transparent) 0%, transparent 70%),
-    radial-gradient(55% 50% at 84% 22%, color-mix(in srgb, var(--blue) 18%, transparent) 0%, transparent 72%),
-    radial-gradient(70% 60% at 50% 108%, color-mix(in srgb, var(--lilac) 12%, transparent) 0%, transparent 70%);
-}
-
-/** Diagonal manga panel cut, for section transitions. */
-@utility panel-cut-top { clip-path: polygon(0 3.5vw, 100% 0, 100% 100%, 0 100%); }
-@utility panel-cut-bottom { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3.5vw), 0 100%); }
-
-/* --- Motion --------------------------------------------------------------- */
-
-@keyframes grain-drift {
-  0%   { background-position: 0 0, 0 0; }
-  100% { background-position: 120px 80px, -90px 60px; }
-}
-@utility grain-drift { animation: grain-drift 28s linear infinite; }
-
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.72; }
-  50%      { opacity: 1; }
-}
-@utility pulse-glow { animation: pulse-glow 4.5s ease-in-out infinite; }
-
-@keyframes panel-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: none; }
-}
-/* Animates as a flourish from a visible resting state — never parked hidden. */
-@utility panel-in { animation: panel-in 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
-
 :focus-visible {
-  outline: 2px solid var(--shu);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 2px;
 }

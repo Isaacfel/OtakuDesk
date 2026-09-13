@@ -4,7 +4,6 @@ import { Header, Footer } from '@/components/Shell'
 import { Prose } from '@/mdx-components'
 import { Placeholder } from '@/app/_legal/LegalShell'
 import { MERCHANTS } from '@/data/merchants'
-import { CATALOG_IS_SAMPLE, PICKS } from '@/data/picks'
 import { PRICE_MAX_AGE_DAYS } from '@/data/types'
 import { INLINE_DISCLOSURE, AMAZON_ATTESTATION } from '@/lib/affiliate'
 
@@ -23,7 +22,7 @@ export const metadata: Metadata = {
  * describe a partnership we do not have or a catalog state that has changed.
  */
 export default function AboutPage() {
-  const programs = MERCHANTS.filter((m) => m.id !== 'sample')
+  const programs = MERCHANTS
   const approved = programs.filter((m) => Boolean(m.termsVerifiedAt))
   const usesAmazon = MERCHANTS.some(
     (m) => m.network === 'amazon' && Boolean(m.termsVerifiedAt),
@@ -99,9 +98,8 @@ export default function AboutPage() {
                 <Link href="/journal/licensed-vs-bootleg">our own guide</Link>.
               </li>
               <li>
-                We have the right to show an image of it: from the
-                merchant&rsquo;s own feed, a press kit, or our own camera. If we
-                do not, we show a placeholder rather than borrow one.
+                The image is the seller&rsquo;s own listing image, and the pick
+                records that it came from there.
               </li>
               <li>
                 We can write three specific reasons it is good and, where there
@@ -115,8 +113,7 @@ export default function AboutPage() {
               is more persuasive than four and a half stars nobody believes.
             </p>
             <p>
-              What we skip: anything whose seller we cannot identify, and
-              anything we cannot source an image for legally. Figures and
+              What we skip: anything whose seller we cannot identify. Figures and
               collectibles are the hardest category in which to keep a licence
               promise, so every figure here names its manufacturer of record,
               and one we cannot trace to a licensee stays marked{' '}
@@ -146,8 +143,7 @@ export default function AboutPage() {
                 guessed at.
               </li>
               <li>
-                <strong>Confirm image rights</strong> and record where the image
-                came from.
+                <strong>Record where the image came from.</strong>
               </li>
               <li>
                 <strong>Only then</strong> does the buy link go live.
@@ -201,8 +197,8 @@ export default function AboutPage() {
                 reader&rsquo;s interest &mdash; usually the cheaper one.
               </li>
               <li>
-                Sample listings and picks marked <em>Verifying</em> never link
-                out, so they cannot earn anything.
+                Picks marked <em>Verifying</em> never link out, so they cannot
+                earn anything.
               </li>
             </ul>
             {approved.length === 0 ? (
@@ -223,21 +219,6 @@ export default function AboutPage() {
                 dates on the <Link href="/disclosure">disclosure page</Link>.
                 {usesAmazon && <> {AMAZON_ATTESTATION}</>}
               </p>
-            )}
-
-            {CATALOG_IS_SAMPLE && (
-              <>
-                <h2 id="catalog">Where the catalog stands</h2>
-                <p>
-                  Every one of the {PICKS.length} products on Otakudesk today is
-                  sample data used while the site is built. Each is labelled as
-                  such, none is for sale, no price is live, and no purchase link
-                  is configured. Real picks will replace them one at a time, each
-                  having gone through the process above first. This section, and
-                  the banner at the top of every page, disappear on their own the
-                  moment the first real pick is published.
-                </p>
-              </>
             )}
 
             <h2 id="wont">What we will not do</h2>

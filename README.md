@@ -9,11 +9,12 @@ shapes the whole codebase — see [`PROJECT.md`](./PROJECT.md) for the build
 brief, the v1 scope boundary, and the seven implementation rules that override
 convenience.
 
-> **Status: soft launch.** The catalog carries 23 researched Amazon picks
-> (12 from known licensees and buyable, 11 marked *Verifying* and not linking
-> out until their licence is confirmed) alongside the original twelve sample
-> picks, which remain explicitly non-buyable. Amazon Associates is the only
-> live program; the tag lives in the `AMAZON_TAG` Worker secret.
+> **Status: live.** 23 researched Amazon picks: 12 from known licensees and
+> buyable, 11 marked *Verifying* and not linking out until their licence is
+> confirmed. Light storefront design; see
+> `docs/superpowers/specs/2026-09-13-storefront-redesign-design.md`. Amazon
+> Associates is the only live program; the tag lives in the `AMAZON_TAG`
+> Worker secret.
 
 ## Stack
 

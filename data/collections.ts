@@ -66,20 +66,13 @@ export const SETS: CuratedSet[] = [
     name: 'First Desk Upgrade',
     description:
       'The three things that change a desk most for the least money, in the order we would buy them.',
-    pickIds: ['p001', 'p007', 'p010'],
-  },
-  {
-    slug: 'first-convention',
-    name: 'First Convention Kit',
-    description:
-      'What we would carry to a first two-day event, assuming you already own a bag you like.',
-    pickIds: ['p002', 'p012', 'p008'],
+    pickIds: ['p030', 'p026', 'p034'],
   },
   {
     slug: 'shelf-that-lasts',
     name: 'A Shelf That Lasts',
     description:
       'Display, protect, and light a collection so it still looks right in three years.',
-    pickIds: ['p003', 'p009', 'p010'],
+    pickIds: ['p016', 'p018', 'p035'],
   },
 ]

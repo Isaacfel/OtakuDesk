@@ -36,7 +36,7 @@ function formatDate(iso: string) {
  * attestation appears only once an Amazon program is actually verified.
  */
 export default function DisclosurePage() {
-  const programs = MERCHANTS.filter((m) => m.id !== 'sample')
+  const programs = MERCHANTS
   const approved = programs.filter((m) => Boolean(m.termsVerifiedAt))
   const pending = programs.filter((m) => !m.termsVerifiedAt)
   const usesAmazon = MERCHANTS.some(
@@ -143,8 +143,8 @@ export default function DisclosurePage() {
           commission is a consequence of choosing it, not a condition.
         </li>
         <li>
-          Sample listings and picks marked <em>Verifying</em> have no buy button
-          and cannot earn anything.
+          Picks marked <em>Verifying</em> have no buy button and cannot earn
+          anything.
         </li>
       </ul>
 
