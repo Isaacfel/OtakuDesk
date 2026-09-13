@@ -13,9 +13,10 @@ import type { Merchant } from './types'
  * Re-verify quarterly and update the date. Anything older than a quarter is a
  * claim we can no longer support.
  *
- * Entries other than `sample` are placeholders for programs we have applied to
- * but not yet been approved for. They carry no picks until approval lands and
- * a real product has been researched and verified by hand.
+ * Entries with an empty `termsVerifiedAt` are placeholders for programs we
+ * have applied to but not yet been approved for. They carry no picks until
+ * approval lands and a real product has been researched and verified by hand.
+ * Amazon is the first live program.
  */
 export const MERCHANTS: Merchant[] = [
   {
@@ -78,10 +79,11 @@ export const MERCHANTS: Merchant[] = [
     network: 'amazon',
     blurb:
       'Widest selection and fastest delivery, but listing quality and authenticity vary by seller.',
-    termsVerifiedAt: '',
+    termsVerifiedAt: '2026-09-13',
     termsNotes: [
-      'UNVERIFIED — application not yet submitted.',
-      'Product Advertising API gated behind 3 qualifying sales in 180 days.',
+      'Associates account is live; the tag is set as the AMAZON_TAG Worker secret, never here.',
+      'Operating Agreement accepted at sign-up. Re-read it in full and bump this date each quarter.',
+      'Product Advertising API gated behind 3 qualifying sales in 180 days — until then, no feed images.',
       'Affiliate links PROHIBITED in email — newsletters must link to our own pages.',
       'Displaying stale prices is prohibited; PriceStamp freshness rule is mandatory.',
       'Attestation sentence required verbatim on every page carrying their links.',
