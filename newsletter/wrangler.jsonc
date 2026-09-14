@@ -1,0 +1,17 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "otakudesk-newsletter",
+  "main": "worker.ts",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  // Fridays at 15:00 UTC. Sends every product added in the previous 7 days to
+  // confirmed subscribers; sends nothing if there were none.
+  "triggers": { "crons": ["0 15 * * 5"] },
+
+  // Same namespace the site's subscribe/confirm/unsubscribe routes write to.
+  "kv_namespaces": [{ "binding": "SUBSCRIBERS", "id": "fa3607a7e5814994b5805a7beb4d790e" }]
+
+  // Secret, set with: npx wrangler secret put RESEND_API_KEY -c newsletter/wrangler.jsonc
+}

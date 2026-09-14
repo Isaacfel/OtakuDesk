@@ -100,3 +100,34 @@ That failure mode is production-only: `next build`, `next start` and even
 `wrangler dev` on a freshly populated bundle all pass. The only way to catch it
 is to hit the deployed URL, so after every deploy check one journal article,
 not just the home page.
+
+## Newsletter
+
+Two pieces share one KV namespace (`SUBSCRIBERS`, bound in both wrangler
+configs): the site's subscribe/confirm/unsubscribe routes, and a separate
+cron Worker in `newsletter/` that emails the week's new products every
+Friday at 15:00 UTC. `npm run cf:deploy` deploys both.
+
+Emails send through Resend. One-time setup:
+
+1. Create an account at resend.com and add the domain `otakudesk.com`. Add
+   the DNS records it shows (DKIM, SPF, DMARC) in the Cloudflare dashboard.
+2. Create an API key and set it on both Workers:
+
+   ```
+   npx wrangler secret put RESEND_API_KEY
+   npx wrangler secret put RESEND_API_KEY -c newsletter/wrangler.jsonc
+   ```
+
+3. Put a postal mailing address in `NEWSLETTER.postalAddress` in
+   `lib/newsletter.ts`. Anti-spam law requires one in every marketing email;
+   the cron Worker refuses to send while it is empty.
+
+Rules baked in: double opt-in (nothing sends until the confirmation link is
+clicked), a one-click unsubscribe link and `List-Unsubscribe` header on
+every issue, and links to product pages only, never to a merchant, because
+Amazon forbids affiliate links in email. Missing configuration is logged as
+`newsletter_misconfigured` and nothing sends.
+
+To exercise the cron handler locally: `npm run newsletter:dev`, then open
+`http://localhost:8787/__scheduled`.

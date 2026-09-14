@@ -51,11 +51,14 @@ export default function PrivacyPage() {
       </p>
       <h3>Email list</h3>
       <p>
-        If you sign up, we keep your email address and the date you signed up,
-        and use it to send the newsletter. Every email carries an unsubscribe
-        link, and unsubscribing deletes you from the list. Email provider:{' '}
-        <Placeholder what="email service provider" />. We do not add anyone who
-        has not signed up, and we do not buy or import lists.
+        If you sign up, we store your email address, the date you signed up, and
+        the date you confirmed, in a Cloudflare KV store on our account. Nothing
+        is sent until you click the confirmation link in the first email.
+        Emails are delivered by Resend, which processes your address to send
+        them. Every issue carries a one-click unsubscribe link, and
+        unsubscribing deletes your record. Unconfirmed signups are deleted
+        automatically after seven days. We do not add anyone who has not signed
+        up, and we do not buy or import lists.
       </p>
       <h3>Contact</h3>
       <p>
