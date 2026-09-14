@@ -75,15 +75,15 @@ export function Header() {
         </form>
 
         <Link
-          href="/journal"
+          href="/about"
           className="hidden shrink-0 text-sm font-medium text-fg transition-colors hover:text-accent sm:block"
         >
-          Journal
+          About
         </Link>
       </div>
 
       <nav aria-label="Categories" className="border-t border-line">
-        <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-2 text-sm">
+        <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-2 text-sm sm:justify-center">
           <li>
             <Link
               href="/desk"
@@ -104,10 +104,10 @@ export function Header() {
           ))}
           <li className="sm:hidden">
             <Link
-              href="/journal"
+              href="/about"
               className="block whitespace-nowrap px-2 py-2.5 text-fg-muted transition-colors hover:text-accent"
             >
-              Journal
+              About
             </Link>
           </li>
         </ul>
@@ -118,8 +118,8 @@ export function Header() {
 
 const FOOTER_LINKS = [
   { href: '/desk', label: 'All products' },
-  { href: '/journal', label: 'Journal' },
   { href: '/about', label: 'About' },
+  { href: '/journal', label: 'Guides' },
   { href: '/disclosure', label: 'Affiliate disclosure' },
   { href: '/privacy', label: 'Privacy' },
   { href: '/terms', label: 'Terms' },
