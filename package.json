@@ -13,7 +13,9 @@
     "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy && npm run newsletter:deploy",
     "newsletter:deploy": "wrangler deploy -c newsletter/wrangler.jsonc",
     "newsletter:dev": "wrangler dev -c newsletter/wrangler.jsonc --test-scheduled",
-    "check:overflow": "node scripts/check-overflow.mjs"
+    "check:overflow": "node scripts/check-overflow.mjs",
+    "prices:refresh": "tsx scripts/refresh-prices.ts",
+    "links:check": "tsx scripts/check-links.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
