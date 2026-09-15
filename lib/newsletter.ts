@@ -24,7 +24,7 @@ export const NEWSLETTER = {
    * Required in every marketing email by anti-spam law (CAN-SPAM and others).
    * A PO box is fine. Empty means no issue is sent, by design.
    */
-  postalAddress: '',
+  postalAddress: 'Otakudesk, 617 Breckenridge Park Drive, Alvarado, TX 76009',
   /** Products added within this many days of the send go into the issue. */
   windowDays: 7,
   /** Unconfirmed signups expire after this long. */
