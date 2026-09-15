@@ -1,5 +1,6 @@
 import type { Pick } from '../data/types'
 import { isPriceFresh, isPurchasable } from '../data/types'
+import { SITE } from './site'
 
 /**
  * The weekly newsletter: subscriber storage, double opt-in, and the issue.
@@ -17,14 +18,15 @@ import { isPriceFresh, isPurchasable } from '../data/types'
  */
 
 export const NEWSLETTER = {
-  siteUrl: 'https://otakudesk.com',
+  siteUrl: SITE.url,
   /** Must be on a domain verified in Resend. */
   from: 'Otakudesk <newsletter@otakudesk.com>',
   /**
    * Required in every marketing email by anti-spam law (CAN-SPAM and others).
-   * A PO box is fine. Empty means no issue is sent, by design.
+   * Derived from lib/site.ts so the legal pages and the email footer cannot
+   * drift apart. Empty means no issue is sent, by design.
    */
-  postalAddress: 'Otakudesk, 617 Breckenridge Park Drive, Alvarado, TX 76009',
+  postalAddress: `${SITE.legalName}, ${SITE.address}`,
   /** Products added within this many days of the send go into the issue. */
   windowDays: 7,
   /** Unconfirmed signups expire after this long. */

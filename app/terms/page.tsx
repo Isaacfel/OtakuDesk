@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { LegalPage, Placeholder } from '@/app/_legal/LegalShell'
+import { LegalPage, ContactEmail } from '@/app/_legal/LegalShell'
+import { SITE } from '@/lib/site'
 import { PRICE_MAX_AGE_DAYS } from '@/data/types'
 
 export const metadata: Metadata = {
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 /**
- * Terms of use — draft. Short and honest. Most of what matters legally
+ * Terms of use. Short and honest. Most of what matters legally
  * follows from one fact: we are not a party to any purchase.
  */
 export default function TermsPage() {
@@ -84,8 +85,8 @@ export default function TermsPage() {
 
       <h2 id="law">Governing law</h2>
       <p>
-        These terms are governed by the laws of{' '}
-        <Placeholder what="governing jurisdiction" />, and disputes go to the
+        These terms are governed by the laws of {SITE.jurisdiction}, and
+        disputes go to the
         courts there, without prejudice to any mandatory consumer protections
         where you live.
       </p>
@@ -99,9 +100,8 @@ export default function TermsPage() {
 
       <h2 id="who">Who you are dealing with</h2>
       <p>
-        This site is operated by <Placeholder what="legal entity name" />,{' '}
-        <Placeholder what="business address" />. Contact:{' '}
-        <Placeholder what="contact email" />.
+        This site is operated by {SITE.legalName}, {SITE.address}. Contact:{' '}
+        <ContactEmail />.
       </p>
     </LegalPage>
   )

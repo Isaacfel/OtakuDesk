@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { LegalPage, Placeholder } from '@/app/_legal/LegalShell'
+import { LegalPage, ContactEmail } from '@/app/_legal/LegalShell'
+import { SITE } from '@/lib/site'
 import { MERCHANTS } from '@/data/merchants'
 import { PRICE_MAX_AGE_DAYS, type AffiliateNetwork } from '@/data/types'
 import { INLINE_DISCLOSURE, AMAZON_ATTESTATION } from '@/lib/affiliate'
@@ -166,10 +167,8 @@ export default function DisclosurePage() {
 
       <h2 id="entity">Who is disclosing</h2>
       <p>
-        This disclosure is made by the operator of Otakudesk:{' '}
-        <Placeholder what="legal entity name" />, located at{' '}
-        <Placeholder what="business address" />. Questions about this page:{' '}
-        <Placeholder what="contact email" />.
+        This disclosure is made by the operator of Otakudesk: {SITE.legalName},{' '}
+        {SITE.address}. Questions about this page: <ContactEmail />.
       </p>
     </LegalPage>
   )
