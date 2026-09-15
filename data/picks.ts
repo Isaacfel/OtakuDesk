@@ -60,7 +60,7 @@ export const PICKS: Pick[] = [
     licenseStatus: 'officially_licensed',
     goSlug: 'demon-slayer-vol-1-viz',
     purchaseUrl: 'https://www.amazon.com/dp/1974700526',
-    price: 6.71,
+    price: 6.72,
     currency: 'USD',
     priceCheckedAt: '2026-09-15',
     images: [{ src: 'https://m.media-amazon.com/images/I/81ZNkhqRvVL._SL1500_.jpg', alt: 'Demon Slayer: Kimetsu no Yaiba, Vol. 1 paperback', source: 'merchant_listing' }],
