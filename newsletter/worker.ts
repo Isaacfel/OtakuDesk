@@ -22,7 +22,6 @@ import {
 
 type Env = { SUBSCRIBERS: KVLike; RESEND_API_KEY?: string }
 type ScheduledEvent = { scheduledTime: number; cron: string }
-type Ctx = { waitUntil(promise: Promise<unknown>): void }
 
 export async function sendWeeklyIssue(env: Env, now: Date = new Date()): Promise<void> {
   if (!env.SUBSCRIBERS) throw new NewsletterConfigError('SUBSCRIBERS KV binding is missing')
@@ -68,17 +67,19 @@ export async function sendWeeklyIssue(env: Env, now: Date = new Date()): Promise
 }
 
 const worker = {
-  async scheduled(event: ScheduledEvent, env: Env, ctx: Ctx) {
-    ctx.waitUntil(
-      sendWeeklyIssue(env, new Date(event.scheduledTime)).catch((err) => {
-        console.error(
-          JSON.stringify({
-            event: err instanceof NewsletterConfigError ? 'newsletter_misconfigured' : 'newsletter_issue_failed',
-            reason: err instanceof Error ? err.message : String(err),
-          }),
-        )
-      }),
-    )
+  // Awaited, not handed to waitUntil: the runtime keeps a scheduled
+  // invocation alive only as long as the returned promise.
+  async scheduled(event: ScheduledEvent, env: Env) {
+    try {
+      await sendWeeklyIssue(env, new Date(event.scheduledTime))
+    } catch (err) {
+      console.error(
+        JSON.stringify({
+          event: err instanceof NewsletterConfigError ? 'newsletter_misconfigured' : 'newsletter_issue_failed',
+          reason: err instanceof Error ? err.message : String(err),
+        }),
+      )
+    }
   },
 
   // This Worker has no public surface. Anything that reaches it over HTTP

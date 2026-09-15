@@ -1,0 +1,21 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "otakudesk-prices",
+  "main": "worker.ts",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  // Mondays, every two minutes from 13:00 to 14:58 UTC. Each firing reads ONE
+  // listing; the firing that completes the list opens the pull request. That
+  // keeps CPU per invocation tiny (free-plan safe) and spaces the fetches out.
+  "triggers": { "crons": ["*/2 13-14 * * 1"] },
+
+  // Progress for the week's run lives here under run:<date>.
+  "kv_namespaces": [{ "binding": "PRICES", "id": "f70089a0447a40cba0d73c0e11d4d636" }],
+
+  "vars": { "GITHUB_REPO": "Isaacfel/OtakuDesk" }
+
+  // Secret, set with: npx wrangler secret put GITHUB_TOKEN -c prices/wrangler.jsonc
+  // (fine-grained token for this repo only: Contents and Pull requests, read and write)
+}

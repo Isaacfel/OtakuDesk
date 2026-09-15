@@ -10,9 +10,11 @@
     "test": "tsx --test tests/*.test.mts",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy && npm run newsletter:deploy",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy && npm run newsletter:deploy && npm run prices:deploy",
     "newsletter:deploy": "wrangler deploy -c newsletter/wrangler.jsonc",
     "newsletter:dev": "wrangler dev -c newsletter/wrangler.jsonc --test-scheduled",
+    "prices:deploy": "wrangler deploy -c prices/wrangler.jsonc",
+    "prices:dev": "wrangler dev --remote -c prices/wrangler.jsonc --test-scheduled --var DRY_RUN:1",
     "check:overflow": "node scripts/check-overflow.mjs",
     "prices:refresh": "tsx scripts/refresh-prices.ts",
     "links:check": "tsx scripts/check-links.ts"

@@ -7,7 +7,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { applyPrice, parseOutcome, parsePrice } from '../scripts/refresh-prices'
+import { applyPrice, parseOutcome, parsePrice } from '../lib/prices'
 import { PICKS } from '../data/picks'
 
 const CORE = (price: string) =>
