@@ -1,34 +1,48 @@
 /**
- * The Otakudesk wordmark. The O of OTAKU is a desk: a monitor whose thick
- * rounded frame reads as the letter's ring, on a tabletop with two legs. One
- * red shape, followed by TAKU in ink and DESK in red, set in Kanit Extra-Bold
- * Italic. Original, no characters, nothing but the name.
+ * The Otakudesk logo: a small desk with a face, and the name beside it.
+ *
+ * The desk is drawn as line art in the text colour with a red tabletop and a
+ * red mug on top. The face (two eyes, a smile, a blush) sits on the drawer
+ * front. The name is OTAKUDESK in spaced Poppins capitals, one colour, so the
+ * desk does the talking.
  */
 
 /**
- * The desk-as-O glyph. Sized in em so it sits on the baseline at the letters'
- * cap height whatever the wordmark's font size.
+ * The desk mascot on its own. Strokes use `currentColor`, so set a text
+ * colour on the parent to recolour the line art; the tabletop and mug take
+ * the accent red from the theme.
  */
-export function DeskO({ className = '' }: { className?: string }) {
+export function DeskMark({ className = '' }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 30 34"
-      fill="currentColor"
-      fillRule="evenodd"
+      viewBox="2 2 124 98"
       aria-hidden="true"
       className={className}
-      // Cap height of Kanit, slanted to match its italic.
-      style={{ height: '0.8em', width: 'auto', transform: 'skewX(-11deg)' }}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="5"
+      strokeLinejoin="round"
+      strokeLinecap="round"
     >
-      {/* Monitor: a rounded frame with the screen cut out, like an O's counter. */}
-      <path d="M6 0h18a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H6a6 6 0 0 1-6-6V6a6 6 0 0 1 6-6zm0 5.5a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 6 16.5h18a1.5 1.5 0 0 0 1.5-1.5V7A1.5 1.5 0 0 0 24 5.5z" />
-      {/* Stand. */}
-      <rect x="13" y="22" width="4" height="3.5" />
+      {/* Legs. */}
+      <rect x="16" y="44" width="12" height="52" rx="4" fill="var(--bg)" />
+      <rect x="92" y="44" width="12" height="52" rx="4" fill="var(--bg)" />
+      {/* Drawer front, with the face. */}
+      <rect x="24" y="44" width="72" height="34" rx="8" fill="var(--bg)" />
+      <g stroke="none" fill="currentColor">
+        <circle cx="44.6" cy="58" r="4.8" />
+        <circle cx="75.4" cy="58" r="4.8" />
+      </g>
+      <path d="M52.3 65.7q7.7 6.6 15.4 0" strokeWidth="4.4" />
+      <g stroke="none" fill="#ffb3c0">
+        <ellipse cx="35.8" cy="65.7" rx="5.1" ry="3.1" />
+        <ellipse cx="84.2" cy="65.7" rx="5.1" ry="3.1" />
+      </g>
       {/* Tabletop. */}
-      <rect x="0" y="25.5" width="30" height="4" rx="1" />
-      {/* Legs, splayed with the italic. */}
-      <path d="M4 29.5h4.5L6.5 34H2z" />
-      <path d="M21.5 29.5H26l2 4.5h-4.5z" />
+      <rect x="6" y="28" width="108" height="16" rx="6" fill="var(--accent)" />
+      {/* Mug. */}
+      <path d="M112 12h4a5.5 5.5 0 0 1 0 11h-4" />
+      <rect x="96" y="6" width="16" height="22" rx="3" fill="var(--accent)" />
     </svg>
   )
 }
@@ -36,16 +50,26 @@ export function DeskO({ className = '' }: { className?: string }) {
 export function Logo({ size = 'md' }: { size?: 'md' | 'lg' }) {
   const lg = size === 'lg'
   return (
-    <span
-      className={`inline-flex items-baseline font-display uppercase leading-none tracking-tight ${lg ? 'text-3xl' : 'text-2xl'}`}
-    >
-      <span className="sr-only">Otakudesk</span>
-      <DeskO className="mr-[0.06em] shrink-0 text-accent" />
-      <span aria-hidden="true" className="text-fg">
-        taku
+    <span className="inline-flex items-center gap-2.5 text-fg">
+      <DeskMark className={`shrink-0 ${lg ? 'h-12' : 'h-9'} w-auto`} />
+      <span
+        className={`font-display font-bold uppercase leading-none ${
+          lg ? 'text-[22px] tracking-[0.18em]' : 'text-[17px] tracking-[0.16em]'
+        }`}
+      >
+        Otakudesk
       </span>
-      <span aria-hidden="true" className="text-accent">
-        desk
+    </span>
+  )
+}
+
+/** The stacked version: desk on top, name underneath. For pages and social. */
+export function LogoStacked() {
+  return (
+    <span className="inline-flex flex-col items-center gap-3 text-fg">
+      <DeskMark className="h-24 w-auto" />
+      <span className="font-display text-xl font-bold uppercase leading-none tracking-[0.22em] pl-[0.22em]">
+        Otakudesk
       </span>
     </span>
   )
