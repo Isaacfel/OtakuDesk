@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Archivo_Black, Inter } from 'next/font/google'
+import { Inter, Kanit } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({
@@ -8,11 +8,12 @@ const inter = Inter({
   display: 'swap',
 })
 
-// Heavy geometric face for the wordmark only.
-const archivoBlack = Archivo_Black({
+// Heavy italic display face for the wordmark only.
+const kanit = Kanit({
   subsets: ['latin'],
-  weight: '400',
-  variable: '--font-archivo-black',
+  weight: '800',
+  style: 'italic',
+  variable: '--font-kanit',
   display: 'swap',
 })
 
@@ -43,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${archivoBlack.variable}`}>
+    <html lang="en" className={`${inter.variable} ${kanit.variable}`}>
       <body className="min-h-screen bg-bg text-fg antialiased">{children}</body>
     </html>
   )

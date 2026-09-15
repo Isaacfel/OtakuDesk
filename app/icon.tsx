@@ -1,8 +1,8 @@
 import { ImageResponse } from 'next/og'
 
 /**
- * Favicon: the desk glyph from components/Logo.tsx, white on the accent red.
- * Duplicated rather than imported because this renders through Satori at
+ * Favicon: the desk-as-O glyph from components/Logo.tsx, white on the accent
+ * red. Duplicated rather than imported because this renders through Satori at
  * build time, which wants plain SVG elements with inline attributes.
  */
 
@@ -23,12 +23,12 @@ export default function Icon() {
           borderRadius: 12,
         }}
       >
-        <svg width="48" height="36" viewBox="0 0 40 30" fill="#ffffff">
-          <rect x="10" y="1" width="20" height="13" rx="1.5" />
-          <rect x="18.5" y="14" width="3" height="3" />
-          <rect x="1" y="17" width="38" height="4.5" rx="1" />
-          <path d="M6 21.5h4.5L8 30H3.5z" />
-          <path d="M29.5 21.5H34l2.5 8.5H32z" />
+        <svg width="40" height="45" viewBox="0 0 30 34" fill="#ffffff" fillRule="evenodd">
+          <path d="M6 0h18a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H6a6 6 0 0 1-6-6V6a6 6 0 0 1 6-6zm0 5.5a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 6 16.5h18a1.5 1.5 0 0 0 1.5-1.5V7A1.5 1.5 0 0 0 24 5.5z" />
+          <rect x="13" y="22" width="4" height="3.5" />
+          <rect x="0" y="25.5" width="30" height="4" rx="1" />
+          <path d="M4 29.5h4.5L6.5 34H2z" />
+          <path d="M21.5 29.5H26l2 4.5h-4.5z" />
         </svg>
       </div>
     ),
