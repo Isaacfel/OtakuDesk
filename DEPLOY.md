@@ -132,6 +132,41 @@ Amazon forbids affiliate links in email. Missing configuration is logged as
 To exercise the cron handler locally: `npm run newsletter:dev`, then open
 `http://localhost:8787/__scheduled`.
 
+## Outbound click log
+
+`/go/[slug]` records every outbound click in the `CLICKS` KV namespace (bound
+in `wrangler.jsonc`), one key per click:
+
+```
+click:<YYYY-MM-DD>:<pickSlug>:<random id>   →   { merchant, network, from, ts }
+```
+
+One key per click rather than a counter because KV has no atomic increment;
+a read-modify-write counter would lose clicks under concurrent traffic. Keys
+expire after 13 months, which is the retention period the privacy page
+states, and the value holds no IP, user agent, or cookie — the log is
+anonymous by construction. A failed write is logged as `click_record_failed`
+and never affects the redirect.
+
+`GET /api/clicks?days=30` (default 30, max 400) returns the summary as JSON:
+`{ days, total, byPick: [{ pickSlug, clicks }], byDay: [{ date, clicks }] }`.
+It is gated by a bearer token held in the `ADMIN_TOKEN` Worker secret. Set it
+once (any long random string):
+
+```
+npx wrangler secret put ADMIN_TOKEN
+```
+
+Then, from any machine:
+
+```
+curl -H "authorization: Bearer $ADMIN_TOKEN" "https://otakudesk.com/api/clicks?days=30"
+```
+
+A wrong or missing token gets a 401; a Worker without the `CLICKS` binding
+gets a 503 and logs `clicks_misconfigured`. `/api/` is disallowed in
+robots.txt and every response carries `X-Robots-Tag: noindex`.
+
 ## Weekly price refresh
 
 The site hides any price older than 45 days, so prices must be re-read
