@@ -1,21 +1,22 @@
 /**
- * The Otakudesk mark: a stylised eye in the accent red, drawn from scratch.
- * No character, no series; the only thing it quotes is the genre's line
- * style. Wordmark beside it, katakana reading underneath.
+ * The Otakudesk wordmark: heavy uppercase display type, slightly italic,
+ * OTAKU in ink and DESK in the accent red, with a desk-and-monitor glyph in
+ * front drawn at the same visual weight. Original, no characters, no text
+ * beyond the name.
  */
-export function LogoMark({ className = 'h-7 w-11' }: { className?: string }) {
+
+/** A desk with a monitor on it, drawn in blocks so it matches the letterforms. */
+export function DeskMark({ className = 'h-6 w-8' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 64 40" fill="none" aria-hidden="true" className={className}>
-      {/* Upper lid, with the outer-corner flick. */}
-      <path d="M6 23C15 9 49 9 58 23" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-      <path d="M57 22l5-6" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
-      {/* Two lashes. */}
-      <path d="M47 11l2-5M40 8.5l1-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-      {/* Lower lid. */}
-      <path d="M12 25c8 9 32 9 40 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-      {/* Iris and highlight. */}
-      <circle cx="32" cy="22" r="7" fill="currentColor" />
-      <circle cx="34.5" cy="19.5" r="2" fill="#ffffff" />
+    <svg viewBox="0 0 40 30" fill="currentColor" aria-hidden="true" className={className}>
+      {/* Monitor and stand. */}
+      <rect x="10" y="1" width="20" height="13" rx="1.5" />
+      <rect x="18.5" y="14" width="3" height="3" />
+      {/* Tabletop. */}
+      <rect x="1" y="17" width="38" height="4.5" rx="1" />
+      {/* Legs, splayed like the italic letters. */}
+      <path d="M6 21.5h4.5L8 30H3.5z" />
+      <path d="M29.5 21.5H34l2.5 8.5H32z" />
     </svg>
   )
 }
@@ -23,15 +24,14 @@ export function LogoMark({ className = 'h-7 w-11' }: { className?: string }) {
 export function Logo({ size = 'md' }: { size?: 'md' | 'lg' }) {
   const lg = size === 'lg'
   return (
-    <span className="inline-flex items-center gap-2.5">
-      <LogoMark className={`text-accent ${lg ? 'h-9 w-14' : 'h-7 w-11'}`} />
-      <span className="flex flex-col leading-none">
-        <span className={`font-extrabold tracking-tight text-fg ${lg ? 'text-2xl' : 'text-xl'}`}>
-          Otaku<span className="text-accent">desk</span>
-        </span>
-        <span lang="ja" className="mt-1 text-[10px] font-medium tracking-[0.22em] text-fg-muted">
-          オタクデスク
-        </span>
+    <span className="inline-flex items-center gap-2">
+      <DeskMark className={`shrink-0 text-accent ${lg ? 'h-8 w-11' : 'h-6 w-8'}`} />
+      <span
+        className={`font-display uppercase italic leading-none tracking-tight ${lg ? 'text-3xl' : 'text-2xl'}`}
+        style={{ transform: 'skewX(-6deg)' }}
+      >
+        <span className="text-fg">Otaku</span>
+        <span className="text-accent">desk</span>
       </span>
     </span>
   )

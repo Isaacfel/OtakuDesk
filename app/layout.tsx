@@ -1,10 +1,18 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Archivo_Black, Inter } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+})
+
+// Heavy geometric face for the wordmark only.
+const archivoBlack = Archivo_Black({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-archivo-black',
   display: 'swap',
 })
 
@@ -35,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${archivoBlack.variable}`}>
       <body className="min-h-screen bg-bg text-fg antialiased">{children}</body>
     </html>
   )
