@@ -17,6 +17,9 @@
  *
  * Exit codes: 0 fine; 2 when Amazon blocked most requests (bot check), so a
  * scheduled run knows not to open an empty pull request.
+ *
+ * Runs from a home connection via scripts/refresh-prices.ps1 and Windows Task
+ * Scheduler. GitHub's hosted runners are blocked by Amazon's bot check.
  */
 
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -124,10 +127,15 @@ export function applyPrice(source: string, pick: Pick, price: number, date: stri
   const i = source.indexOf(anchor)
   if (i < 0) throw new Error(`could not find ${pick.slug} in data/picks.ts`)
   const window = source.slice(i, i + 800)
+  const PRICE_FIELD = /price: (?:[0-9.]+|null),/
+  const DATE_FIELD = /priceCheckedAt: (?:[A-Z_]+|'[0-9-]+'),/
+  // Presence, not difference: an unchanged price on the same day is a
+  // legitimate no-op, not a missing field.
+  if (!PRICE_FIELD.test(window) || !DATE_FIELD.test(window))
+    throw new Error(`no price fields found for ${pick.slug}`)
   const updated = window
-    .replace(/price: (?:[0-9.]+|null),/, `price: ${price},`)
-    .replace(/priceCheckedAt: (?:[A-Z_]+|'[0-9-]+'),/, `priceCheckedAt: '${date}',`)
-  if (updated === window) throw new Error(`no price fields found for ${pick.slug}`)
+    .replace(PRICE_FIELD, `price: ${price},`)
+    .replace(DATE_FIELD, `priceCheckedAt: '${date}',`)
   return source.slice(0, i) + updated + source.slice(i + 800)
 }
 

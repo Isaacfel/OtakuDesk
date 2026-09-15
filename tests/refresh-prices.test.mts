@@ -86,6 +86,9 @@ test('applyPrice: rewrites only the target pick and only price fields', () => {
   assert.ok(out.includes(`    price: ${a.price},\n    currency: 'USD',\n    priceCheckedAt: AMAZON_DATE,`), 'first pick untouched')
   assert.ok(out.includes(`    price: 12.34,\n    currency: 'USD',\n    priceCheckedAt: '2026-10-01',`), 'second pick updated')
   assert.throws(() => applyPrice(source, { ...b, purchaseUrl: 'https://www.amazon.com/dp/NOPE000000' }, 1, '2026-10-01'))
+
+  // Same price on the same day is a no-op, not an error.
+  assert.equal(applyPrice(source, b, b.price ?? 0, '2026-09-13'), source)
 })
 
 test('applyPrice: works on the real catalog source for every live pick', async () => {
