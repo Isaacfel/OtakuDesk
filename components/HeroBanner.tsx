@@ -2,17 +2,14 @@ import Link from 'next/link'
 
 /**
  * Home banner: the owner-supplied artwork in /public with a short line of
- * copy over it. The image is stated by the owner to be a public, free-to-use
- * animation still (recorded here and in the commit that added it).
+ * copy over it. The owner chose and supplied the image and states it is free
+ * to use (recorded here and in the commit that added it).
  *
- * Copy sits over a left-side gradient so it reads against the red without
- * covering the picture. Two lines and one button; nothing else.
- */
-
-/**
- * The animation ships as animated WebP (523 KB against the source GIF's
- * 2.8 MB, same frames); the JPEG is its first frame, the fallback for a
- * browser without WebP and the social-preview image.
+ * Copy sits over a left-side gradient so it reads against the picture without
+ * covering it. Two lines and one button; nothing else.
+ *
+ * Shipped at 1800px wide as WebP with a JPEG fallback, both resized from the
+ * owner's 5119px original, so it stays sharp on large screens.
  */
 export const BANNER = { webp: '/banner.webp', poster: '/banner.jpg' } as const
 
