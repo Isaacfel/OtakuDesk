@@ -3,6 +3,7 @@ import { PICKS } from '@/data/picks'
 import { MERCHANTS } from '@/data/merchants'
 import type { Category } from '@/data/types'
 import { AMAZON_ATTESTATION } from '@/lib/affiliate'
+import { Logo } from './Logo'
 
 /**
  * Site shell: a store header with search and category links, and a footer
@@ -41,26 +42,28 @@ export function categoryLinks(): CategoryLink[] {
   }))
 }
 
-export function Wordmark({ className = '' }: { className?: string }) {
-  return (
-    <span className={`text-xl font-extrabold tracking-tight text-fg ${className}`}>
-      Otaku<span className="text-accent">desk</span>
-    </span>
-  )
-}
+/** The footer and other callers still import this name. */
+export const Wordmark = Logo
 
 export function Header() {
   const categories = categoryLinks()
 
   return (
     <header className="border-b border-line bg-bg">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:gap-6">
-        <Link href="/" aria-label="Otakudesk home" className="shrink-0">
-          <Wordmark />
+      {/* Three balanced columns on wider screens: logo, centred search, About.
+          On phones the logo and About share the first row and the search box
+          takes the full second row. */}
+      <div className="mx-auto grid max-w-6xl grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 px-4 py-3 sm:grid-cols-[1fr_minmax(0,36rem)_1fr] sm:gap-x-6">
+        <Link href="/" aria-label="Otakudesk home" className="justify-self-start">
+          <Logo />
         </Link>
 
         {/* Plain GET form: works without JavaScript and keeps the header static. */}
-        <form action="/desk" role="search" className="min-w-0 flex-1 sm:max-w-xl">
+        <form
+          action="/desk"
+          role="search"
+          className="order-3 col-span-2 w-full sm:order-none sm:col-span-1 sm:justify-self-center"
+        >
           <label htmlFor="site-search" className="sr-only">
             Search products
           </label>
@@ -76,7 +79,7 @@ export function Header() {
 
         <Link
           href="/about"
-          className="hidden shrink-0 text-sm font-medium text-fg transition-colors hover:text-accent sm:block"
+          className="order-2 justify-self-end text-sm font-medium text-fg transition-colors hover:text-accent sm:order-none"
         >
           About
         </Link>
@@ -102,14 +105,6 @@ export function Header() {
               </Link>
             </li>
           ))}
-          <li className="sm:hidden">
-            <Link
-              href="/about"
-              className="block whitespace-nowrap px-2 py-2.5 text-fg-muted transition-colors hover:text-accent"
-            >
-              About
-            </Link>
-          </li>
         </ul>
       </nav>
     </header>
