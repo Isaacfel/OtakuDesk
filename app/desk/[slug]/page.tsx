@@ -12,6 +12,7 @@ import { OutboundButton } from '@/components/OutboundButton'
 import { ProductGrid, ProductImage } from '@/components/ProductCard'
 import { LicenceBadge, ProductDetails } from '@/components/ProductDetails'
 import { SITE } from '@/lib/site'
+import { breadcrumbJsonLd, jsonLdScript, productJsonLd } from '@/lib/structured-data'
 
 /**
  * The product page. Image, title, licence badge, seller, price, one buy
@@ -90,8 +91,19 @@ export default async function PickPage({ params }: Props) {
   const more = related(pick).map(toCatalogPick)
   const safe = toCatalogPick(pick)
 
+  // Built only past the notFound gate, so a 404 never carries a Product
+  // claim. jsonLdScript escapes `<`, so a title cannot close the script tag.
+  const jsonLd = [productJsonLd(pick, merchant), breadcrumbJsonLd(pick)]
+
   return (
     <>
+      {jsonLd.map((data) => (
+        <script
+          key={data['@type']}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdScript(data) }}
+        />
+      ))}
       <Header />
       <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
         <nav aria-label="Breadcrumb" className="mb-4 text-sm text-fg-muted">
