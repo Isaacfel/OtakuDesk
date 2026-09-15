@@ -134,6 +134,46 @@ export function Footer() {
   return (
     <footer className="mt-16 border-t border-line bg-bg-soft">
       <div className="mx-auto max-w-6xl px-4 py-10">
+        {/* Newsletter signup. Plain POST form; /api/newsletter/subscribe sends a
+            confirmation link, so nobody is added without clicking it. */}
+        <form
+          action="/api/newsletter/subscribe"
+          method="post"
+          className="mb-10 max-w-md border-b border-line pb-10"
+        >
+          <p className="text-sm font-semibold text-fg">New products, once a week.</p>
+          <div className="mt-3 flex gap-2">
+            <label htmlFor="newsletter-email" className="sr-only">
+              Email address
+            </label>
+            <input
+              id="newsletter-email"
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+              className="min-w-0 flex-1 rounded-full border border-line bg-bg px-4 py-2 text-sm text-fg placeholder:text-fg-muted focus:border-line-strong focus:outline-none"
+            />
+            {/* Honeypot: hidden from people, filled by bots. */}
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="hidden"
+            />
+            <button
+              type="submit"
+              className="shrink-0 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-hover"
+            >
+              Subscribe
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-fg-muted">Unsubscribe any time.</p>
+        </form>
+
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <Wordmark />
           <nav aria-label="Footer">

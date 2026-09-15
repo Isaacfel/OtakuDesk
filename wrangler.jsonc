@@ -10,6 +10,11 @@
   },
   "observability": { "enabled": true },
 
+  // Newsletter subscribers. Shared with the cron Worker in newsletter/, which
+  // sends the weekly issue. Secret RESEND_API_KEY is set with
+  // `wrangler secret put` on both Workers and never appears here.
+  "kv_namespaces": [{ "binding": "SUBSCRIBERS", "id": "fa3607a7e5814994b5805a7beb4d790e" }],
+
   // Custom domains. otakudesk.com is registered in this same Cloudflare
   // account, so the DNS records and the TLS certificate are created and
   // renewed automatically — there is no nameserver change to make.

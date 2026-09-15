@@ -10,7 +10,9 @@
     "test": "tsx --test tests/*.test.mts",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy && npm run newsletter:deploy",
+    "newsletter:deploy": "wrangler deploy -c newsletter/wrangler.jsonc",
+    "newsletter:dev": "wrangler dev -c newsletter/wrangler.jsonc --test-scheduled",
     "check:overflow": "node scripts/check-overflow.mjs"
   },
   "dependencies": {
