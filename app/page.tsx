@@ -1,22 +1,28 @@
 import { Header, Footer } from '@/components/Shell'
 import { HeroBanner } from '@/components/HeroBanner'
 import { CategoryRow } from '@/components/CategoryRow'
-import { PICKS } from '@/data/picks'
+import { PICKS, navCategories } from '@/data/picks'
 import { toCatalogPick, type Category } from '@/data/types'
 
 /**
  * Home: a banner of real product photos, then product rows by category.
  * Nothing on this page links to a merchant; only the product page does.
+ *
+ * The rows follow the header nav: a category gets a row only when it clears
+ * the same MIN_NAV_PICKS gate, so the home page never advertises a category
+ * whose page would be empty or all "still checking" panels.
  */
-
-const HOME_ROWS: Array<{ id: string; category: Category }> = [
-  { id: 'figures', category: 'Figures & Collectibles' },
-  { id: 'manga', category: 'Manga & Books' },
-  { id: 'desk', category: 'Desk & Room' },
-]
 
 function categoryHref(category: Category) {
   return `/desk?category=${encodeURIComponent(category)}`
+}
+
+/** Heading id for aria-labelledby: 'Figures & Collectibles' -> 'figures-collectibles'. */
+function rowId(category: Category) {
+  return category
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
 }
 
 export default function HomePage() {
@@ -37,13 +43,13 @@ export default function HomePage() {
 
         <CategoryRow id="new" title="New" href="/desk?sort=newest" picks={newest.slice(0, 4)} />
 
-        {HOME_ROWS.map((row) => (
+        {navCategories().map((category) => (
           <CategoryRow
-            key={row.id}
-            id={row.id}
-            title={row.category}
-            href={categoryHref(row.category)}
-            picks={PICKS.filter((p) => p.category === row.category).map(toCatalogPick)}
+            key={category}
+            id={rowId(category)}
+            title={category}
+            href={categoryHref(category)}
+            picks={PICKS.filter((p) => p.category === category).map(toCatalogPick)}
           />
         ))}
       </main>

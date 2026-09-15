@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { PICKS } from '@/data/picks'
+import { navCategories } from '@/data/picks'
 import { MERCHANTS } from '@/data/merchants'
 import type { Category } from '@/data/types'
 import { AMAZON_ATTESTATION } from '@/lib/affiliate'
@@ -21,21 +21,15 @@ const SHORT_LABEL: Record<Category, string> = {
   'Storage & Display': 'Storage',
 }
 
-const NAV_ORDER: Category[] = [
-  'Figures & Collectibles',
-  'Manga & Books',
-  'Desk & Room',
-  'Wall Art',
-  'Apparel',
-  'Accessories',
-  'Storage & Display',
-]
-
 export type CategoryLink = { value: Category; label: string; href: string }
 
-/** Categories that currently have at least one pick, in nav order. */
+/**
+ * Categories worth linking to, in nav order. The gate (MIN_NAV_PICKS
+ * purchasable picks) lives in data/picks.ts so the home page rows and the
+ * /desk filter tabs agree with the header about what is on offer.
+ */
 export function categoryLinks(): CategoryLink[] {
-  return NAV_ORDER.filter((c) => PICKS.some((p) => p.category === c)).map((c) => ({
+  return navCategories().map((c) => ({
     value: c,
     label: SHORT_LABEL[c],
     href: `/desk?category=${encodeURIComponent(c)}`,

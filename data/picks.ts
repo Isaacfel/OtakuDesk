@@ -1,4 +1,5 @@
-import type { Pick } from './types'
+import type { Category, Pick } from './types'
+import { isPurchasable } from './types'
 import { COLLECTIONS } from './collections'
 
 // Re-exported for server-side consumers. Client Components must import these
@@ -775,6 +776,35 @@ export const getCollection = (slug: string) =>
   COLLECTIONS.find((c) => c.slug === slug)
 export const getPicksInCollection = (slug: string) =>
   PICKS.filter((p) => p.collections.includes(slug))
+
+/**
+ * Category navigation gate.
+ *
+ * A category earns a header link and a homepage row only once it has this
+ * many purchasable picks. Below that, the link sends a shopper to a page that
+ * is empty or nothing but "still checking" panels, which reads as a broken
+ * store rather than a small one. The category pages themselves stay
+ * reachable by direct URL; only the ways in are gated.
+ */
+export const MIN_NAV_PICKS = 2
+
+/** The order categories appear in the header and on the home page. */
+export const NAV_ORDER: Category[] = [
+  'Figures & Collectibles',
+  'Manga & Books',
+  'Desk & Room',
+  'Wall Art',
+  'Apparel',
+  'Accessories',
+  'Storage & Display',
+]
+
+/** Categories with enough purchasable picks to be worth linking to, in nav order. */
+export function navCategories(picks: readonly Pick[] = PICKS): Category[] {
+  return NAV_ORDER.filter(
+    (c) => picks.filter((p) => p.category === c && isPurchasable(p)).length >= MIN_NAV_PICKS,
+  )
+}
 
 /**
  * Gift-quiz availability gate.
