@@ -29,16 +29,11 @@ export default function HomePage() {
     )
     .map(toCatalogPick)
 
-  // The banner shelf: featured first, then newest.
-  const shelf = [...newest].sort(
-    (a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)),
-  )
-
   return (
     <>
       <Header />
       <main>
-        <HeroBanner picks={shelf} />
+        <HeroBanner />
 
         <CategoryRow id="new" title="New" href="/desk?sort=newest" picks={newest.slice(0, 4)} />
 
