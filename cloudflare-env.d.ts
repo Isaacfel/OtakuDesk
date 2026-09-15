@@ -8,6 +8,10 @@ declare global {
   interface CloudflareEnv {
     SUBSCRIBERS?: KVLike
     RESEND_API_KEY?: string
+    /** Outbound click log, written by /go and read by /api/clicks. */
+    CLICKS?: KVLike
+    /** Bearer token for /api/clicks. Set with `wrangler secret put ADMIN_TOKEN`. */
+    ADMIN_TOKEN?: string
   }
 }
 

@@ -10,6 +10,8 @@ import {
   AffiliateConfigError,
 } from '@/lib/affiliate'
 import { logOutboundClick } from '@/lib/analytics'
+import { getCloudflareContext } from '@opennextjs/cloudflare'
+import { recordClick } from '@/lib/clicks'
 
 /**
  * The outbound link layer.
@@ -119,15 +121,36 @@ export async function GET(
     return bounce(`/desk/${pick.slug}?unavailable=1`)
   }
 
-  // Fire-and-forget: the reader never waits on our analytics.
-  after(() =>
-    logOutboundClick({
-      pickSlug: pick.slug,
-      merchant: merchantName,
-      network,
-      from,
-    }),
-  )
+  // Fire-and-forget: the reader never waits on our analytics, and nothing in
+  // here can reach the redirect — every failure is caught and logged.
+  const click = { pickSlug: pick.slug, merchant: merchantName, network, from }
+  after(async () => {
+    // The structured log line stays: it is the trail in Workers observability
+    // and the only record when the KV binding is absent (plain `next dev`).
+    logOutboundClick(click)
+
+    let kv: CloudflareEnv['CLICKS']
+    try {
+      kv = (await getCloudflareContext({ async: true })).env.CLICKS
+    } catch {
+      return // No Cloudflare context: local dev. The console log above is it.
+    }
+    if (!kv) {
+      console.error(JSON.stringify({ event: 'clicks_misconfigured', missing: ['CLICKS'] }))
+      return
+    }
+    try {
+      await recordClick(kv, click)
+    } catch (err) {
+      console.error(
+        JSON.stringify({
+          event: 'click_record_failed',
+          pick: pick.slug,
+          reason: err instanceof Error ? err.message : String(err),
+        }),
+      )
+    }
+  })
 
   // 302, never 301. A cached permanent redirect costs us the click count and
   // the ability to retarget the link when the program changes.
