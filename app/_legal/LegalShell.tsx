@@ -2,52 +2,24 @@ import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { Header, Footer } from '@/components/Shell'
 import { Prose } from '@/mdx-components'
+import { SITE } from '@/lib/site'
 
 /**
  * Shared frame for the legal pages (/disclosure, /privacy, /terms, /contact).
  *
- * Two deliberate choices:
- *
- * 1. Every page opens with a visible draft notice. These pages have not had
- *    legal review and there is no legal entity behind the site yet. Saying so
- *    is more accurate than looking finished, and accuracy is what these
- *    pages are for.
- * 2. Anything that requires a real entity — a name, an address, a governing
- *    law, an email — is a <Placeholder />, rendered loudly. Nothing here is
- *    invented to fill a gap.
+ * Operator details come from lib/site.ts rather than being typed into each
+ * page, so the four pages cannot disagree about who is behind the site.
  */
 
-/** The date the drafts were last edited. Bump when the copy changes. */
-export const LEGAL_DRAFT_DATE = '2026-09-11'
+/** The date the copy was last edited. Bump when it changes. */
+export const LEGAL_UPDATED_DATE = '2026-09-15'
 
-export function DraftNotice() {
-  return (
-    <aside
-      role="note"
-      className="mb-10 rounded-sm border border-caution/40 bg-caution-soft p-4 text-sm leading-relaxed text-caution"
-    >
-      <p className="label-xs mb-1.5">Draft — pending legal review</p>
-      <p>
-        This page is a working draft, published so the site&rsquo;s commitments
-        are visible while it is being built. It has not been reviewed by a
-        lawyer. Items marked{' '}
-        <span className="font-mono text-[0.85em] font-medium">
-          [TO BE COMPLETED BEFORE LAUNCH]
-        </span>{' '}
-        are deliberate placeholders for details that require a real legal
-        entity, not omissions.
-      </p>
-    </aside>
-  )
-}
-
-/** A loud, unmistakable gap. Never render real-looking dummy data instead. */
-export function Placeholder({ what }: { what: string }) {
-  return (
-    <span className="inline-block rounded-xs bg-caution-soft px-1.5 py-0.5 font-mono text-[0.8em] font-medium text-caution">
-      [TO BE COMPLETED BEFORE LAUNCH: {what}]
-    </span>
-  )
+/** The one contact address, as a mailto link. `subject` pre-fills the email. */
+export function ContactEmail({ subject }: { subject?: string }) {
+  const href = subject
+    ? `mailto:${SITE.contactEmail}?subject=${encodeURIComponent(subject)}`
+    : `mailto:${SITE.contactEmail}`
+  return <a href={href}>{SITE.contactEmail}</a>
 }
 
 export function LegalPage({
@@ -71,16 +43,14 @@ export function LegalPage({
               {label}{' '}
               <span aria-hidden="true">·</span>{' '}
               <span className="tnum normal-case tracking-normal">
-                Draft dated{' '}
-                <time dateTime={LEGAL_DRAFT_DATE}>{LEGAL_DRAFT_DATE}</time>
+                Updated{' '}
+                <time dateTime={LEGAL_UPDATED_DATE}>{LEGAL_UPDATED_DATE}</time>
               </span>
             </p>
             <h1 className="mt-4 text-3xl leading-[1.1] sm:text-4xl">{title}</h1>
             <p className="mt-4 text-lg leading-relaxed text-paper-2">{lede}</p>
             <hr className="mt-8 border-line" />
           </header>
-
-          <DraftNotice />
 
           <Prose>{children}</Prose>
 

@@ -119,9 +119,9 @@ Emails send through Resend. One-time setup:
    npx wrangler secret put RESEND_API_KEY -c newsletter/wrangler.jsonc
    ```
 
-3. Put a postal mailing address in `NEWSLETTER.postalAddress` in
-   `lib/newsletter.ts`. Anti-spam law requires one in every marketing email;
-   the cron Worker refuses to send while it is empty.
+3. The postal mailing address in every issue comes from `SITE.address` in
+   `lib/site.ts`. Anti-spam law requires one in every marketing email; the
+   cron Worker refuses to send while it is empty.
 
 Rules baked in: double opt-in (nothing sends until the confirmation link is
 clicked), a one-click unsubscribe link and `List-Unsubscribe` header on

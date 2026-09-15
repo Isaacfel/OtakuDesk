@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { LegalPage, Placeholder } from '@/app/_legal/LegalShell'
+import { LegalPage, ContactEmail } from '@/app/_legal/LegalShell'
+import { SITE } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Privacy',
@@ -9,11 +10,11 @@ export const metadata: Metadata = {
 }
 
 /**
- * Privacy policy — draft.
+ * Privacy policy.
  *
- * Written from what the code actually does today: page analytics, an outbound
- * click log, and (when built) an email list. Provider names are placeholders
- * because none has been chosen; naming one we do not use would be false.
+ * Written from what the code actually does today: no analytics script, an
+ * anonymous outbound click log, and a double opt-in email list. If a provider
+ * or a data category is added, this page changes in the same PR.
  */
 export default function PrivacyPage() {
   return (
@@ -23,23 +24,18 @@ export default function PrivacyPage() {
       lede="We run a shopping guide, not a shop. We have no accounts, take no payments, and sell no data. Here is the whole of what we collect and why."
     >
       <h2 id="collect">What we collect</h2>
-      <h3>Page analytics</h3>
+      <h3>Analytics</h3>
       <p>
-        We record which pages are viewed, roughly where visitors come from, and
-        what device type they use, so we can tell which articles and picks are
-        useful. Analytics provider, and whether it sets cookies:{' '}
-        <Placeholder what="analytics provider name and cookie behaviour" />. If
-        the chosen provider sets cookies, a consent prompt will appear on your
-        first visit and this section will list each cookie by name and
-        lifetime.
+        None. We load no analytics script and set no analytics cookies.
       </p>
       <h3>Outbound clicks</h3>
       <p>
-        When you click a buy button, we log the pick, the page you clicked from,
-        and the time. This is how we know which article earned a commission,
-        and it is the only independent check on whether an affiliate network is
-        reporting honestly. The log contains no name, email, or account, because
-        we have none of those.
+        When you click a buy button, we log the product, the page you clicked
+        from, and the time. No IP address, cookie, or other identifier is stored
+        with it. The log is stored with our hosting provider, Cloudflare, and
+        kept for up to 13 months. This is how we know which article earned a
+        commission, and it is the only independent check on whether an
+        affiliate network is reporting honestly.
       </p>
       <h3>Affiliate tracking on the merchant&rsquo;s site</h3>
       <p>
@@ -87,8 +83,8 @@ export default function PrivacyPage() {
         about you, correct it, delete it, or stop using it. Given what we
         collect, the honest answer will usually be &ldquo;an email address, if
         you subscribed&rdquo; or &ldquo;nothing we can tie to you&rdquo;. To
-        exercise any of these rights, contact:{' '}
-        <Placeholder what="privacy contact email" />. We will respond within the
+        exercise any of these rights, contact <ContactEmail subject="Privacy request" />.
+        We will respond within the
         period the applicable law requires (one month under GDPR; 45 days under
         CCPA). We will not discriminate against you for making a request.
       </p>
@@ -99,10 +95,8 @@ export default function PrivacyPage() {
 
       <h2 id="controller">Who is responsible</h2>
       <p>
-        The data controller for this site is{' '}
-        <Placeholder what="legal entity name" />,{' '}
-        <Placeholder what="business address" />. EU/UK representative, if
-        required: <Placeholder what="representative details or 'not required'" />.
+        The data controller for this site is {SITE.legalName}, {SITE.address}.
+        EU/UK representative: not required.
       </p>
 
       <h2 id="children">Children</h2>

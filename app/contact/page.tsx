@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { LegalPage, Placeholder } from '@/app/_legal/LegalShell'
+import { LegalPage, ContactEmail } from '@/app/_legal/LegalShell'
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 }
 
 /**
- * Contact — draft. No real email exists yet, so every channel is a loud
- * placeholder. The structure matters more than the address: the "report a
- * listing problem" route is the one that keeps the catalog honest.
+ * Contact. One mailbox, with a pre-filled subject per route so reports sort
+ * themselves. The "report a listing problem" route is the one that keeps the
+ * catalog honest.
  */
 export default function ContactPage() {
   return (
@@ -46,7 +46,7 @@ export default function ContactPage() {
         acting on it.
       </p>
       <p>
-        Send it to: <Placeholder what="listing-problems contact email" />
+        Send it to: <ContactEmail subject="Listing problem" />
       </p>
 
       <h2 id="rights">Rights holders and artists</h2>
@@ -59,7 +59,7 @@ export default function ContactPage() {
         verify you are the rights holder.
       </p>
       <p>
-        Send it to: <Placeholder what="rights contact email" />
+        Send it to: <ContactEmail subject="Rights concern" />
       </p>
 
       <h2 id="sellers">Sellers with a pick marked Verifying</h2>
@@ -75,14 +75,14 @@ export default function ContactPage() {
         <Link href="/disclosure">disclosure page</Link>.
       </p>
       <p>
-        Send it to: <Placeholder what="seller contact email" />
+        Send it to: <ContactEmail subject="Seller verification" />
       </p>
 
       <h2 id="else">Everything else</h2>
       <p>
         Suggestions for products to look at, corrections to an article,
         questions about how the site works, or press enquiries:{' '}
-        <Placeholder what="general contact email" />
+        <ContactEmail />
       </p>
       <p>
         We do not publish a phone number and do not offer live chat. We are a

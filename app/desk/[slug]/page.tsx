@@ -11,6 +11,7 @@ import { BouncedNotice } from '@/components/BouncedNotice'
 import { OutboundButton } from '@/components/OutboundButton'
 import { ProductGrid, ProductImage } from '@/components/ProductCard'
 import { LicenceBadge, ProductDetails } from '@/components/ProductDetails'
+import { SITE } from '@/lib/site'
 
 /**
  * The product page. Image, title, licence badge, seller, price, one buy
@@ -78,7 +79,7 @@ function bounceReason(pick: Pick): string {
   return 'Our link to the seller is misconfigured on our side. Please try again later.'
 }
 
-const REPORT_EMAIL = 'hello@otakudesk.com'
+const REPORT_EMAIL = SITE.contactEmail
 
 export default async function PickPage({ params }: Props) {
   const { slug } = await params
