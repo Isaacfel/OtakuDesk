@@ -80,7 +80,7 @@ export async function GET(
   if (!pick) return bounce('/desk')
 
   // The two hard stops, both delegating to the same predicate the UI uses so
-  // the button and the redirect can never disagree. Sample and unverified
+  // the button and the redirect can never disagree. Sample and dead-link
   // picks bounce back to their own page, which explains the state — far
   // better than dropping someone on a merchant 404.
   if (!isPurchasable(pick)) {

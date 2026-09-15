@@ -74,8 +74,6 @@ function related(pick: Pick): Pick[] {
 }
 
 function bounceReason(pick: Pick): string {
-  if (pick.licenseStatus === 'unverified')
-    return "We're still confirming this item's licence, so it doesn't link out yet."
   if (!isPurchasable(pick)) return 'This listing is no longer available, so the link was removed.'
   return 'Our link to the seller is misconfigured on our side. Please try again later.'
 }

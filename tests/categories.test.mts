@@ -39,12 +39,18 @@ test('NAV_ORDER covers every category exactly once', () => {
 test('a category with fewer than MIN_NAV_PICKS purchasable picks is hidden', () => {
   const picks = [
     fakePick({ category: 'Wall Art' }),
-    // Unverified licence: rendered as "still checking", never linkable, so it
-    // must not count towards the threshold.
-    fakePick({ category: 'Wall Art', licenseStatus: 'unverified' }),
     fakePick({ category: 'Wall Art', linkStatus: 'broken' }),
+    fakePick({ category: 'Wall Art', linkStatus: 'discontinued' }),
   ]
   assert.deepEqual(navCategories(picks), [])
+})
+
+test('an unverified licence still counts: the owner keeps those links live', () => {
+  const picks = [
+    fakePick({ category: 'Wall Art' }),
+    fakePick({ category: 'Wall Art', licenseStatus: 'unverified' }),
+  ]
+  assert.deepEqual(navCategories(picks), ['Wall Art'])
 })
 
 test('a category with MIN_NAV_PICKS purchasable picks is shown', () => {

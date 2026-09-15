@@ -12,8 +12,8 @@ import { isPriceFresh, isPurchasable, PRICE_MAX_AGE_DAYS } from '@/data/types'
  *
  *   1. An `Offer` is emitted only when the pick is purchasable AND its price
  *      is fresh — the same `isPurchasable` / `isPriceFresh` predicates the
- *      buy button and PriceStamp use. A stale or unverified pick is still a
- *      `Product`, just one with no price claim.
+ *      buy button and PriceStamp use. A stale-priced or dead-link pick is still
+ *      a `Product`, just one with no price claim.
  *   2. The offer's `url` is our own product page. Never the /go redirect
  *      (a tracking endpoint, noindex) and never the merchant URL (we are not
  *      the seller, and the raw destination must not appear in page source).

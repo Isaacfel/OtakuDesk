@@ -41,8 +41,8 @@ export default function ContactPage() {
       <p>
         <strong>What we do with it:</strong> a dead link or wrong price is
         pulled the day we confirm it. A bootleg or seller concern moves the
-        pick to <em>Verifying</em> immediately &mdash; which removes its buy
-        button &mdash; while we re-check. We do not argue with a report before
+        pick to <em>Verifying</em> immediately while we re-check, and a
+        confirmed bootleg is removed. We do not argue with a report before
         acting on it.
       </p>
       <p>

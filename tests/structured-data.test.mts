@@ -116,9 +116,13 @@ test('null price: no offers even when fresh and purchasable', () => {
   assert.ok(!('offers' in productJsonLd(fakePick({ price: null }), merchant, { now: NOW })))
 })
 
-test('unverified licence or dead link: no offers', () => {
+test('unverified licence still gets an offer: the link is live and the label discloses the status', () => {
+  const ld = productJsonLd(fakePick({ licenseStatus: 'unverified' }), merchant, { now: NOW })
+  assert.ok('offers' in ld)
+})
+
+test('dead link: no offers', () => {
   for (const overrides of [
-    { licenseStatus: 'unverified' as const },
     { linkStatus: 'broken' as const },
     { linkStatus: 'discontinued' as const },
   ]) {
