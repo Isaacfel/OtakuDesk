@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Kanit } from 'next/font/google'
+import { Inter, Poppins } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({
@@ -8,12 +8,11 @@ const inter = Inter({
   display: 'swap',
 })
 
-// Heavy italic display face for the wordmark only.
-const kanit = Kanit({
+// Geometric display face for the wordmark only.
+const poppins = Poppins({
   subsets: ['latin'],
-  weight: '800',
-  style: 'italic',
-  variable: '--font-kanit',
+  weight: '700',
+  variable: '--font-poppins',
   display: 'swap',
 })
 
@@ -44,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${kanit.variable}`}>
+    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body className="min-h-screen bg-bg text-fg antialiased">{children}</body>
     </html>
   )

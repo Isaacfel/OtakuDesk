@@ -1,9 +1,9 @@
 import { ImageResponse } from 'next/og'
 
 /**
- * Favicon: the desk-as-O glyph from components/Logo.tsx, white on the accent
- * red. Duplicated rather than imported because this renders through Satori at
- * build time, which wants plain SVG elements with inline attributes.
+ * Favicon: the desk mascot from components/Logo.tsx on a white tile.
+ * Duplicated rather than imported because this renders through Satori at
+ * build time, which wants plain SVG elements with literal colours.
  */
 
 export const size = { width: 64, height: 64 }
@@ -19,16 +19,31 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#dc1a2b',
+          background: '#ffffff',
           borderRadius: 12,
         }}
       >
-        <svg width="40" height="45" viewBox="0 0 30 34" fill="#ffffff" fillRule="evenodd">
-          <path d="M6 0h18a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H6a6 6 0 0 1-6-6V6a6 6 0 0 1 6-6zm0 5.5a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 6 16.5h18a1.5 1.5 0 0 0 1.5-1.5V7A1.5 1.5 0 0 0 24 5.5z" />
-          <rect x="13" y="22" width="4" height="3.5" />
-          <rect x="0" y="25.5" width="30" height="4" rx="1" />
-          <path d="M4 29.5h4.5L6.5 34H2z" />
-          <path d="M21.5 29.5H26l2 4.5h-4.5z" />
+        <svg
+          width="58"
+          height="46"
+          viewBox="2 2 124 98"
+          fill="none"
+          stroke="#141416"
+          strokeWidth="6"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        >
+          <rect x="16" y="44" width="12" height="52" rx="4" fill="#ffffff" />
+          <rect x="92" y="44" width="12" height="52" rx="4" fill="#ffffff" />
+          <rect x="24" y="44" width="72" height="34" rx="8" fill="#ffffff" />
+          <circle cx="44.6" cy="58" r="5.5" fill="#141416" stroke="none" />
+          <circle cx="75.4" cy="58" r="5.5" fill="#141416" stroke="none" />
+          <path d="M52.3 65.7q7.7 6.6 15.4 0" strokeWidth="5" />
+          <ellipse cx="35.8" cy="65.7" rx="5.1" ry="3.1" fill="#ffb3c0" stroke="none" />
+          <ellipse cx="84.2" cy="65.7" rx="5.1" ry="3.1" fill="#ffb3c0" stroke="none" />
+          <rect x="6" y="28" width="108" height="16" rx="6" fill="#dc1a2b" />
+          <path d="M112 12h4a5.5 5.5 0 0 1 0 11h-4" />
+          <rect x="96" y="6" width="16" height="22" rx="3" fill="#dc1a2b" />
         </svg>
       </div>
     ),
