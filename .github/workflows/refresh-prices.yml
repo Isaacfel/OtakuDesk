@@ -1,0 +1,49 @@
+name: Refresh prices
+
+# Every Monday, re-read each Amazon listing, update price and checked-date in
+# data/picks.ts, and open a pull request with a report for a person to approve.
+# The site hides prices older than 45 days, so this keeps them visible.
+on:
+  schedule:
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Refresh prices
+        run: npx tsx scripts/refresh-prices.ts --write --report price-report.md
+
+      - name: Open pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- data/picks.ts; then
+            echo "No price changes."
+            exit 0
+          fi
+          DATE=$(date -u +%F)
+          BRANCH="chore/prices-$DATE"
+          git config user.name "otakudesk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add data/picks.ts
+          git commit -m "Refresh prices ($DATE)"
+          git push -u origin "$BRANCH"
+          gh pr create --base main --head "$BRANCH" \
+            --title "Refresh prices ($DATE)" \
+            --body-file price-report.md
