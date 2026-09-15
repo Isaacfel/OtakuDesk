@@ -157,11 +157,27 @@ runners but not Cloudflare's network. One-time setup:
    npx wrangler secret put GITHUB_TOKEN -c prices/wrangler.jsonc
    ```
 
-`npm run cf:deploy` deploys this Worker with the other two. To exercise it
-without touching GitHub: `npm run prices:dev`, then request
-`http://localhost:8787/__scheduled` once per listing (it runs against the real
-listings from Cloudflare's edge with `DRY_RUN=1`; the final request logs the
-report). Progress is kept in KV under `run:<date>`, so a run can be resumed
-and a second run on the same day is a no-op. The same check by hand, from this machine:
+3. Set a run token so the job can be driven by hand (any long random string):
+
+   ```
+   npx wrangler secret put RUN_TOKEN -c prices/wrangler.jsonc
+   ```
+
+`npm run cf:deploy` deploys this Worker with the other two.
+
+**Running it by hand.** The Worker's only HTTP surface is
+`POST https://otakudesk-prices.otakudesk.workers.dev/__step` with an
+`x-run-token` header equal to the RUN_TOKEN secret. Each call advances the
+week's run by one listing and returns where it stands; the call that completes
+the list opens the pull request. Progress is kept in KV under `run:<date>`, so
+a run can be resumed and a second run on the same day is a no-op. Add `?mock=1`
+for a rehearsal: real fetches, then the first price is nudged by one cent so
+the branch-and-pull-request path runs for real; the PR is titled
+`Refresh prices (mock-<date>)` and is closed by hand. Verified this way on
+2026-09-15: 23 of 23 listings priced and the Worker opened the PR itself.
+
+Local rehearsal without GitHub: `npm run prices:dev`, then request
+`http://localhost:8787/__scheduled` once per listing (`DRY_RUN=1`; the final
+request logs the report). The same check by hand, from this machine:
 `npm run prices:refresh`, or `npm run prices:refresh -- --write` to also edit
 the catalog.

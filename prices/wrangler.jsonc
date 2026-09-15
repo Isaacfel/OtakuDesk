@@ -6,6 +6,10 @@
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
 
+  // A workers.dev URL so POST /__step (protected by the RUN_TOKEN secret) can
+  // drive the run by hand. Every other path is a 404.
+  "workers_dev": true,
+
   // Mondays, every two minutes from 13:00 to 14:58 UTC. Each firing reads ONE
   // listing; the firing that completes the list opens the pull request. That
   // keeps CPU per invocation tiny (free-plan safe) and spaces the fetches out.

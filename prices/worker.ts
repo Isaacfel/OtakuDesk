@@ -26,7 +26,10 @@ type KV = {
   get(key: string): Promise<string | null>
   put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>
 }
-type Env = { PRICES: KV; GITHUB_TOKEN?: string; GITHUB_REPO?: string; DRY_RUN?: string }
+type Env = { PRICES: KV; GITHUB_TOKEN?: string; GITHUB_REPO?: string; DRY_RUN?: string; RUN_TOKEN?: string }
+
+/** What a step reports back: where the week's run stands. */
+export type StepStatus = { date: string; cursor: number; total: number; done?: RunState['done'] }
 type ScheduledEvent = { scheduledTime: number; cron: string }
 
 class PricesConfigError extends Error {}
@@ -77,11 +80,11 @@ function decodeBase64(b64: string): string {
   return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)))
 }
 
-async function openPullRequest(env: Env, results: Result[], date: string): Promise<string> {
+async function openPullRequest(env: Env, results: Result[], date: string, label = date): Promise<string> {
   if (!env.GITHUB_TOKEN) throw new PricesConfigError('GITHUB_TOKEN is not set')
   const repo = env.GITHUB_REPO ?? 'Isaacfel/OtakuDesk'
   const api = gh(env.GITHUB_TOKEN)
-  const branch = `chore/prices-${date}`
+  const branch = `chore/prices-${label}`
   const report = buildReport(results, date, PRICE_MAX_AGE_DAYS)
 
   // Apply prices to the catalog as it is on main right now, not as bundled.
@@ -93,13 +96,13 @@ async function openPullRequest(env: Env, results: Result[], date: string): Promi
   const main = await api<{ object: { sha: string } }>('GET', `/repos/${repo}/git/ref/heads/main`)
   await api('POST', `/repos/${repo}/git/refs`, { ref: `refs/heads/${branch}`, sha: main.object.sha })
   await api('PUT', `/repos/${repo}/contents/data/picks.ts`, {
-    message: `Refresh prices (${date})`,
+    message: `Refresh prices (${label})`,
     content: encodeBase64(source),
     sha: file.sha,
     branch,
   })
   const pr = await api<{ html_url: string }>('POST', `/repos/${repo}/pulls`, {
-    title: `Refresh prices (${date})`,
+    title: `Refresh prices (${label})`,
     head: branch,
     base: 'main',
     body: report,
@@ -109,18 +112,26 @@ async function openPullRequest(env: Env, results: Result[], date: string): Promi
 
 // --- The stepwise run --------------------------------------------------------
 
-/** Advance the week's run by one listing; finish it when the list is done. */
-export async function step(env: Env, now: Date = new Date()): Promise<void> {
+/**
+ * Advance the week's run by one listing; finish it when the list is done.
+ *
+ * `mock` runs a separate, clearly labelled rehearsal: real fetches, then the
+ * first price is nudged by one cent so the branch-and-pull-request path is
+ * exercised for real. The resulting PR is titled "mock" and is closed by hand.
+ */
+export async function step(env: Env, now: Date = new Date(), mock = false): Promise<StepStatus> {
   if (!env.PRICES) throw new PricesConfigError('PRICES KV binding is missing')
   if (env.DRY_RUN !== '1' && !env.GITHUB_TOKEN) throw new PricesConfigError('GITHUB_TOKEN is not set')
 
   const date = now.toISOString().slice(0, 10)
-  const key = `run:${date}`
+  const label = mock ? `mock-${date}` : date
+  const key = `run:${label}`
   const picks = livePicks()
   const raw = await env.PRICES.get(key)
   const state: RunState = raw ? JSON.parse(raw) : { date, cursor: 0, results: [] }
+  const status = (): StepStatus => ({ date, cursor: state.cursor, total: picks.length, done: state.done })
 
-  if (state.done) return
+  if (state.done) return status()
 
   if (state.cursor < picks.length) {
     const pick = picks[state.cursor]
@@ -137,7 +148,7 @@ export async function step(env: Env, now: Date = new Date()): Promise<void> {
     console.log(
       JSON.stringify({ event: 'price_checked', step: `${state.cursor}/${picks.length}`, pick: pick.slug, outcome: outcome.kind, changed }),
     )
-    if (state.cursor < picks.length) return
+    if (state.cursor < picks.length) return status()
   }
 
   // All listings read: finish the run.
@@ -149,6 +160,14 @@ export async function step(env: Env, now: Date = new Date()): Promise<void> {
     })
     .filter((r): r is Result => r !== null)
 
+  if (mock) {
+    const first = results.find((r) => r.outcome.kind === 'price')
+    if (first && first.outcome.kind === 'price') {
+      first.outcome = { kind: 'price', price: Math.round((first.outcome.price + 0.01) * 100) / 100 }
+      first.changed = true
+    }
+  }
+
   let summary: string
   if (mostlyBlocked(results)) {
     summary = `blocked: Amazon refused ${results.filter((r) => r.outcome.kind === 'blocked').length} of ${results.length}`
@@ -156,7 +175,7 @@ export async function step(env: Env, now: Date = new Date()): Promise<void> {
     console.log(buildReport(results, date, PRICE_MAX_AGE_DAYS))
     summary = 'dry run'
   } else {
-    summary = await openPullRequest(env, results, date)
+    summary = await openPullRequest(env, results, date, label)
   }
 
   state.done = { at: now.toISOString(), summary }
@@ -171,6 +190,7 @@ export async function step(env: Env, now: Date = new Date()): Promise<void> {
       summary,
     }),
   )
+  return status()
 }
 
 const worker = {
@@ -189,8 +209,24 @@ const worker = {
     }
   },
 
-  // No public surface; the site lives on the otakudesk Worker.
-  async fetch() {
+  /**
+   * The only HTTP surface: POST /__step with an `x-run-token` header equal
+   * to the RUN_TOKEN secret advances the run by one listing and reports where
+   * it stands. Used to test the job end to end and to run it by hand between
+   * Mondays. Everything else is a 404; the site lives on the otakudesk Worker.
+   */
+  async fetch(request: Request, env: Env) {
+    const url = new URL(request.url)
+    if (request.method === 'POST' && url.pathname === '/__step') {
+      const token = request.headers.get('x-run-token') ?? ''
+      if (!env.RUN_TOKEN || token.length === 0 || token !== env.RUN_TOKEN)
+        return new Response('Forbidden', { status: 403 })
+      try {
+        return Response.json(await step(env, new Date(), url.searchParams.get('mock') === '1'))
+      } catch (err) {
+        return Response.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 })
+      }
+    }
     return new Response('Not found', { status: 404 })
   },
 }
