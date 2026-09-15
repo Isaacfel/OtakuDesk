@@ -131,3 +131,25 @@ Amazon forbids affiliate links in email. Missing configuration is logged as
 
 To exercise the cron handler locally: `npm run newsletter:dev`, then open
 `http://localhost:8787/__scheduled`.
+
+## Weekly price refresh
+
+The site hides any price older than 45 days, so prices must be re-read
+regularly. `scripts/refresh-prices.ts` re-reads every live Amazon listing,
+updates `price` and `priceCheckedAt` in `data/picks.ts`, and writes a report.
+It ignores struck-through list prices and per-unit prices, recognises
+Amazon's bot pages, and leaves judgement calls (listing unavailable or gone,
+a price that moved more than 3x) to a person.
+
+GitHub's hosted runners are blocked by Amazon's bot check, so the job runs
+from a home PC through `scripts/refresh-prices.ps1`, which pulls main, runs
+the refresh, and opens a pull request when anything changed. Register it once
+in Windows Task Scheduler (Mondays, 09:00; it runs at next logon if missed):
+
+```
+schtasks /Create /SC WEEKLY /D MON /ST 09:00 /TN "Otakudesk price refresh" /TR "powershell -NoProfile -ExecutionPolicy Bypass -File C:\Users\isaac\OtakuDesk\scripts\refresh-prices.ps1"
+```
+
+By hand: `npm run prices:refresh` reports; `npm run prices:refresh -- --write`
+also edits the catalog. Pace is one listing every four seconds; faster earns
+the bot page.
