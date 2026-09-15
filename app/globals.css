@@ -29,6 +29,7 @@
 
 @theme inline {
   --font-sans: var(--font-inter), system-ui, "Segoe UI", Arial, sans-serif;
+  --font-display: var(--font-archivo-black), "Arial Black", Impact, sans-serif;
 
   --color-bg: var(--bg);
   --color-bg-soft: var(--bg-soft);
