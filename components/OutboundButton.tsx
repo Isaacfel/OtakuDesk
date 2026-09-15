@@ -30,9 +30,7 @@ export function OutboundButton({
   if (!isPurchasable(pick)) {
     return (
       <p className="rounded-md border border-line bg-bg-soft px-4 py-3 text-sm text-fg-muted">
-        {pick.licenseStatus === 'unverified'
-          ? "We're still confirming this item's licence, so there is no buy link yet."
-          : 'This listing is no longer available.'}
+        This listing is no longer available.
       </p>
     )
   }

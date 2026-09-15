@@ -42,7 +42,7 @@ export default async function AboutPage() {
               Each item is added by hand. We check who is selling it and whether the maker holds
               a licence for the series. Products from known licensees are marked{' '}
               <strong>Officially licensed</strong>. Anything we can&rsquo;t trace to a licensee is
-              marked <strong>Verifying</strong> and has no buy button until we can. Prices show the
+              marked <strong>Verifying</strong> so you can decide for yourself. Prices show the
               date we checked them, and a price older than {PRICE_MAX_AGE_DAYS} days is hidden
               rather than shown stale.
             </p>

@@ -144,8 +144,9 @@ export default function DisclosurePage() {
           commission is a consequence of choosing it, not a condition.
         </li>
         <li>
-          Picks marked <em>Verifying</em> have no buy button and cannot earn
-          anything.
+          Picks marked <em>Verifying</em> link out like any other and can earn
+          a commission. The label means we could not confirm the licence,
+          and we say so rather than hide it.
         </li>
       </ul>
 

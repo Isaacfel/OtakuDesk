@@ -47,7 +47,7 @@ export function CardPrice({ pick }: { pick: CatalogPick }) {
   if (!isPurchasable(pick)) {
     return (
       <span className="inline-block rounded-sm bg-bg-soft px-2 py-0.5 text-xs font-medium text-fg-muted">
-        {pick.licenseStatus === 'unverified' ? 'Verifying' : 'Unavailable'}
+        Unavailable
       </span>
     )
   }

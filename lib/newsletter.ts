@@ -198,7 +198,7 @@ function escapeHtml(s: string): string {
 }
 
 function priceLine(pick: Pick): string {
-  if (!isPurchasable(pick)) return pick.licenseStatus === 'unverified' ? 'Verifying' : 'Unavailable'
+  if (!isPurchasable(pick)) return 'Unavailable'
   if (pick.price !== null && isPriceFresh(pick.priceCheckedAt)) return `$${pick.price.toFixed(2)}`
   return 'See price'
 }

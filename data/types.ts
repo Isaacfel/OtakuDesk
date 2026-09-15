@@ -214,9 +214,13 @@ export function isPriceFresh(checkedAt: string, now = Date.now()): boolean {
  * The single source of truth for "may this pick send a reader to a merchant?".
  * Both the /go route and the OutboundButton call this, so the UI and the
  * redirect can never disagree about whether a link is live.
+ *
+ * Licence status deliberately plays no part. The owner's decision (2026-09-15)
+ * is that an unverified licence is disclosed with the Verifying label, not
+ * enforced by hiding the link; only a dead or sample link removes the button.
  */
 export function isPurchasable(pick: CatalogPick): boolean {
-  return pick.licenseStatus !== 'unverified' && pick.linkStatus === 'ok'
+  return pick.linkStatus === 'ok'
 }
 
 export const LICENSE_LABEL: Record<LicenseStatus, string> = {
