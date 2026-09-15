@@ -135,21 +135,33 @@ To exercise the cron handler locally: `npm run newsletter:dev`, then open
 ## Weekly price refresh
 
 The site hides any price older than 45 days, so prices must be re-read
-regularly. `scripts/refresh-prices.ts` re-reads every live Amazon listing,
-updates `price` and `priceCheckedAt` in `data/picks.ts`, and writes a report.
-It ignores struck-through list prices and per-unit prices, recognises
-Amazon's bot pages, and leaves judgement calls (listing unavailable or gone,
-a price that moved more than 3x) to a person.
+regularly. A third Worker, `prices/` (`otakudesk-prices`), runs on Mondays in small
+steps: its cron fires every two minutes from 13:00 to 14:58 UTC, each firing
+reads one listing and records the result in the `PRICES` KV namespace, and
+the firing that completes the list applies new prices to `data/picks.ts` as it
+is on `main`, pushes a branch, and opens a pull request with a report. One
+listing per firing keeps CPU per invocation far under the free plan's limit.
+Nothing merges on its own. It ignores
+struck-through list prices and per-unit prices, recognises Amazon's bot
+pages, and leaves judgement calls (listing unavailable or gone, a price that
+moved more than 3x) to a person.
 
-GitHub's hosted runners are blocked by Amazon's bot check, so the job runs
-from a home PC through `scripts/refresh-prices.ps1`, which pulls main, runs
-the refresh, and opens a pull request when anything changed. Register it once
-in Windows Task Scheduler (Mondays, 09:00; it runs at next logon if missed):
+It runs on Cloudflare because Amazon's bot check blocks GitHub's hosted
+runners but not Cloudflare's network. One-time setup:
 
-```
-schtasks /Create /SC WEEKLY /D MON /ST 09:00 /TN "Otakudesk price refresh" /TR "powershell -NoProfile -ExecutionPolicy Bypass -File C:\Users\isaac\OtakuDesk\scripts\refresh-prices.ps1"
-```
+1. Create a fine-grained GitHub token for this repository only, with
+   Contents and Pull requests set to read and write, no expiry or one year.
+2. Set it on the Worker:
 
-By hand: `npm run prices:refresh` reports; `npm run prices:refresh -- --write`
-also edits the catalog. Pace is one listing every four seconds; faster earns
-the bot page.
+   ```
+   npx wrangler secret put GITHUB_TOKEN -c prices/wrangler.jsonc
+   ```
+
+`npm run cf:deploy` deploys this Worker with the other two. To exercise it
+without touching GitHub: `npm run prices:dev`, then request
+`http://localhost:8787/__scheduled` once per listing (it runs against the real
+listings from Cloudflare's edge with `DRY_RUN=1`; the final request logs the
+report). Progress is kept in KV under `run:<date>`, so a run can be resumed
+and a second run on the same day is a no-op. The same check by hand, from this machine:
+`npm run prices:refresh`, or `npm run prices:refresh -- --write` to also edit
+the catalog.
