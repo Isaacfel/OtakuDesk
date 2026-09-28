@@ -79,6 +79,28 @@ test('double opt-in: pending until the token is confirmed; unsubscribe deletes',
   assert.equal(kv.store.size, 0, 'unsubscribe leaves nothing behind')
 })
 
+test('signup form cannot flood one inbox: one confirmation email per cooldown', async () => {
+  const kv = fakeKv()
+  const t0 = new Date('2026-09-28T12:00:00Z')
+  const first = await beginSubscription(kv, 'target@example.com', t0)
+  assert.equal(first.sendConfirmation, true)
+
+  const soon = new Date(t0.getTime() + 60_000)
+  const repeat = await beginSubscription(kv, 'target@example.com', soon)
+  assert.equal(repeat.sendConfirmation, false, 'no second email inside the cooldown')
+  assert.equal(repeat.subscriber.token, first.subscriber.token)
+
+  const later = new Date(t0.getTime() + NEWSLETTER.resendCooldownSeconds * 1000 + 1)
+  const retry = await beginSubscription(kv, 'target@example.com', later)
+  assert.equal(retry.sendConfirmation, true, 'a real retry after the cooldown sends again')
+  const again = await beginSubscription(kv, 'target@example.com', new Date(later.getTime() + 1000))
+  assert.equal(again.sendConfirmation, false, 'the cooldown restarts from the last send')
+
+  await confirmByToken(kv, first.subscriber.token, later)
+  const confirmed = await beginSubscription(kv, 'target@example.com', new Date(later.getTime() + 86_400_000))
+  assert.equal(confirmed.sendConfirmation, false, 'confirmed subscribers are never re-emailed')
+})
+
 test('issue window: picks added within the window, newest first', () => {
   const now = new Date('2026-09-18T15:00:00Z')
   assert.equal(issueWindowStart(now, 7), '2026-09-11')

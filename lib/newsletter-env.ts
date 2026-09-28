@@ -8,7 +8,17 @@ import type { KVLike } from './newsletter'
  * or a Worker missing its KV namespace), so callers can answer honestly
  * instead of crashing.
  */
-export type NewsletterBindings = { kv: KVLike; resendApiKey: string }
+export type NewsletterBindings = {
+  kv: KVLike
+  resendApiKey: string
+  /** Absent in local dev or if the binding is removed; callers then skip the IP limit. */
+  limiter?: RateLimiterLike
+}
+
+/** The subset of a Workers Rate Limiting binding the signup route uses. */
+export type RateLimiterLike = {
+  limit(options: { key: string }): Promise<{ success: boolean }>
+}
 
 export async function newsletterBindings(): Promise<NewsletterBindings | null> {
   let env: CloudflareEnv
@@ -28,5 +38,5 @@ export async function newsletterBindings(): Promise<NewsletterBindings | null> {
     )
     return null
   }
-  return { kv, resendApiKey }
+  return { kv, resendApiKey, limiter: env.NEWSLETTER_RATE_LIMITER }
 }
