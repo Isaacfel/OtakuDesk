@@ -2,6 +2,7 @@ import { PICKS } from '../data/picks'
 import { PRICE_MAX_AGE_DAYS } from '../data/types'
 import type { Pick } from '../data/types'
 import { applyResults, buildReport, fetchListing, mostlyBlocked, type Outcome, type Result } from '../lib/prices'
+import { tokenMatches } from '../lib/clicks'
 
 /**
  * Weekly price refresh, as a Cloudflare cron Worker (see prices/wrangler.jsonc).
@@ -219,7 +220,8 @@ const worker = {
     const url = new URL(request.url)
     if (request.method === 'POST' && url.pathname === '/__step') {
       const token = request.headers.get('x-run-token') ?? ''
-      if (!env.RUN_TOKEN || token.length === 0 || token !== env.RUN_TOKEN)
+      // Constant-time compare; an unset RUN_TOKEN never matches.
+      if (token.length === 0 || !tokenMatches(token, env.RUN_TOKEN ?? ''))
         return new Response('Forbidden', { status: 403 })
       try {
         return Response.json(await step(env, new Date(), url.searchParams.get('mock') === '1'))
