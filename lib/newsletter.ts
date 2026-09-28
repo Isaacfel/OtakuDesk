@@ -31,6 +31,11 @@ export const NEWSLETTER = {
   windowDays: 7,
   /** Unconfirmed signups expire after this long. */
   pendingTtlSeconds: 7 * 24 * 60 * 60,
+  /**
+   * Minimum gap between confirmation emails to one pending address, so the
+   * signup form cannot be used to flood someone's inbox.
+   */
+  resendCooldownSeconds: 15 * 60,
 } as const
 
 export class NewsletterConfigError extends Error {}
@@ -54,6 +59,8 @@ export type Subscriber = {
   token: string
   createdAt: string
   confirmedAt?: string
+  /** When the last confirmation email was sent (pending records only). */
+  lastSentAt?: string
 }
 
 const SUB_PREFIX = 'sub:'
@@ -101,25 +108,37 @@ async function writeSubscriber(kv: KVLike, sub: Subscriber): Promise<void> {
 /**
  * Start (or restart) a signup. A confirmed subscriber is left alone; a pending
  * one keeps its token so a second confirmation email carries the same link.
+ *
+ * `sendConfirmation` says whether the caller should email the confirmation
+ * link now. It is false inside the resend cooldown, so repeated submissions
+ * for one address send at most one email per cooldown window.
  */
 export async function beginSubscription(
   kv: KVLike,
   email: string,
   now: Date = new Date(),
-): Promise<{ subscriber: Subscriber; created: boolean }> {
+): Promise<{ subscriber: Subscriber; created: boolean; sendConfirmation: boolean }> {
   const existing = await getSubscriber(kv, email)
   if (existing) {
-    if (existing.status === 'pending') await writeSubscriber(kv, existing) // refresh TTL
-    return { subscriber: existing, created: false }
+    if (existing.status !== 'pending') {
+      return { subscriber: existing, created: false, sendConfirmation: false }
+    }
+    const last = existing.lastSentAt ? Date.parse(existing.lastSentAt) : Number.NaN
+    const coolingDown =
+      Number.isFinite(last) && now.getTime() - last < NEWSLETTER.resendCooldownSeconds * 1000
+    const next: Subscriber = coolingDown ? existing : { ...existing, lastSentAt: now.toISOString() }
+    await writeSubscriber(kv, next) // refresh TTL (and the send time when sending)
+    return { subscriber: next, created: false, sendConfirmation: !coolingDown }
   }
   const subscriber: Subscriber = {
     email,
     status: 'pending',
     token: newToken(),
     createdAt: now.toISOString(),
+    lastSentAt: now.toISOString(),
   }
   await writeSubscriber(kv, subscriber)
-  return { subscriber, created: true }
+  return { subscriber, created: true, sendConfirmation: true }
 }
 
 export async function confirmByToken(

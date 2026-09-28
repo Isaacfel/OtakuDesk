@@ -13,11 +13,17 @@ import {
  * every outcome is a redirect to /newsletter with a `state` the page explains.
  *
  * Double opt-in: this only stores a pending record and sends the confirmation
- * link. Nothing is subscribed until /api/newsletter/confirm is hit.
+ * link. Nothing is subscribed until the confirmation is POSTed.
+ *
+ * Abuse limits (the form sends email, so it must not be a free mail cannon):
+ *   - per IP: the NEWSLETTER_RATE_LIMITER binding (wrangler.jsonc) caps
+ *     attempts per client address per minute;
+ *   - per address: a pending signup gets at most one confirmation email per
+ *     NEWSLETTER.resendCooldownSeconds, however often the form is submitted.
  */
 export const dynamic = 'force-dynamic'
 
-export type SubscribeState = 'check-email' | 'already' | 'invalid' | 'unavailable'
+export type SubscribeState = 'check-email' | 'already' | 'invalid' | 'unavailable' | 'slow-down'
 
 function to(state: SubscribeState): NextResponse {
   const res = new NextResponse(null, { status: 303 })
@@ -40,8 +46,16 @@ export async function POST(request: NextRequest) {
   const bindings = await newsletterBindings()
   if (!bindings) return to('unavailable')
 
-  const { subscriber } = await beginSubscription(bindings.kv, email)
+  if (bindings.limiter) {
+    const ip = request.headers.get('cf-connecting-ip') ?? 'unknown'
+    const { success } = await bindings.limiter.limit({ key: `subscribe:${ip}` })
+    if (!success) return to('slow-down')
+  }
+
+  const { subscriber, sendConfirmation } = await beginSubscription(bindings.kv, email)
   if (subscriber.status === 'confirmed') return to('already')
+  // Inside the resend cooldown: the earlier email is still valid, say so.
+  if (!sendConfirmation) return to('check-email')
 
   try {
     await sendEmail(bindings.resendApiKey, {
